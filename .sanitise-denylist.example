@@ -1,0 +1,15 @@
+# Confidential denylist — copy to .sanitise-denylist and fill in. NEVER commit the real one.
+# One term per line, case-insensitive, matched as a whole word. Blank lines and # comments ignored.
+#
+# Include, for every client and engagement:
+#   - the client's name, trading name, and any abbreviation
+#   - their end client
+#   - their sector, domain, country, programme, or named capability
+#   - product names, service names, repository names, hostnames
+#   - any named individual
+#
+# Example shape only:
+# acmeanalytics
+# acme
+# widgetcorp
+# some-internal-service-name

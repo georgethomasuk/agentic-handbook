@@ -1,0 +1,41 @@
+site_name: Agentic Delivery Handbook
+site_description: Running a whole software engagement with agents.
+site_author: George Thomas
+site_url: https://georgethomasuk.github.io/agentic-handbook/
+repo_url: https://github.com/georgethomasuk/agentic-handbook
+edit_uri: ""
+
+theme:
+  name: material
+  features:
+    - navigation.sections
+    - navigation.top
+    - toc.follow
+    - content.code.copy
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      toggle: { icon: material/weather-night, name: Dark mode }
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      toggle: { icon: material/weather-sunny, name: Light mode }
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - tables
+  - toc: { permalink: true }
+  - pymdownx.details
+  - pymdownx.superfences
+
+nav:
+  - Home: index.md
+  - 0 · What this is: parts/00-what-this-is.md
+  - 1 · Framing the work: parts/01-framing-the-work.md
+  - 2 · Designing the system: parts/02-system-design.md
+  - 3 · Attacking it before building it: parts/03-threat-modelling.md
+  - 4 · Designing the surfaces: parts/04-design.md
+  - 5 · Planning the delivery: parts/05-delivery-planning.md
+  - 6 · Supervising the run: parts/06-supervision.md
+  - 7 · Keeping it honest: parts/07-keeping-it-honest.md
+  - 8 · The machine: parts/08-the-machine.md
