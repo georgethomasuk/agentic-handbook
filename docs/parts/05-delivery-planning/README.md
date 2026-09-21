@@ -12,7 +12,7 @@ The worked example throughout is [the example system](../../reference/example-sy
 |---|---|
 | **This guide** | What the process is, why it is shaped this way, and what good output looks like. Written for you |
 | [**`prompt.md`**](./prompt.md) | The instruction set to paste into an agent session. Written for the agent |
-| [**`templates/`**](./templates/) | Skeletons for every file the process produces. Copy the directory |
+| [**`templates/`**](./templates/README.md) | Skeletons for every file the process produces. Copy the directory |
 
 **Read this once. Use the prompt every time.**
 

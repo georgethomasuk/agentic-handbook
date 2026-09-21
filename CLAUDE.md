@@ -117,6 +117,17 @@ scripts/check-sanitised.sh
 It fails if a published file contains a denylisted term or a drafting-only block. Run it before any
 push and before any site build.
 
+**And build the site before pushing:**
+
+```
+scripts/build-site.sh
+```
+
+The publish workflow runs MkDocs in **strict mode**, so a link to a file that is not in `docs/` fails
+the build rather than warning. That has already broken `main` once – a part was converted to a folder
+and `index.md` still linked the old page. The script creates `.venv` on first run and then builds the
+same way the workflow does.
+
 **The denylist cannot live in a public repository**, because the denylist *is* the confidential list.
 It lives at `.sanitise-denylist` in the working copy, is gitignored, and is never committed. The
 repository ships `.sanitise-denylist.example` showing the format only.
