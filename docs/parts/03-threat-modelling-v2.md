@@ -44,6 +44,23 @@ artefact. That is an end-of-engagement assurance document, and you are at the st
 target. Hold the line on the client-facing document instead – it is the only one anybody reads end to
 end, and it is the one that overran worst.
 
+## Who does what
+
+Three roles. They are referred to by name throughout, so it is always clear who is acting.
+
+| | | |
+|---|---|---|
+| **You** | the operator | Direct the agent. Decide when a step is done. Make the calls the agent cannot: what counts as a boundary, whether a split is justified, when the work is finished |
+| **The agent** | | Research the category. Ask the questions. Draft findings. Write every file. It starts knowing nothing about the system |
+| **The participant** | | Hold the business knowledge and answer the questions. What actually happens, as opposed to what the specification says |
+
+**You and the participant may be the same person.** Today they usually are – the operator represents
+the client's knowledge from prior conversations. That is a limitation rather than a design, and it is
+in *What's not solved yet*.
+
+**Never let the agent be the participant.** If it starts answering its own questions from the
+specification, the pass is producing a summary of a document rather than a model of a system.
+
 ## The shape of the work
 
 You run **two passes**, not one.
@@ -81,10 +98,12 @@ side.
 
 ## 1.1 · List your trust boundaries
 
+> **Agent** drafts from the system description · **You** check and decide the final list.
+
 A **trust boundary** is where data moves between two parties who trust each other differently.
 
-Ask of the system: *where does something cross from one party's control into another's?* Each answer
-is a boundary. Number them.
+The agent works through the system description asking *where does something cross from one party's
+control into another's?* Each answer is a boundary. Number them.
 
 **Worked example.**
 
@@ -98,19 +117,20 @@ is a boundary. Number them.
 | **B6** | The supplier's own handling during the build | Live data on machines the client does not control |
 | **B7** | The company's own handling | Exports, spreadsheets, board packs. Where the platform stops being able to help |
 
-**Aim for five to nine.** Fewer and you are describing zones, not boundaries. More and you are
-describing components.
-
----
+**Aim for five to nine.** Fewer and the agent is describing zones, not boundaries. More and it is
+describing components. This is your call to make, not its.
 
 ---
 
 ## 1.2 · List your data holdings
 
+> **Agent** drafts from the system description · **You** check and decide the final list.
+
 A **holding** is one place personal data sits, treated as a single thing for analysis. Not a database
 table. Not a server. A body of records about people you can reason about as a unit.
 
-Ask: *where does personal data come to rest?* Include the places you do not control.
+The agent asks *where does personal data come to rest?* It must include the places nobody controls –
+the client's own exports, the supplier's own machines.
 
 **Worked example.**
 
@@ -124,20 +144,24 @@ Ask: *where does personal data come to rest?* Include the places you do not cont
 | **H6** | Operational exhaust | Logs, dead-letter queue, transient stores |
 
 **Holdings outside the platform get no row.** Paper notes in a filing cabinet are real and are not
-analysable here. Note them in the cell that raises them and move on.
-
----
+analysable here. The agent notes them in the cell that raises them and moves on.
 
 ---
 
 ## 1.3 · Split holdings with the fork test
 
+> **Agent** proposes candidate splits · **Participant** answers the forking question · **You** decide.
+
 Some holdings hide two different analyses inside one row. Split those, and only those.
+
+The agent proposes a split. You decide whether to take it, because an over-eager split is what makes
+the pass unfinishable.
 
 **The test: split only where walking the holding as one forces two different answers.** Not where the
 data merely differs.
 
-**Worked example.** H3, intake, looks like one holding. Apply one privacy question to it:
+**Worked example.** H3, intake, looks like one holding. The agent puts one privacy question to the
+participant:
 
 > *Can the person deny having said this?*
 
@@ -148,22 +172,22 @@ data merely differs.
 
 Same question, opposite answers. **H3 splits into H3a and H3b.**
 
-Now test H6, operational exhaust, the same way. Its retention answer differs from H1 – exhaust is
+The agent then tests H6, operational exhaust, the same way. Its retention answer differs from H1 – exhaust is
 purged at thirty days while the canonical store is kept. That is a diverging answer, so H6 stays
 separate.
 
-**Different content is the symptom. Diverging analysis is the justification.** Apply the test
-strictly, or the spine splits forever and the pass never finishes.
+**Different content is the symptom. Diverging analysis is the justification.** Hold the agent to that
+test, or the spine splits forever and the pass never finishes.
 
 You now have seven holdings: H1, H2, H3a, H3b, H4, H5, H6.
 
 ---
 
----
-
 ## 1.4 · Set up the files before the first question
 
-Three files and one directory. Create them now, empty.
+> **You** create the files and reserve the ID blocks. **Agent** writes into them from here on.
+
+Three files and one directory. Create them now, empty, before the agent is given any task.
 
 ```
 threat_model/
@@ -189,18 +213,18 @@ after both entries are written. **Gaps in the numbering cost nothing.** Do not c
 
 ---
 
----
-
 # 2 · The security pass
 
-**You are walking your trust boundaries.** Holdings are not used in this section at all.
+**The agent is walking your trust boundaries.** Holdings are not used in this section at all.
 
 Six categories × seven boundaries = **42 cells**.
 
 ## 2.1 · Pick one category and prepare it
 
-Work one category all the way across every boundary before starting the next. Asking the same
-question at seven different boundaries is what catches the category you would otherwise skim.
+> **You** choose the category · **Agent** does all three preparation tasks and writes the rules down.
+
+One category is worked all the way across every boundary before the next one starts. Asking the same
+question at seven different boundaries is what catches the category the agent would otherwise skim.
 
 **The six STRIDE categories:**
 
@@ -213,17 +237,19 @@ question at seven different boundaries is what catches the category you would ot
 | **D** | Denial of service | Can the system be made unavailable? |
 | **E** | Elevation of privilege | Can someone gain rights they were not granted? |
 
-Before the first question, do three things.
+Before the agent puts its first question, it does three things. None is optional, and each produces
+something written down that you can check.
 
-**Research the category.** What it covers, where it borders its neighbours, its specific pitfalls. Do
-this first, not while the interview is open.
+**Research the category.** What it covers, where it borders its neighbours, its specific pitfalls.
+This happens first, not while the interview is open.
 
-**Read what already exists, including the contracts.** Contracts are easy to skip because they read as
-commercial material, and they are often where security obligations are actually written down.
-Proposing a control that is already a contractual deliverable wastes the session.
+**Read what already exists, including the contracts.** Contracts are easy for an agent to skip because
+they read as commercial material, and they are often where security obligations are actually written
+down. Proposing a control that is already a contractual deliverable wastes the participant's time.
 
-**Write the disambiguation rules down before using them.** State each as something answerable, so that
-when a cell is borderline you have a test rather than an opinion.
+**Write the disambiguation rules down before using them.** Each is stated as something answerable, so
+that when a cell is borderline there is a test rather than an opinion. Read them before the pass
+starts – this is the cheapest place to catch an agent that has misunderstood the category.
 
 **Worked example, preparing Repudiation:**
 
@@ -235,16 +261,16 @@ when a cell is borderline you have a test rather than an opinion.
 
 ---
 
----
-
 ## 2.2 · Work the category across every boundary, by interview
 
-Take your boundaries in order – on the example system, B1 through B7 from Step 1 – and ask the
+> **Agent** asks · **Participant** answers · **You** move things on when a cell is settled.
+
+The agent takes the boundaries in order – on the example system, B1 through B7 from 1.1 – and asks the
 category's question at each one.
 
-You are now working one cell: **one category at one boundary.** Repudiation at B2, for instance.
+One cell is **one category at one boundary.** Repudiation at B2, for instance.
 
-The agent runs four moves per cell.
+The agent runs four moves per cell. Watch for it skipping move 1.
 
 ### Move 1 · Ask what happens, before asking what goes wrong
 
@@ -267,8 +293,8 @@ thought about.
 
 ### Move 3 · State the candidate in one sentence, and get a yes
 
-**Lead with the plain question. Hold the scaffolding.** The analysis can be deep. The sentence handed
-over must be plain. Give the reasoning only if asked.
+**Lead with the plain question. Hold the scaffolding.** The agent's analysis can be deep. The sentence
+it hands over must be plain, and the reasoning comes only if the participant asks for it.
 
 > **Agent:** So: the dashboard can't say which person at the insurer saw which site's data, and a
 > shared login means it couldn't even narrow it to a person. Finding, or accept?
@@ -276,7 +302,7 @@ over must be plain. Give the reasoning only if asked.
 > **Participant:** Finding. Though I'd want to say that not logging reads is partly deliberate –
 > we're not trying to surveil the insurer's staff.
 
-**A finding that cannot be said in one sentence is not understood yet.** Do not write the entry before
+**A finding that cannot be said in one sentence is not understood yet.** No entry gets written before
 this lands.
 
 ### Move 4 · Separate what exists from what is intended
@@ -285,7 +311,7 @@ Descriptions slide into intentions, and both arrive in the same breath.
 
 > **Participant:** There'd be some mechanism where each analyst gets their own account.
 
-That is an intention, not a control. Split it three ways:
+That is an intention, not a control. The agent splits it three ways:
 
 - the **threat** goes in the finding;
 - the **intention** becomes a requirement, written as a requirement;
@@ -299,14 +325,15 @@ A finding whose treatment credits an unbuilt control has become an assurance cla
 not cover is…"* A gap framed as an edge on a sound design invites contribution. A bare gap invites
 defensiveness.
 
-**Withdraw rather than defend.** When the interview kills a finding you already drafted, record the
-withdrawal in the cell. A pass that never retracts is not being told anything.
-
----
+**Withdraw rather than defend.** When the interview kills a finding the agent already drafted, the
+withdrawal is recorded in the cell rather than deleted. A pass that never retracts is not being told
+anything.
 
 ---
 
 ## 2.3 · Mark the cell
+
+> **Agent** writes the row, using the answer the participant already confirmed in 2.2.
 
 Three marks. There is no fourth. An unmarked row means the pass is incomplete.
 
@@ -314,7 +341,7 @@ Three marks. There is no fourth. An unmarked row means the pass is incomplete.
 |---|---|
 | `✅ F-n` | Produced a finding. Write the entry **now**, not later |
 | `➖` | Considered and closed. **The reason is the deliverable** – *"n/a"* is not a reason |
-| `⚠️` | Cannot be closed by you. Name what it waits on and who owns it |
+| `⚠️` | Cannot be closed by anyone in the room. Name what it waits on and who owns it |
 
 **Worked example**, the row written for the cell above, in the Repudiation table:
 
@@ -328,13 +355,13 @@ no room for a cell like this and pushes every explanation into notes underneath.
 
 ---
 
----
-
 ## 2.4 · Write the finding as its own file
 
-Write it in plain language the first time. Not a compressed note to be expanded later. The finding is
-the thing that goes in front of the client, and a statement that cannot survive plain English is one
-that is not yet understood.
+> **Agent** writes the file, the index row and the register line, before moving to the next cell.
+
+The agent writes it in plain language the first time. Not a compressed note to be expanded later. The
+finding is the thing that goes in front of the client, and a statement that cannot survive plain
+English is one that is not yet understood.
 
 **Worked example**, `annex_b/F-048-dashboard-records-no-reads.md`:
 
@@ -361,24 +388,25 @@ insurer's own account governance and achievable now. Content-read logging: accep
 *Residual.* After individual logins, the system can say who had access, never who looked.
 ```
 
-Then add one row to the index in `annex_b_findings.md`, and one line to the register.
+Then one row goes into the index in `annex_b_findings.md`, and one line into the register. All three
+before the next cell is opened – an agent that batches them will lose them on a context reset.
 
 ### If it is not a threat, give it a different number
 
 Contract gaps, stale documents, scope nobody has decided – real, actionable, not threats.
 
-Use a separate series, `ADJ-n`. **A reader is entitled to assume every `F-` line describes a way the
-system can harm someone or be harmed.** One paperwork entry in the register corrupts that guarantee
-for every other line.
+These go in a separate series, `ADJ-n`. **A reader is entitled to assume every `F-` line describes a
+way the system can harm someone or be harmed.** One paperwork entry in the register corrupts that
+guarantee for every other line.
 
 The test: *does this describe something going wrong with the system, or something wrong with the
 paperwork about the system?*
 
 ---
 
----
-
 ## 2.5 · Repeat for the remaining five categories
+
+> **You** decide the order and when to start the next category.
 
 Six categories, seven boundaries, one table each. When all six tables are full, the security pass is
 done.
@@ -387,7 +415,7 @@ done.
 
 # 3 · The privacy pass
 
-**You are now walking your data holdings.** Boundaries are not used in this section at all.
+**The agent is now walking your data holdings.** Boundaries are not used in this section at all.
 
 Seven suits × seven holdings = **49 cells**.
 
@@ -396,6 +424,8 @@ marks (2.3), same one file per finding (2.4). Only the unit and the question ban
 follows covers only what differs.
 
 ## 3.1 · Pick one suit and prepare it
+
+> **You** choose the suit · **Agent** prepares it, and reads the real data before the first question.
 
 **The seven LINDDUN GO suits:**
 
@@ -409,15 +439,16 @@ follows covers only what differs.
 | **U** | Unawareness | Do people not understand what happens to their data? |
 | **N** | Non-compliance | Does the handling breach law, policy or consent? |
 
-**Non-repudiation is the one that catches people out.** In security it is a property you want. In
-privacy it is a threat – a person who cannot deny having said something has lost something.
+**Non-repudiation is the one that catches agents out.** In security it is a property you want. In
+privacy it is a threat – a person who cannot deny having said something has lost something. Check the
+agent has this the right way round before it starts.
 
-**One extra preparation step for this pass: read the real data first.** Before the first suit, open
-the actual form output. Not the specification of it – the real columns, the real metadata, the real
-free-text fields. Privacy questions are answered against what data exists, and the specification will
-have left things out.
+**One extra preparation step for this pass: the agent reads the real data first.** Before the first
+suit, give it the actual form output. Not the specification of it – the real columns, the real
+metadata, the real free-text fields. Privacy questions are answered against what data exists, and the
+specification will have left things out.
 
-**Add one disambiguation test specific to this pass:**
+**The agent adds one disambiguation test specific to this pass:**
 
 | Against | Test |
 |---|---|
@@ -425,16 +456,17 @@ have left things out.
 
 ---
 
----
-
 ## 3.2 · Work the suit across every holding, by interview
 
-Take your holdings in order – on the example system, H1, H2, H3a, H3b, H4, H5, H6 from Steps 2 and 3.
+> **Agent** asks · **Participant** answers · **You** move things on when a cell is settled.
+
+The agent takes the holdings in order – on the example system, H1, H2, H3a, H3b, H4, H5, H6 from 1.2
+and 1.3.
 
 One cell is **one suit at one holding.** Detecting at H3b, for instance.
 
-Use the same four moves from Step 6. What changes is the shape of the question: you are asking about a
-body of records, not about a crossing point.
+Same four moves as 2.2. What changes is the shape of the question: it is about a body of records, not
+about a crossing point.
 
 **Worked example**, Detecting at H3b, the wellbeing check-in:
 
@@ -465,9 +497,9 @@ it. A cell that lands *open, waiting on the client* is the correct result there,
 
 ---
 
----
-
 ## 3.3 · Repeat for the remaining six suits
+
+> **You** decide the order and when to start the next suit.
 
 When all seven tables are full, the privacy pass is done.
 
@@ -477,9 +509,11 @@ When all seven tables are full, the privacy pass is done.
 
 ## 4.1 · Compare the two passes against each other
 
+> **Agent** proposes the pairs · **You** confirm them and decide what goes to the client.
+
 **This is the output you can only get by running both, and it is easy to skip.**
 
-Go through the findings from each pass looking for the same mechanism appearing twice with opposite
+The agent reads both passes' findings looking for the same mechanism appearing twice with opposite
 signs. A control in one, a harm in the other.
 
 **Worked example.** The security pass recorded *the dashboard logs no reads* as an accountability gap.
@@ -488,25 +522,28 @@ insurer's own staff.
 
 **Same absence. One pass calls it a weakness, the other calls it protection.**
 
-Write these up as a set rather than leaving them in their separate findings. Each is a live trade-off,
-not a defect, and **fixing the security finding erodes the privacy property**. Somebody has to decide
-which way it goes, and they can only do that if the two readings are on the same page.
-
----
+These are written up as a set rather than left in their separate findings. Each is a live trade-off,
+not a defect, and **fixing the security finding erodes the privacy property**. The client has to
+decide which way it goes, and they can only do that if both readings are on the same page. Neither you
+nor the agent resolves one of these quietly.
 
 ---
 
 ## 4.2 · Synthesise, in one place
 
-Cross-category judgements cannot be written by a session that has seen one category.
+> **You** choose one session to do this. **Agent** writes it, having read every category table.
 
-A session finishing its category **says** what looked cross-cutting. It does not write that into the
-shared sections itself.
+Cross-category judgements cannot be written by an agent that has seen one category. Give this to a
+session that reads all thirteen tables from the files.
 
-**Derive every count by script, not by hand.** Write something that reads the mark column of every
-table and reports totals plus any unmarked row. A hand-kept tally drifts, and it drifts silently.
+A session finishing its own category **tells you** what looked cross-cutting. It does not write that
+into the shared sections itself.
 
-Then write four things:
+**Have the agent derive every count by script, not by hand.** A short script that reads the mark column
+of every table and reports totals plus any unmarked row. A hand-kept tally drifts, and it drifts
+silently – so the script is the answer, not the agent's arithmetic.
+
+The synthesis session then writes four things:
 
 1. **Coverage** – rows are the thirteen categories and suits, not the boundaries or holdings. The
    question is *was this taxonomy actually walked?*
@@ -516,83 +553,91 @@ Then write four things:
 
 ---
 
----
-
 # Speeding it up
 
 The procedure above is slow on purpose. This section is how to make it faster **and how to know when
-you have earned the right to.**
+you have earned the right to.** Every judgement here is yours – the agent cannot tell you whether it
+has become reliable.
 
 ## The signal that it is safe
 
-**You can predict a cell's mark before the interview, and you are usually right.**
+**You can predict the agent's mark for a cell before it runs the interview, and you are usually
+right.**
 
-That is the whole test. It means you have learned the shape of a live question in this system, and
-you can tell which cells genuinely need an interview from which can be proposed and confirmed.
+That is the whole test. It means the shape of a live question in this system is now known, and the
+cells that genuinely need an interview can be told apart from the ones that can be proposed and
+confirmed.
 
 Four things to check before you believe it:
 
 | | |
 |---|---|
-| **You have finished at least two full categories, sequentially** | One is a sample of one. Optimising against a sample of one is optimising against noise |
-| **Your disambiguation rules stopped changing mid-category** | If you are still rewriting the test that separates this category from its neighbour, you do not yet know the category |
+| **At least two full categories are finished, sequentially** | One is a sample of one. Optimising against a sample of one is optimising against noise |
+| **The agent's disambiguation rules stopped changing mid-category** | If it is still rewriting the test that separates this category from its neighbour, it does not yet know the category |
 | **No finding has been withdrawn for the same reason twice** | A repeated withdrawal means a wrong assumption is still in play |
-| **The participant has stopped correcting your description of the system** | While the specification is still being falsified, you do not know the system well enough to guess at cells |
+| **The participant has stopped correcting the agent's description of the system** | While the specification is still being falsified, nobody knows the system well enough to guess at cells |
 
 **If any of those is not true, keep going sequentially.** It will feel slow. That is the price of the
 calibration.
 
 ## Two ways to go faster
 
-**Propose and confirm, instead of interviewing.** For cells you can predict, put the proposed mark and
-its reason to the participant in one sentence and ask for a yes or no. Keep the full interview for
-cells you cannot call.
+**Propose and confirm, instead of interviewing.** For cells you have told the agent it may call, it
+puts the proposed mark and its reason to the participant in one sentence and asks for a yes or no. The
+full interview stays in place for every other cell. **You decide which cells qualify, not the agent** –
+an agent asked to judge its own reliability will say yes.
 
-**Run two categories at once.** Two agents, two categories, one operator moving between them.
+**Run two categories at once.** Two agent sessions, two categories, you moving between them as the
+single participant.
 
 **Parallelism is a throughput change, not a depth change.** Each session still runs the full interview
-procedure on the cells that need it. The moment a session starts proposing marks it has not earned,
-the pass stops being worth running.
+on the cells that need it. The moment a session starts proposing marks it has not earned, the pass
+stops being worth running.
+
+**The ceiling is you.** Two sessions is what one participant can hold. A third does not fail loudly –
+it fails by getting shallower answers from a person who is now context-switching.
 
 ## Four rules that make concurrent sessions safe
 
 | | |
 |---|---|
-| **Own your own files exclusively** | Your category table, your finding files. Never edit another session's table, even to fix an obvious typo |
-| **Append to shared files, never rewrite them** | Add your index row. Do not regenerate the table |
+| **Each session owns its own files exclusively** | Its category table, its finding files. It never edits another session's table, even to fix an obvious typo |
+| **Shared files are append-only** | A session adds its index row. It does not regenerate the table |
 | **Re-read immediately before editing a shared file** | Not once at session start. An edit built on a stale read silently reverts the other session |
-| **Do not commit unless asked** | A commit sweeps up half-finished work from the other session |
+| **No session commits unless you ask it to** | A commit sweeps up half-finished work from the other session |
 
 Finding-ID blocks (1.4) exist for exactly this. Two sessions both taking *the next free number* will
-collide, and the collision surfaces at merge, after both entries are written.
+collide, and the collision surfaces at merge, after both entries are written. Give each session its
+block when you start it.
 
 ## What not to speed up
 
 **The descriptive question.** Move 1 of the interview – *walk me through what actually happens* – is
-where specifications get corrected. Skipping it is how a pass ends up analysing a system that does not
-exist.
+where specifications get corrected. An agent under time pressure drops it first, and that is how a
+pass ends up analysing a system that does not exist.
 
 **Cross-category synthesis.** It cannot be done by a session that has seen one category, and it cannot
-be split between two.
+be split across two.
 
 ---
 
 # Evaluating the quality
 
-Run these checks before calling the work done. Each one has a failure mode behind it, and each is
-cheap to run.
+**These are yours to run, on the agent's output.** Do not ask the agent whether its own pass was good
+– it will tell you it was. Each check below is cheap and reads the files rather than the conversation.
 
-**The mark distribution varies by category.** If every category comes back all-findings, you are
+**The mark distribution varies by category.** If every category comes back all-findings, the agent is
 marking generously rather than analysing. A category pointed at part of a design that genuinely works
 should come back mostly closed, with reasons.
 
 **There are open cells.** A grid with nothing open, in a system that depends on facts held by other
 people, means the pass stopped asking. An open cell is a healthy state.
 
-**Every closed cell has a reason you could defend out loud.** Search your tables for *"n/a"* and for
-one-word reasons. Each is a cell that was not worked.
+**Every closed cell has a reason you could defend out loud.** Grep the tables for *"n/a"* and for
+one-word reasons. Each one is a cell the agent did not work.
 
-**At least one finding was withdrawn.** A pass that never retracts is not being told anything.
+**At least one finding was withdrawn.** A pass that never retracts is not being told anything – it is
+an agent confirming its own first guesses.
 
 **Nothing claims more than it can.** The work supports one sentence: *recognised practice was followed
 and what it found was recorded.* Not *reviewed*. Not *secure*. A declared gap is defensible; an
@@ -611,12 +656,15 @@ implied assurance is not.
 
 # What's not solved yet
 
-**The agent interviews the supplier, not the client.** Somebody has to represent the client's
-knowledge, and that is a proxy with a ceiling. The artefact shape compensates rather than fixes it:
-the whole output is built to be handed over with *tell us what we got wrong*.
+**The operator is usually also the participant.** One person both directs the agent and answers its
+questions, representing the client's knowledge from prior conversations. That is a proxy with a
+ceiling, and the two roles pull against each other – the person checking the agent's work is the same
+person whose answers produced it. The artefact shape compensates rather than fixes it: the whole
+output is built to be handed over with *tell us what we got wrong*.
 
-**Running this with the client in the room is not designed yet.** Parallel sessions get harder
-immediately, because the knowledge sits with someone whose time cannot be booked twice.
+**Running this with the client as the participant is not designed yet.** It would separate the two
+roles properly. It also makes parallel sessions much harder, because the knowledge then sits with
+someone whose time cannot be booked twice.
 
 **The signals in *Speeding it up* are proposed, not validated.** The speed-up was declined early, on
 the grounds that optimising against a sample of one is optimising against noise, and it has not been
