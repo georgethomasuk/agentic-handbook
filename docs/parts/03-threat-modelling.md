@@ -10,167 +10,233 @@
 >
 > **LINDDUN GO** – Linking · Identifying · Non-repudiation · Detecting · Data disclosure · Unawareness · Non-compliance. ([linddun.org](https://linddun.org/go/))
 >
-> The four questions are the container. The two taxonomies plug into the second one, and nothing else.
+> The four questions are the container. The two taxonomies fill the second one, and nothing else.
+
+The worked example throughout is [the example system](../reference/example-system.md) – an internal
+safety and wellbeing platform, with seven trust boundaries and seven data holdings.
 
 ## The problem
 
 **At the start of an engagement there is nothing for an agent to analyse.**
 
-No codebase. No running system. There are specifications, and the specifications are wrong in places
-nobody has noticed yet. Three cells in this walk corrected the specification itself, each found by
-asking what actually happens rather than reading what was written.
+No codebase. No running system. There are specifications, and specifications describe the system as
+it is meant to be, which is not the same as how it works.
 
 What exists instead is business context sitting in people's heads. How collection actually happens.
 Who is allowed to ask for an account. What the team does when a record will not process. None of it
 is in a repository, so there is nothing to grep.
 
 **So the agent's job is elicitation, not analysis.** That inverts which parts of the workflow matter.
-Most writing about agents and security assumes the agent is reading something. Here it reads almost
-nothing and interviews almost entirely.
+An agent reading a codebase can work alone. An agent with nothing to read cannot, and every rule
+below follows from that.
 
-### The second problem: the usual output is the wrong shape
+### The output is usually the wrong shape
 
 Threat modelling conventionally produces a document written to **close** things. Coverage statements,
 declared gaps, a sign-off table.
 
-That is an end-of-engagement assurance artefact. At the start of a build it is the wrong shape.
+That is an end-of-engagement assurance artefact. At the start of a build you need the opposite: a
+document written to **open** things. *Here is how we looked, here is what we found, tell us what we
+got wrong.*
 
-This engagement had two of them already, from an earlier session – 462 lines of internal working
-record with dated addenda, and 788 lines of closing report. Both were good work. Neither was readable
-by the client, and neither was the thing needed, which is a document written to **open** things: here
-is how we looked, here is what we found, tell us what we got wrong.
+The difference is not tone. It decides the file layout, the granularity, and whether anyone outside
+the team can contribute to it.
 
 ## The mechanism
 
-Three things. Everything else is detail.
+Eight steps. Steps 1 and 2 are done once. Steps 3 to 6 repeat per category. Steps 7 and 8 are how it
+scales.
 
-### The worked example
+---
 
-The system described below is a stand-in. It carries the structure of a real engagement and none of
-its content, and it is used across Parts 2, 3 and 5 so you meet one example rather than three.
+### Step 1 · Describe the system twice
 
-> **An internal safety and wellbeing platform for a multi-site employer.** Supervisors file incident
-> reports from managed devices, sometimes in another language, so reports are machine-translated on
-> the way in. Once a year, for a two-week window, all staff are invited to complete an anonymous
-> wellbeing check-in on their own phones. The company's insurer reads a dashboard of aggregate
-> trends by site.
+Two lists, on two different spines, because the two taxonomies need different units.
 
-Every count in *What it cost* is real and comes from the actual engagement. The stand-in illustrates
-shape; it never carries a finding, a figure or a quote.
+**Trust boundaries** – the places where data moves between parties who trust each other differently.
+Security threats cluster here, because each side relies on assumptions the other has not promised to
+keep. The example system has seven.
 
-### M1 · Two taxonomies, two spines, deliberately not reconciled
+**Data holdings** – each place personal data sits, treated as one thing for analysis. Not a database
+table and not a server. A body of records about people that can be reasoned about as a unit. The
+example system has seven.
 
-**STRIDE walks the trust boundaries.** Security threats cluster where trust levels meet, so the
-boundary is the right unit. Six categories against seven boundaries is forty-two cells.
+**Do not reconcile the two lists.** They answer different questions and forcing one spine onto both
+loses cells. The reason is specific: a boundary walk never sits you in front of two holdings at once,
+and that is exactly where the sharpest questions live. *Can an incident report be linked to a
+wellbeing check-in* is only visible with both holdings side by side.
 
-**The privacy taxonomy walks the personal-data holdings.** A privacy harm attaches to a record about
-a person, not to an architecture element. *Can this person be re-identified* is a question about
-data, not about a line on a diagram. Seven suits against seven holdings is forty-nine cells.
+---
 
-The first attempt walked both against the boundaries. It did not survive contact with the work.
+### Step 2 · Split the holdings, using the fork test
 
-**The reason it does not work is specific.** A boundary walk never sits you in front of two holdings
-at once, and that is exactly where the sharp cells live. Linking an incident report to a check-in is
-only visible with both holdings side by side.
-
-#### The fork test
-
-Splitting a holding is the decision that decides how long the walk takes, so it needs a rule.
+Splitting a holding decides how long the walk takes, so it needs a rule.
 
 **Split only where walking a holding as one forces two different answers.** Not where the data merely
 differs.
 
-On the stand-in, the two intakes fork hard:
+On the example system the two intakes fork hard:
 
-| | Holding | Non-repudiation |
+| | Holding | Can the person deny having said it? |
 |---|---|---|
-| **H3a** | Incident report, managed device | Attribution is **the control**. Losing it defeats the purpose of the report |
+| **H3a** | Incident report, managed device | Attribution is **the control**. Losing it defeats the purpose of filing a report |
 | **H3b** | Wellbeing check-in, personal phone | Attribution is **the harm**. Someone who cannot deny having reported that they are struggling has lost the thing that made the check-in safe to complete |
 
-Same mechanism, opposite valence. Walking them together forces one answer onto two questions.
+Same mechanism, opposite valence. Walking them as one holding forces a single answer onto two
+questions, and it will be wrong for both.
 
 **Different content is the symptom. Diverging analysis is the justification.** Hold that line or the
 spine splits forever.
 
-Holdings outside the platform get no row at all. Route them in the cell that raised them and move on.
+**Holdings outside the platform get no row.** Paper notes in a filing cabinet are real and are not
+analysable here. Note them in the cell that raised them and move on.
 
-### M2 · The interview rules
+---
 
-This is where the elicitation happens, and it is the mechanism the whole method rests on.
+### Step 3 · Pick one category and prepare it
 
-Four rules. Each is a consequence of the agent knowing nothing.
+Work one category at a time, all the way across the row. Six security categories against seven
+boundaries is forty-two cells; seven privacy suits against seven holdings is forty-nine.
 
-| Rule | Why, given the agent knows nothing |
+**Asking the same question seven times in a row is what catches the category you would otherwise
+skim.** That repetition is the entire reason the pass exists.
+
+Three things before the first question:
+
+**Research the category.** What it covers, where it borders the adjacent ones, and its specific
+pitfalls. Do this first, not in parallel with opening the interview.
+
+**Read the existing record, including the contracts.** Proposing something already decided makes the
+walk look like it is talking over earlier work rather than building on it. Contracts are easy to skip
+because they read as commercial material, and they are often where obligations are actually specified.
+
+**Write the disambiguation rules down before using them.** State the test that separates this category
+from its neighbours as something answerable: *if authentication were perfect and the finding survives,
+it is elevation of privilege, not spoofing.*
+
+---
+
+### Step 4 · Work the row, one cell at a time, by interview
+
+This is where the elicitation happens. Four rules, each a consequence of the agent knowing nothing.
+
+| Rule | Why |
 |---|---|
 | **Ask what happens before asking what goes wrong** | There is no model of the system yet, so a hypothesis-first question spends the whole exchange being reversed |
 | **Ask in the system's own terms, not the taxonomy's** | Not *"is there a spoofing risk at B2"* but *"someone from the insurer logs in – could that be someone else, and how would you know?"* A cell answered in taxonomy vocabulary has usually not been thought about |
 | **Lead with the plain question. Hold the scaffolding** | The analysis can be deep. The sentence handed over must be plain. Give the reasoning only if asked |
 | **State the candidate finding in one sentence, get a yes, then write it up** | A finding that cannot be said in one sentence is not understood yet |
 
-**Every one of these is a rule about protecting the human's attention**, because the human is the
-only source of truth in the room.
+**Every one of these protects the human's attention**, because the human is the only source of truth
+in the room. That cost multiplies across parallel sessions.
 
-Two of them exist because of a specific failure, and those are in the next section.
+Two things to separate while listening:
 
-### M3 · The artefact shape
+**What exists, versus what is intended.** *"There'd be some mechanism where the form gets taken down"*
+is an intention, not a control, and it arrives in the same breath as things that are actually built.
+The threat goes in the finding. The intention becomes a requirement. The finding says plainly that the
+control is not built.
 
-Each of these was adopted for a machine reason. Each turned out to be what made the output something
-a non-specialist could contribute to.
+**The good property, before the gap.** Name what the design gets right, then what it does not reach. A
+gap framed as an edge on a sound design invites contribution. A bare gap invites defensiveness.
 
-| Choice | Adopted because | Turned out to also mean |
-|---|---|---|
-| **One file per finding** | Reading one finding should not mean loading all of them, and parallel sessions writing into one file collide | A reader can be sent one finding rather than a document |
-| **One small table per category, not one large matrix** | A category is worked in one pass, so it is written in one place | A small table has room to carry the reason in the row. A large matrix pushes every explanation into notes underneath |
-| **Finding IDs allocated in blocks before work starts** | Two sessions both taking "the next free number" collide, and the collision surfaces at merge, after both entries are written | Gaps in the numbering are visible, and a gap is cheaper than a reconciliation pass |
-| **Three marks, no fourth, and the reason is the deliverable** | An unmarked row means the walk is incomplete, which is the thing worth knowing | A category considered and dismissed on stated grounds is a decision. A category never considered is a gap |
-| **Explicit ownership, per file** | Each session owns its category table exclusively and appends to the shared index, never rewriting it | The record says who wrote what |
+---
 
-Two agents worked two categories in parallel, with the operator moving between them. **Parallelism is
-a throughput change, not a depth change** – each session runs the full interview procedure.
+### Step 5 · Mark every cell
+
+Three states. There is no fourth, and an unmarked row means the walk is incomplete.
+
+| Mark | When |
+|---|---|
+| **Finding** | The prompt produced something. Write the entry now, not later |
+| **Closed** | Considered and dismissed. **The reason is the deliverable** – *"n/a"* is not a reason |
+| **Open** | Cannot be closed by you. Name what it waits on and who owns it |
+
+**A dismissal is a result.** A category considered and dismissed on stated grounds is a decision. A
+category never considered is a gap. Distinguishing those two is the only thing the coverage record is
+for.
+
+**Withdraw rather than defend.** When an interview kills a finding you already drafted, record the
+withdrawal in the cell rather than deleting it. A walk that never retracts is not being told anything.
+
+**If a cell produces something that is not a threat, give it a different number.** Contract gaps,
+stale documents, undecided scope – real, actionable, not threats. A reader is entitled to assume every
+finding describes a way the system can harm someone or be harmed, and one paperwork entry corrupts
+that guarantee for every other line.
+
+---
+
+### Step 6 · Write each finding as its own file
+
+One file per finding, named so they sort. An index table alongside. A one-line register entry
+elsewhere.
+
+**Write it in plain language the first time.** Not a compressed note to be translated later. The
+finding is the thing that goes in front of the client, and a statement that cannot survive plain
+English is one that is not yet understood.
+
+---
+
+### Step 7 · Run categories in parallel
+
+Two agents, two categories, one operator moving between them.
+
+**Parallelism is a throughput change, not a depth change.** Each session runs the full interview
+procedure. The moment it starts proposing marks to save time, the pass stops being worth running.
+
+Four rules make concurrent sessions safe:
+
+| Rule | Why |
+|---|---|
+| **Allocate finding IDs in blocks before work starts** | Two sessions both taking *the next free number* collide, and the collision surfaces at merge, after both entries are written. Gaps in the numbering cost nothing |
+| **Each session owns its own category table and its own finding files exclusively** | Never edit another session's table, even to fix an obvious typo |
+| **Shared files are append-only, and re-read immediately before editing** | Not once at session start. An edit built on a stale read silently reverts the other session |
+| **Do not commit unless asked** | A commit sweeps up half-finished work from the other session |
+
+---
+
+### Step 8 · Synthesise across categories, in one place
+
+Cross-category judgements cannot be written by a session that has seen one category. The coverage
+summary, the distribution check, the cross-cutting observations – these compare categories against
+each other.
+
+A session finishing its category says what looked cross-cutting. It does not write that into the
+shared sections itself.
+
+**Derive every count by script, not by hand.** A hand-kept tally drifts, and it drifts silently.
 
 ## The rules that earned their place
 
-Each of these has a dated failure behind it.
+Each of these exists because something went wrong without it.
 
-**Lead with the plain question; hold the scaffolding.** On the first parallel test run, the
-participant twice had to say *simplify that* before the actual question was visible underneath the
-framing, the reasoning and the severity split wrapped around it. That cost lands on the participant,
-and it multiplies across parallel sessions.
+**Lead with the plain question; hold the scaffolding.** An agent that hands over its framing, its
+reasoning and its severity split wrapped around the question forces the participant to say *simplify
+that* before the actual question is visible. That cost lands on the participant and multiplies across
+parallel sessions.
 
-**State the candidate in one sentence before writing it up.** Three cells in one category had a whole
-finding built, framed and paragraphed before the premise was confirmed. Each collapsed the moment the
-participant described what actually happens. The cost lands on the person who has to read three
-paragraphs to find the one wrong assumption underneath.
+**State the candidate in one sentence before writing it up.** A finding built, framed and paragraphed
+before the premise is confirmed collapses the moment the participant describes what actually happens.
+The cost lands on the person who has to read three paragraphs to find the one wrong assumption
+underneath.
 
-**Separate what exists from what is intended.** Describing a system slides into describing the system
-as it is meant to be, and both are said in the same breath. *"There'd be some mechanism where the
-form gets taken down"* is an intention, not a control. The threat goes in the finding, the intention
-becomes a requirement, and the finding says plainly that the control is not yet built. A finding whose
-treatment credits an unbuilt control has quietly become an assurance claim.
+**Separate what exists from what is intended.** A finding whose treatment credits an unbuilt control
+has quietly become an assurance claim, which is the one thing this work must never produce.
 
-**Name the good property before the finding.** A gap framed as an edge on a sound design invites the
-contribution the exercise exists for. A bare gap invites defensiveness. It also keeps the record
-honest in the other direction, because a dismissal that names the property it relies on is auditable.
+**Name the good property before the finding.** It also keeps the record honest in the other
+direction, because a dismissal that names the property it relies on is auditable.
 
-**Withdraw rather than defend.** Several findings were drafted and pulled back after interview, and
-the withdrawals are recorded in the cells rather than deleted. A walk that never retracts is not being
-told anything.
+**Things that are real, actionable and not threats get a separate series.** Otherwise the register
+stops meaning what its readers assume it means.
 
-**Things that are real, actionable and not threats get a separate series.** The walk reliably turns up
-contract clauses that do not cover a task that will certainly happen, documents describing an
-architecture the design has moved away from, and scope decisions nobody has taken. They get an `ADJ-`
-number, not an `F-` number. A reader is entitled to assume every finding line describes a way the
-system can harm someone or be harmed, and one entry that is really a paperwork question corrupts that
-guarantee for every other line.
-
-**Derive every count by script, not by hand.** A hand-kept tally had already drifted – it recorded six
-open cells when there were seven, because it counted its own rows instead of the marks.
+**Derive every count by script.** A hand-kept tally will disagree with the grid it describes, and
+nothing will announce it.
 
 **Never imply independent review where there is none.** The output supports one claim: recognised
 practice was followed and what it found was recorded. Not *reviewed*. Not *secure*. A declared gap is
 defensible; an implied assurance is not.
 
-### Failure modes, named before starting
+### Failure modes worth naming before starting
 
 - **Admiration for the problem.** A finding with no treatment decision is half a finding.
 - **The tidy grid.** No open cells means the walk stopped asking. An open cell is a healthy state.
@@ -180,42 +246,31 @@ defensible; an implied assurance is not.
 
 ## What it cost
 
-**Figures from the real engagement, verified 16 September 2026.**
+**What one full pass takes, measured 16 September 2026. Re-verify before publishing.**
 
 | | |
 |---|---|
-| Cells walked | **91** across thirteen tables – 42 security, 49 privacy |
-| Register before the walk | **16 findings** |
-| Register after | **62 findings**, 43 of them produced by this walk |
+| Cells to work | **91** across thirteen tables – 42 security, 49 privacy |
+| Findings produced | **43**, taking a register of 16 to 62 |
 | Findings file before it was split | **2,201 lines**, then one file per finding |
 
-**Two annexes came in at roughly double their line budget.** They were written down as overruns at the
-line, with the date, rather than the targets being quietly restated.
+**Budget roughly double what you expect for the reference annexes, and hold the line on the document
+people actually read.** Two annexes came in at about twice their target. The client-facing document
+was budgeted at around 120 lines and landed at 350, and it is the one with a real constraint, because
+it is the only one anybody reads end to end.
 
-**The front door came in at nearly triple.** It was budgeted at around 120 lines and landed at 350 –
-and it is the one document with a real length constraint, because it is the only one the client
-actually reads. The length principle still stands and is now unmet.
+**A pass this size is not cheap.** The smallest version below exists because of that.
 
-### A prediction made in advance, which failed
+### Two results worth knowing before you start
 
-One privacy category went onto a watch-list before the walk started, flagged with a specific fear. It
-was walked across all seven holdings and produced **nothing**. Every cell closed.
+**A category can produce nothing, and that is a result.** One privacy category was flagged in advance
+with a specific fear, walked across all seven holdings, and closed every cell. The reason was recorded
+rather than assumed. A pass that only reports its successful hypotheses is not evidence of anything.
 
-The reason was recorded rather than assumed. Nothing in the system could stop a person denying an
-account attributed to them, because the record is a paraphrase with no verbatim original and no
-confirmation step.
-
-**A walk that only reports its successful hypotheses is not evidence of anything.**
-
-### One result that only two taxonomies could find
-
-Four times, a property the security pass recorded as a weakness turned out to be the thing protecting
-the subject. Unreliable records protect deniability. Absent read-logging protects the people being
-logged.
-
-Each is a live trade-off rather than a defect, and **fixing the security finding would erode the
-privacy property.** Running one taxonomy would have produced four confident recommendations that made
-the system worse.
+**Running one taxonomy can make the system worse.** Four times, a property the security pass recorded
+as a weakness turned out to be the thing protecting the subject. Unreliable records protect
+deniability. Absent read-logging protects the people being logged. Each is a live trade-off, and
+fixing the security finding erodes the privacy property.
 
 ## The smallest version that works
 
@@ -226,20 +281,21 @@ The privacy spine can come later. The parallel sessions can come much later.
 
 ## What's not solved yet
 
-**The agent interviews me, and I represent the client's knowledge.** That is a proxy, and a proxy has
-a ceiling – the walk is only as accurate as what I happen to have absorbed from prior conversations.
-The artefact shape compensates for this rather than fixing it, because the whole output is built to be
-handed over with *tell us what we got wrong*.
+**The agent interviews the supplier, not the client.** Somebody has to represent the client's
+knowledge, and that is a proxy with a ceiling – the pass is only as accurate as what the proxy has
+absorbed. The artefact shape compensates rather than fixes: the whole output is built to be handed
+over with *tell us what we got wrong*.
 
-**How to run this with the client in the room is unsolved.** It is the obvious next version and it is
-not designed yet. Parallel sessions get harder immediately, because the knowledge sits with someone
-whose time cannot be booked twice.
+**Running this with the client in the room is not designed yet.** It is the obvious next version.
+Parallel sessions get harder immediately, because the knowledge sits with someone whose time cannot
+be booked twice.
 
-**The length principle is unmet**, and it is recorded that way rather than restated downwards.
+**Length is a design constraint and this method does not yet meet it.** Recorded that way rather than
+restated downwards.
 
 **Pace is deliberately unsolved.** The obvious speed-up – propose marks for every boundary at once and
-interview only the live ones – was declined after a single cell, on the grounds that optimising
-against a sample of one is optimising against noise. It has not been revisited since.
+interview only the live ones – was declined, on the grounds that optimising against a sample of one is
+optimising against noise. It has not been revisited.
 
 ---
 
@@ -252,9 +308,9 @@ against a sample of one is optimising against noise. It has not been revisited s
 - `.../workbook.md` – §4.3 the two spines, §5.1 coverage, §5.2 what the grids added, §7 limits.
 - `.../annex_a_grids.md` – the thirteen tables, the ID reservation table.
 - `.../annex_b_findings.md` + `annex_b/` – the index and one file per finding.
-- `.../adjacent_findings.md` – the `ADJ-` series.
+- `.../adjacent_findings.md` – the separate series.
 - `.../findings_register.csv` – the register, 64 rows.
-- `.../design_review/` – the two superseded predecessors, kept as the signed historical record.
+- `.../design_review/` – the two superseded predecessors.
 
 ## Verification state
 
@@ -266,6 +322,5 @@ table is stale on three lines and must not be quoted.
 
 - Whether the client-facing front-door document is worth showing as a shape.
 - How much of the governance mapping belongs here versus one line.
-- The stand-in system is introduced here but belongs in Part 2. Move it when Part 2 is drafted.
 
 <!-- END DRAFTING ONLY -->

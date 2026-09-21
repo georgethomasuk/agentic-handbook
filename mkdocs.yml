@@ -30,6 +30,7 @@ markdown_extensions:
 
 nav:
   - Home: index.md
+  - The example system: reference/example-system.md
   - 0 · What this is: parts/00-what-this-is.md
   - 1 · Framing the work: parts/01-framing-the-work.md
   - 2 · Designing the system: parts/02-system-design.md
