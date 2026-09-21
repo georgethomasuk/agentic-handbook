@@ -34,17 +34,18 @@ behaves. Your job is to elicit, not to deduce.
 Never answer your own question from the specification. If you find yourself reasoning about what
 probably happens, stop and ask.
 
-## Before your first question — do all four, in order
+## Before your first question – do all four, in order
 
-1. Research the category. What it covers, where it borders the adjacent categories, its specific
-   pitfalls. Do this first, not while the interview is open.
+1. Research the category ONLINE. Use web search and fetch pages – do not work from memory of what
+   the category means. Find what it actually covers, where it borders the adjacent categories, and
+   the pitfalls specific to it. Cite what you used. Do this FIRST, before the interview is open.
 2. Read the existing record: the system description, any prior findings, and the contracts.
    Contracts read as commercial material and are often where security obligations are specified.
    Proposing a control that is already a contractual deliverable wastes the interview.
 3. Write down the disambiguation rules for this category before you use them. State each as
-   something answerable, for example: "assume authentication is perfect — if the finding survives,
+   something answerable, for example: "assume authentication is perfect – if the finding survives,
    it is Elevation of privilege, not Spoofing." Show these to me before you start.
-4. (LINDDUN only) Read the real data structure — the actual form output, the real columns and
+4. (LINDDUN only) Read the real data structure – the actual form output, the real columns and
    metadata. Not the specification of it. Read for structure; never copy anyone's content into the
    tracked files.
 
@@ -54,22 +55,22 @@ Take the elements in order. One cell is this category at one element.
 
 For each cell, four moves:
 
-MOVE 1 — Ask what happens before asking what goes wrong.
+MOVE 1 – Ask what happens before asking what goes wrong.
   "Walk me through what physically happens here. Who is involved, and what do they do?"
   Never lead with a hypothesis. A hypothesis-first question spends the exchange being reversed.
 
-MOVE 2 — Ask the threat question in the system's own terms.
-  Not "is there a spoofing risk at B2" but "someone from the insurer logs in — could that be
+MOVE 2 – Ask the threat question in the system's own terms.
+  Not "is there a spoofing risk at B2" but "someone from the insurer logs in – could that be
   someone else, and how would you know?" A cell answered in taxonomy vocabulary has not been
   thought about.
 
-MOVE 3 — State the candidate finding in ONE PLAIN SENTENCE and get a yes or no.
+MOVE 3 – State the candidate finding in ONE PLAIN SENTENCE and get a yes or no.
   Hand over the question only. Not your framing, not your reasoning, not the severity split.
   Give the reasoning only if asked for it.
   Do not write the entry until this lands.
-  If you cannot say it in one sentence, you do not understand it yet — go back to move 1.
+  If you cannot say it in one sentence, you do not understand it yet – go back to move 1.
 
-MOVE 4 — Separate what exists from what is intended.
+MOVE 4 – Separate what exists from what is intended.
   "There'd be some mechanism where the form gets taken down" is an intention, not a control.
   Split it: the threat goes in the finding, the intention becomes a requirement written as a
   requirement, and the finding says plainly that the control is not built.
@@ -92,7 +93,7 @@ Write the reason into the row itself. The tables are small so that the reason fi
 
 ## Writing a finding
 
-Use the template at templates/finding.md. Write it in plain language the first time — this is what
+Use the template at templates/finding.md. Write it in plain language the first time – this is what
 goes in front of the client. A statement that cannot survive plain English is not understood yet.
 
 For each finding, in this order, before opening the next cell:
@@ -106,7 +107,7 @@ Take IDs from your reserved block only. Gaps are expected and cost nothing. Neve
 
 ## If it is not a threat
 
-Contract gaps, stale documents, scope nobody has decided — real, actionable, not threats.
+Contract gaps, stale documents, scope nobody has decided – real, actionable, not threats.
 These go in adjacent_findings.md with an ADJ-n number, never an F- number.
 
 The test: does this describe something going wrong with the SYSTEM, or something wrong with the
@@ -114,12 +115,12 @@ PAPERWORK ABOUT the system? Only the first is a finding.
 
 ## Files you may and may not write
 
-  Your category's table in annex_a_grids.md    — yours exclusively
-  Your finding files in annex_b/               — yours exclusively
-  annex_b_findings.md, the register            — shared, APPEND ONLY
+  Your category's table in annex_a_grids.md    – yours exclusively
+  Your finding files in annex_b/               – yours exclusively
+  annex_b_findings.md, the register            – shared, APPEND ONLY
 
 Another session may be working a different category right now. Re-read any shared file immediately
-before editing it, not once at session start. Never revert or tidy content you did not write — tell
+before editing it, not once at session start. Never revert or tidy content you did not write – tell
 me instead. Do not commit anything unless I ask.
 
 ## Do not
@@ -134,7 +135,7 @@ me instead. Do not commit anything unless I ask.
 
 ## When the category is finished
 
-Finish the whole table before stopping — a half-filled table looks finished and is worse than an
+Finish the whole table before stopping – a half-filled table looks finished and is worse than an
 empty one. Then report to me:
   - the mark distribution for this category
   - anything that looked cross-cutting

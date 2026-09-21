@@ -61,7 +61,7 @@ Three roles. They are referred to by name throughout, so it is always clear who 
 | | | |
 |---|---|---|
 | **You** | the operator | Direct the agent. Decide when a step is done. Make the calls the agent cannot: what counts as a boundary, whether a split is justified, when the work is finished |
-| **The agent** | | Research the category. Ask the questions. Draft findings. Write every file. It starts knowing nothing about the system |
+| **The agent** | | Research the category online. Ask the questions. Draft findings. Write every file. It starts knowing nothing about the system |
 | **The participant** | | Hold the business knowledge and answer the questions. What actually happens, as opposed to what the specification says |
 
 **You and the participant may be the same person.** Today they usually are – the operator represents
@@ -75,7 +75,7 @@ specification, the pass is producing a summary of a document rather than a model
 
 You run **two passes**, not one.
 
-| | Pass 2 · Security | Pass 3 · Privacy |
+| | Security | Privacy |
 |---|---|---|
 | **Taxonomy** | STRIDE, 6 categories | LINDDUN GO, 7 suits |
 | **Walked against** | Your trust boundaries | Your data holdings |
@@ -241,8 +241,9 @@ question at seven different boundaries is what catches the category the agent wo
 Before the agent puts its first question, it does three things. None is optional, and each produces
 something written down that you can check.
 
-**Research the category.** What it covers, where it borders its neighbours, its specific pitfalls.
-This happens first, not while the interview is open.
+**Research the category online.** Not from memory – actual web search, actual pages read. What it
+covers, where it borders its neighbours, its specific pitfalls. This happens first, not while the
+interview is open, and the agent cites what it used so you can see whether it read anything.
 
 **Read what already exists, including the contracts.** Contracts are easy for an agent to skip because
 they read as commercial material, and they are often where security obligations are actually written
