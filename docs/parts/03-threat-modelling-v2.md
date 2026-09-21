@@ -40,7 +40,21 @@ finding or a written reason.**
 **Do not reconcile the two spines.** They answer different questions on different units. Forcing one
 spine onto both loses cells.
 
+**The procedure below runs in four phases.**
+
+| Phase | Steps | What happens |
+|---|---|---|
+| **Set up** | 1–4 | Describe the system on both spines. Create the files |
+| **Pass 1 · Security** | 5–9 | Six categories, walked across your boundaries |
+| **Pass 2 · Privacy** | 10–12 | Seven suits, walked across your holdings |
+| **Finish** | 13–15 | Compare the passes, parallelise, synthesise |
+
 ---
+
+# Set up
+
+You describe the system on **both** spines before either pass starts, because Step 3 needs them side
+by side.
 
 ## Step 1 · List your trust boundaries
 
@@ -146,12 +160,18 @@ after both entries are written. **Gaps in the numbering cost nothing.** Do not c
 
 ---
 
+# Pass 1 · The security pass
+
+**You are walking your seven trust boundaries.** Holdings are not used in this pass at all.
+
+Six categories × seven boundaries = **42 cells**.
+
 ## Step 5 · Pick one category and prepare it
 
 Work one category all the way across every boundary before starting the next. Asking the same
-question seven times in a row is what catches the category you would otherwise skim.
+question at seven different boundaries is what catches the category you would otherwise skim.
 
-**The six STRIDE categories**, with the question each one asks:
+**The six STRIDE categories:**
 
 | | Category | The question |
 |---|---|---|
@@ -162,18 +182,6 @@ question seven times in a row is what catches the category you would otherwise s
 | **D** | Denial of service | Can the system be made unavailable? |
 | **E** | Elevation of privilege | Can someone gain rights they were not granted? |
 
-**The seven LINDDUN GO suits:**
-
-| | Suit | The question |
-|---|---|---|
-| **L** | Linking | Can separate records be connected to the same person? |
-| **I** | Identifying | Can someone be named from data not meant to name them? |
-| **N** | Non-repudiation | Can a person be prevented from denying something? |
-| **D** | Detecting | Is the fact someone participated observable, even without content? |
-| **D** | Data disclosure | Is more collected, kept or shared than is needed? |
-| **U** | Unawareness | Do people not understand what happens to their data? |
-| **N** | Non-compliance | Does the handling breach law, policy or consent? |
-
 Before the first question, do three things.
 
 **Research the category.** What it covers, where it borders its neighbours, its specific pitfalls. Do
@@ -183,7 +191,8 @@ this first, not while the interview is open.
 commercial material, and they are often where security obligations are actually written down.
 Proposing a control that is already a contractual deliverable wastes the session.
 
-**Write the disambiguation rules down before using them.** State each as something answerable.
+**Write the disambiguation rules down before using them.** State each as something answerable, so that
+when a cell is borderline you have a test rather than an opinion.
 
 **Worked example, preparing Repudiation:**
 
@@ -192,13 +201,17 @@ Proposing a control that is already a contractual deliverable wastes the session
 | **vs Spoofing** | Assume authentication is perfect. Does the finding survive? If it vanishes it was Spoofing |
 | **vs Tampering** | Ask who benefits. If the log can be altered by the person whose conduct it records, it is Repudiation with Tampering as the mechanism |
 | **vs Information disclosure** | Under-logging is Repudiation. Over-logging is Information disclosure |
-| **vs privacy Non-repudiation** | Ask whether the actor is **staff acting in role** (attribution is a control) or a **data subject** (attribution may be the harm). The same log line can answer both ways. Record both |
 
 ---
 
-## Step 6 · Work each cell by interview
+## Step 6 · Work the category across every boundary, by interview
 
-Take B1 through B7 in order. For each cell, the agent runs four moves.
+Take your boundaries in order – on the example system, B1 through B7 from Step 1 – and ask the
+category's question at each one.
+
+You are now working one cell: **one category at one boundary.** Repudiation at B2, for instance.
+
+The agent runs four moves per cell.
 
 ### Move 1 · Ask what happens, before asking what goes wrong
 
@@ -268,15 +281,15 @@ Three marks. There is no fourth. An unmarked row means the pass is incomplete.
 | `➖` | Considered and closed. **The reason is the deliverable** – *"n/a"* is not a reason |
 | `⚠️` | Cannot be closed by you. Name what it waits on and who owns it |
 
-**Worked example**, the row written for the cell above:
+**Worked example**, the row written for the cell above, in the Repudiation table:
 
 | Boundary | Mark | Finding or reason |
 |---|---|---|
 | **B2** The insurer logging in | `✅ F-48` | The dashboard records nothing – no sign-in event, no view event – so *"which analyst saw this site?"* has no answer. A shared login removes even account-level attribution. **Treatment splits:** sign-in visibility is the insurer's own account governance and is achievable today; content-read logging is **designed for and not built**, because a record of which analyst read which site is surveillance of the insurer's own staff. Recorded as a decision so the absence does not later read as an oversight |
 
-Note what the row carries: the finding, the mechanism, the split treatment, and the reason a control
-was deliberately not taken. **That is why the tables are small.** A single large matrix has no room for
-a cell like this and pushes every explanation into notes underneath.
+Note what that row carries: the finding, the mechanism, the split treatment, and the reason a control
+was deliberately not taken. **That is why there is one table per category.** A single large matrix has
+no room for a cell like this and pushes every explanation into notes underneath.
 
 ---
 
@@ -326,7 +339,119 @@ paperwork about the system?*
 
 ---
 
-## Step 9 · Run two categories in parallel
+## Step 9 · Repeat for the remaining five categories
+
+Six categories, seven boundaries, one table each. When all six tables are full, the security pass is
+done.
+
+---
+
+# Pass 2 · The privacy pass
+
+**You are now walking your seven data holdings.** Boundaries are not used in this pass at all.
+
+Seven suits × seven holdings = **49 cells**.
+
+**Everything about the mechanics is the same as Pass 1.** Same four interview moves, same three marks,
+same one-file-per-finding. Only the unit and the question bank change, so the steps below cover only
+what differs.
+
+## Step 10 · Pick one suit and prepare it
+
+**The seven LINDDUN GO suits:**
+
+| | Suit | The question |
+|---|---|---|
+| **L** | Linking | Can separate records be connected to the same person? |
+| **I** | Identifying | Can someone be named from data not meant to name them? |
+| **N** | Non-repudiation | Can a person be prevented from denying something? |
+| **D** | Detecting | Is the fact someone participated observable, even without content? |
+| **D** | Data disclosure | Is more collected, kept or shared than is needed? |
+| **U** | Unawareness | Do people not understand what happens to their data? |
+| **N** | Non-compliance | Does the handling breach law, policy or consent? |
+
+**Non-repudiation is the one that catches people out.** In security it is a property you want. In
+privacy it is a threat – a person who cannot deny having said something has lost something.
+
+**One extra preparation step for this pass: read the real data first.** Before the first suit, open
+the actual form output. Not the specification of it – the real columns, the real metadata, the real
+free-text fields. Privacy questions are answered against what data exists, and the specification will
+have left things out.
+
+**Add one disambiguation test specific to this pass:**
+
+| Against | Test |
+|---|---|
+| **vs STRIDE Repudiation** | Ask whether the actor is **staff acting in role**, where attribution is a control, or a **data subject**, where attribution may be the harm. The same log line can answer both ways. Record both |
+
+---
+
+## Step 11 · Work the suit across every holding, by interview
+
+Take your holdings in order – on the example system, H1, H2, H3a, H3b, H4, H5, H6 from Steps 2 and 3.
+
+One cell is **one suit at one holding.** Detecting at H3b, for instance.
+
+Use the same four moves from Step 6. What changes is the shape of the question: you are asking about a
+body of records, not about a crossing point.
+
+**Worked example**, Detecting at H3b, the wellbeing check-in:
+
+> **Agent:** The check-in is anonymous. Setting aside what people write in it – can anyone tell
+> whether a particular person completed one at all?
+>
+> **Participant:** Not from the submission. But the safety team know the headcount per site, and they
+> can see how many came in.
+>
+> **Agent:** So at a site with six staff where five respond, is the sixth person identifiable as a
+> non-respondent?
+>
+> **Participant:** In principle, yes. Someone could work it out.
+>
+> **Agent:** So: participation itself carries no signal, but **non**-participation does, and it gets
+> sharper the smaller the site. Finding, or accept?
+>
+> **Participant:** Finding. Though a lot of people just submit something empty rather than skip it,
+> which sort of solves it.
+
+**Note the last line.** That is the participant handing over a real mitigation that is not in any
+specification, and it is the kind of thing only an interview produces. It also inverts: the junk
+submission is the opt-out the platform never designed.
+
+**Expect more open cells in this pass than in the security one.** Unawareness and Non-compliance run
+straight at things that are somebody else's to decide – what people were told, whether consent covers
+it. A cell that lands *open, waiting on the client* is the correct result there, not a stall.
+
+---
+
+## Step 12 · Repeat for the remaining six suits
+
+When all seven tables are full, the privacy pass is done.
+
+---
+
+# After both passes
+
+## Step 13 · Compare the two passes against each other
+
+**This is the output you can only get by running both, and it is easy to skip.**
+
+Go through the findings from each pass looking for the same mechanism appearing twice with opposite
+signs. A control in one, a harm in the other.
+
+**Worked example.** The security pass recorded *the dashboard logs no reads* as an accountability gap.
+The privacy pass, at the same mechanism, recorded that logging reads would be surveillance of the
+insurer's own staff.
+
+**Same absence. One pass calls it a weakness, the other calls it protection.**
+
+Write these up as a set rather than leaving them in their separate findings. Each is a live trade-off,
+not a defect, and **fixing the security finding erodes the privacy property**. Somebody has to decide
+which way it goes, and they can only do that if the two readings are on the same page.
+
+---
+
+## Step 14 · Run categories in parallel, once the method is settled
 
 Two agents, two categories, one operator moving between them.
 
@@ -342,9 +467,12 @@ Four rules make concurrent sessions safe:
 | **Re-read immediately before editing a shared file** | Not once at session start. An edit built on a stale read silently reverts the other session |
 | **Do not commit unless asked** | A commit sweeps up half-finished work from the other session |
 
+**Do not start here.** Run at least one category single-threaded first, or you will parallelise a
+procedure you have not yet learned.
+
 ---
 
-## Step 10 · Synthesise, in one place
+## Step 15 · Synthesise, in one place
 
 Cross-category judgements cannot be written by a session that has seen one category.
 
@@ -356,8 +484,8 @@ table and reports totals plus any unmarked row. A hand-kept tally drifts, and it
 
 Then write four things:
 
-1. **Coverage** – rows are the thirteen categories, not the boundaries. The question is *was this
-   taxonomy actually walked?*
+1. **Coverage** – rows are the thirteen categories and suits, not the boundaries or holdings. The
+   question is *was this taxonomy actually walked?*
 2. **What the pass added** – the narrative. This is the part anyone reads.
 3. **Accepted risks** – as a signable list, in plain English, because someone has to sign it.
 4. **Limits** – what was deliberately not walked, and what the work does not support being claimed.
@@ -409,15 +537,8 @@ implied assurance is not.
 target. Hold the line on the client-facing document instead – it is the only one anybody reads end to
 end, and it is the one that overran worst.
 
-### Two results worth knowing in advance
-
 **A category can produce nothing, and that is a result.** One privacy suit was flagged in advance with
 a specific fear, walked across all seven holdings, and closed every cell with a recorded reason.
-
-**Running only one taxonomy can make the system worse.** Four times, a property the security pass
-recorded as a weakness turned out to be the thing protecting the subject. Unreliable records protect
-deniability. Absent read-logging protects the people being logged. Fixing the security finding erodes
-the privacy property, and you only see that if both passes share one coverage record.
 
 ---
 
