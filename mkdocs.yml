@@ -32,14 +32,35 @@ nav:
   - Home: index.md
   - The example system: reference/example-system.md
   - 0 · What this is: parts/00-what-this-is.md
-  - 1 · Framing the work: parts/01-framing-the-work.md
-  - 2 · Designing the system: parts/02-system-design.md
+  - 1 · Framing the work:
+      - The guide: parts/01-framing-the-work/README.md
+      - The agent prompt: parts/01-framing-the-work/prompt.md
+      - Templates: parts/01-framing-the-work/templates/README.md
+  - 2 · Designing the system:
+      - The guide: parts/02-system-design/README.md
+      - The agent prompt: parts/02-system-design/prompt.md
+      - Templates: parts/02-system-design/templates/README.md
   - 3 · Attacking it before building it:
       - The guide: parts/03-threat-modelling/README.md
       - The agent prompt: parts/03-threat-modelling/prompt.md
       - Templates: parts/03-threat-modelling/templates/README.md
-  - 4 · Designing the surfaces: parts/04-design.md
-  - 5 · Planning the delivery: parts/05-delivery-planning.md
-  - 6 · Supervising the run: parts/06-supervision.md
-  - 7 · Keeping it honest: parts/07-keeping-it-honest.md
-  - 8 · The machine: parts/08-the-machine.md
+  - 4 · Designing the surfaces:
+      - The guide: parts/04-design/README.md
+      - The agent prompt: parts/04-design/prompt.md
+      - Templates: parts/04-design/templates/README.md
+  - 5 · Planning the delivery:
+      - The guide: parts/05-delivery-planning/README.md
+      - The agent prompt: parts/05-delivery-planning/prompt.md
+      - Templates: parts/05-delivery-planning/templates/README.md
+  - 6 · Supervising the run:
+      - The guide: parts/06-supervision/README.md
+      - The agent prompt: parts/06-supervision/prompt.md
+      - Templates: parts/06-supervision/templates/README.md
+  - 7 · Keeping it honest:
+      - The guide: parts/07-keeping-it-honest/README.md
+      - The agent prompt: parts/07-keeping-it-honest/prompt.md
+      - Templates: parts/07-keeping-it-honest/templates/README.md
+  - 8 · The machine:
+      - The guide: parts/08-the-machine/README.md
+      - The agent prompt: parts/08-the-machine/prompt.md
+      - Templates: parts/08-the-machine/templates/README.md
