@@ -9,54 +9,77 @@ at the design stage, before there is any code to analyse.
 
 The worked example throughout is [the example system](../reference/example-system.md).
 
-## Before you start
+---
 
-**You need four things.**
+# Context
+
+## What you are producing
+
+**A document written to open the conversation, not close it.** *Here is how we looked, here is what we
+found, tell us what we got wrong.*
+
+If you find yourself writing a coverage statement and a sign-off table, you are building the wrong
+artefact. That is an end-of-engagement assurance document, and you are at the start.
+
+## What you need before you start
 
 | | |
 |---|---|
 | **A system description** | Architecture, data flows, who the users are. Draft quality is fine. It will be wrong in places, and finding that out is part of the work |
 | **A person who knows the business** | Not the architecture – the business. What actually happens when a record fails to process. The agent has no way to obtain this except by asking |
 | **A repository** | Everything is written to files as you go. Nothing lives in the conversation |
-| **Two to four sessions of a few hours** | A full pass over both taxonomies is roughly ninety cells. Plan for days, not an afternoon |
+| **Days, not an afternoon** | A full pass over both taxonomies is around ninety cells |
 
-**Know what you are producing before you start.** A document written to **open** the conversation, not
-close it: *here is how we looked, here is what we found, tell us what we got wrong.* If you find
-yourself writing a coverage statement and a sign-off table, you are building the wrong artefact.
+## What it costs
+
+**Figures from one full pass, measured 16 September 2026.**
+
+| | |
+|---|---|
+| Cells worked | 91, across thirteen tables |
+| Findings produced | 43, taking a register from 16 to 62 |
+| Findings file before it was split into one file per finding | 2,201 lines |
+
+**Budget roughly double what you expect for the reference annexes.** Two came in at about twice
+target. Hold the line on the client-facing document instead – it is the only one anybody reads end to
+end, and it is the one that overran worst.
 
 ## The shape of the work
 
 You run **two passes**, not one.
 
-| | Security pass | Privacy pass |
+| | Pass 2 · Security | Pass 3 · Privacy |
 |---|---|---|
 | **Taxonomy** | STRIDE, 6 categories | LINDDUN GO, 7 suits |
 | **Walked against** | Your trust boundaries | Your data holdings |
 | **Asks** | How does an attacker break this? | How does this harm people when it works as designed? |
 
-Seven boundaries × 6 = 42 cells. Seven holdings × 7 = 49 cells. **Ninety-one cells, each one either a
-finding or a written reason.**
+Six categories × seven boundaries = 42 cells. Seven suits × seven holdings = 49 cells. **Ninety-one
+cells, each one either a finding or a written reason.**
 
-**Do not reconcile the two spines.** They answer different questions on different units. Forcing one
-spine onto both loses cells.
+**Do not reconcile the two spines.** They answer different questions about different units. Forcing
+one spine onto both loses cells.
 
-**The procedure below runs in four phases.**
+**Work through it sequentially.** One category at a time, one cell at a time, start to finish. There
+is a section on speeding it up at the end, and it is deliberately not part of the procedure.
 
-| Phase | Steps | What happens |
+| Section | Steps | What happens |
 |---|---|---|
-| **Set up** | 1–4 | Describe the system on both spines. Create the files |
-| **Pass 1 · Security** | 5–9 | Six categories, walked across your boundaries |
-| **Pass 2 · Privacy** | 10–12 | Seven suits, walked across your holdings |
-| **Finish** | 13–15 | Compare the passes, parallelise, synthesise |
+| **1 · Set up** | 1.1 – 1.4 | Describe the system on both spines. Create the files |
+| **2 · The security pass** | 2.1 – 2.5 | Six categories, walked across your boundaries |
+| **3 · The privacy pass** | 3.1 – 3.3 | Seven suits, walked across your holdings |
+| **4 · Bringing it together** | 4.1 – 4.2 | Compare the passes, then synthesise |
+| **Speeding it up** | – | Only once the signals below are present |
+| **Evaluating the quality** | – | Checks to run before calling it done |
 
 ---
 
-# Set up
+# 1 · Set up
 
-You describe the system on **both** spines before either pass starts, because Step 3 needs them side
-by side.
+Describe the system on **both** spines before either pass starts, because step 1.3 needs them side by
+side.
 
-## Step 1 · List your trust boundaries
+## 1.1 · List your trust boundaries
 
 A **trust boundary** is where data moves between two parties who trust each other differently.
 
@@ -80,7 +103,9 @@ describing components.
 
 ---
 
-## Step 2 · List your data holdings
+---
+
+## 1.2 · List your data holdings
 
 A **holding** is one place personal data sits, treated as a single thing for analysis. Not a database
 table. Not a server. A body of records about people you can reason about as a unit.
@@ -103,7 +128,9 @@ analysable here. Note them in the cell that raises them and move on.
 
 ---
 
-## Step 3 · Split holdings with the fork test
+---
+
+## 1.3 · Split holdings with the fork test
 
 Some holdings hide two different analyses inside one row. Split those, and only those.
 
@@ -132,7 +159,9 @@ You now have seven holdings: H1, H2, H3a, H3b, H4, H5, H6.
 
 ---
 
-## Step 4 · Set up the files before the first question
+---
+
+## 1.4 · Set up the files before the first question
 
 Three files and one directory. Create them now, empty.
 
@@ -160,13 +189,15 @@ after both entries are written. **Gaps in the numbering cost nothing.** Do not c
 
 ---
 
-# Pass 1 · The security pass
+---
 
-**You are walking your seven trust boundaries.** Holdings are not used in this pass at all.
+# 2 · The security pass
+
+**You are walking your trust boundaries.** Holdings are not used in this section at all.
 
 Six categories × seven boundaries = **42 cells**.
 
-## Step 5 · Pick one category and prepare it
+## 2.1 · Pick one category and prepare it
 
 Work one category all the way across every boundary before starting the next. Asking the same
 question at seven different boundaries is what catches the category you would otherwise skim.
@@ -204,7 +235,9 @@ when a cell is borderline you have a test rather than an opinion.
 
 ---
 
-## Step 6 · Work the category across every boundary, by interview
+---
+
+## 2.2 · Work the category across every boundary, by interview
 
 Take your boundaries in order – on the example system, B1 through B7 from Step 1 – and ask the
 category's question at each one.
@@ -271,7 +304,9 @@ withdrawal in the cell. A pass that never retracts is not being told anything.
 
 ---
 
-## Step 7 · Mark the cell
+---
+
+## 2.3 · Mark the cell
 
 Three marks. There is no fourth. An unmarked row means the pass is incomplete.
 
@@ -293,7 +328,9 @@ no room for a cell like this and pushes every explanation into notes underneath.
 
 ---
 
-## Step 8 · Write the finding as its own file
+---
+
+## 2.4 · Write the finding as its own file
 
 Write it in plain language the first time. Not a compressed note to be expanded later. The finding is
 the thing that goes in front of the client, and a statement that cannot survive plain English is one
@@ -339,24 +376,26 @@ paperwork about the system?*
 
 ---
 
-## Step 9 · Repeat for the remaining five categories
+---
+
+## 2.5 · Repeat for the remaining five categories
 
 Six categories, seven boundaries, one table each. When all six tables are full, the security pass is
 done.
 
 ---
 
-# Pass 2 · The privacy pass
+# 3 · The privacy pass
 
-**You are now walking your seven data holdings.** Boundaries are not used in this pass at all.
+**You are now walking your data holdings.** Boundaries are not used in this section at all.
 
 Seven suits × seven holdings = **49 cells**.
 
-**Everything about the mechanics is the same as Pass 1.** Same four interview moves, same three marks,
-same one-file-per-finding. Only the unit and the question bank change, so the steps below cover only
-what differs.
+**The mechanics are identical to the security pass.** Same four interview moves (2.2), same three
+marks (2.3), same one file per finding (2.4). Only the unit and the question bank change, so what
+follows covers only what differs.
 
-## Step 10 · Pick one suit and prepare it
+## 3.1 · Pick one suit and prepare it
 
 **The seven LINDDUN GO suits:**
 
@@ -386,7 +425,9 @@ have left things out.
 
 ---
 
-## Step 11 · Work the suit across every holding, by interview
+---
+
+## 3.2 · Work the suit across every holding, by interview
 
 Take your holdings in order – on the example system, H1, H2, H3a, H3b, H4, H5, H6 from Steps 2 and 3.
 
@@ -424,15 +465,17 @@ it. A cell that lands *open, waiting on the client* is the correct result there,
 
 ---
 
-## Step 12 · Repeat for the remaining six suits
+---
+
+## 3.3 · Repeat for the remaining six suits
 
 When all seven tables are full, the privacy pass is done.
 
 ---
 
-# After both passes
+# 4 · Bringing it together
 
-## Step 13 · Compare the two passes against each other
+## 4.1 · Compare the two passes against each other
 
 **This is the output you can only get by running both, and it is easy to skip.**
 
@@ -451,28 +494,9 @@ which way it goes, and they can only do that if the two readings are on the same
 
 ---
 
-## Step 14 · Run categories in parallel, once the method is settled
-
-Two agents, two categories, one operator moving between them.
-
-**Parallelism is a throughput change, not a depth change.** Each session runs the full interview. The
-moment a session starts proposing marks to save time, the pass stops being worth running.
-
-Four rules make concurrent sessions safe:
-
-| | |
-|---|---|
-| **Own your own files exclusively** | Your category table, your finding files. Never edit another session's table, even to fix an obvious typo |
-| **Append to shared files, never rewrite them** | Add your index row. Do not regenerate the table |
-| **Re-read immediately before editing a shared file** | Not once at session start. An edit built on a stale read silently reverts the other session |
-| **Do not commit unless asked** | A commit sweeps up half-finished work from the other session |
-
-**Do not start here.** Run at least one category single-threaded first, or you will parallelise a
-procedure you have not yet learned.
-
 ---
 
-## Step 15 · Synthesise, in one place
+## 4.2 · Synthesise, in one place
 
 Cross-category judgements cannot be written by a session that has seen one category.
 
@@ -492,9 +516,71 @@ Then write four things:
 
 ---
 
-## What good looks like
+---
 
-Check these before you call it done.
+# Speeding it up
+
+The procedure above is slow on purpose. This section is how to make it faster **and how to know when
+you have earned the right to.**
+
+## The signal that it is safe
+
+**You can predict a cell's mark before the interview, and you are usually right.**
+
+That is the whole test. It means you have learned the shape of a live question in this system, and
+you can tell which cells genuinely need an interview from which can be proposed and confirmed.
+
+Four things to check before you believe it:
+
+| | |
+|---|---|
+| **You have finished at least two full categories, sequentially** | One is a sample of one. Optimising against a sample of one is optimising against noise |
+| **Your disambiguation rules stopped changing mid-category** | If you are still rewriting the test that separates this category from its neighbour, you do not yet know the category |
+| **No finding has been withdrawn for the same reason twice** | A repeated withdrawal means a wrong assumption is still in play |
+| **The participant has stopped correcting your description of the system** | While the specification is still being falsified, you do not know the system well enough to guess at cells |
+
+**If any of those is not true, keep going sequentially.** It will feel slow. That is the price of the
+calibration.
+
+## Two ways to go faster
+
+**Propose and confirm, instead of interviewing.** For cells you can predict, put the proposed mark and
+its reason to the participant in one sentence and ask for a yes or no. Keep the full interview for
+cells you cannot call.
+
+**Run two categories at once.** Two agents, two categories, one operator moving between them.
+
+**Parallelism is a throughput change, not a depth change.** Each session still runs the full interview
+procedure on the cells that need it. The moment a session starts proposing marks it has not earned,
+the pass stops being worth running.
+
+## Four rules that make concurrent sessions safe
+
+| | |
+|---|---|
+| **Own your own files exclusively** | Your category table, your finding files. Never edit another session's table, even to fix an obvious typo |
+| **Append to shared files, never rewrite them** | Add your index row. Do not regenerate the table |
+| **Re-read immediately before editing a shared file** | Not once at session start. An edit built on a stale read silently reverts the other session |
+| **Do not commit unless asked** | A commit sweeps up half-finished work from the other session |
+
+Finding-ID blocks (1.4) exist for exactly this. Two sessions both taking *the next free number* will
+collide, and the collision surfaces at merge, after both entries are written.
+
+## What not to speed up
+
+**The descriptive question.** Move 1 of the interview – *walk me through what actually happens* – is
+where specifications get corrected. Skipping it is how a pass ends up analysing a system that does not
+exist.
+
+**Cross-category synthesis.** It cannot be done by a session that has seen one category, and it cannot
+be split between two.
+
+---
+
+# Evaluating the quality
+
+Run these checks before calling the work done. Each one has a failure mode behind it, and each is
+cheap to run.
 
 **The mark distribution varies by category.** If every category comes back all-findings, you are
 marking generously rather than analysing. A category pointed at part of a design that genuinely works
@@ -512,7 +598,7 @@ one-word reasons. Each is a cell that was not worked.
 and what it found was recorded.* Not *reviewed*. Not *secure*. A declared gap is defensible; an
 implied assurance is not.
 
-### Four failure modes to watch for
+## Four failure modes to watch for
 
 | | |
 |---|---|
@@ -523,26 +609,7 @@ implied assurance is not.
 
 ---
 
-## What to expect it to cost
-
-**Figures from one full pass, measured 16 September 2026.**
-
-| | |
-|---|---|
-| Cells worked | 91, across thirteen tables |
-| Findings produced | 43, taking a register from 16 to 62 |
-| Findings file before it was split into one file per finding | 2,201 lines |
-
-**Budget roughly double what you expect for the reference annexes.** Two came in at about twice
-target. Hold the line on the client-facing document instead – it is the only one anybody reads end to
-end, and it is the one that overran worst.
-
-**A category can produce nothing, and that is a result.** One privacy suit was flagged in advance with
-a specific fear, walked across all seven holdings, and closed every cell with a recorded reason.
-
----
-
-## What's not solved yet
+# What's not solved yet
 
 **The agent interviews the supplier, not the client.** Somebody has to represent the client's
 knowledge, and that is a proxy with a ceiling. The artefact shape compensates rather than fixes it:
@@ -551,9 +618,10 @@ the whole output is built to be handed over with *tell us what we got wrong*.
 **Running this with the client in the room is not designed yet.** Parallel sessions get harder
 immediately, because the knowledge sits with someone whose time cannot be booked twice.
 
-**Pace is unsolved on purpose.** The obvious speed-up – propose marks for every boundary at once and
-interview only the live ones – was declined, because optimising against a sample of one is optimising
-against noise. It has not been revisited.
+**The signals in *Speeding it up* are proposed, not validated.** The speed-up was declined early, on
+the grounds that optimising against a sample of one is optimising against noise, and it has not been
+revisited since. The four checks are a considered guess at what readiness looks like. Nobody has yet
+run a pass that used them and then measured whether the faster cells held up.
 
 **Length is a design constraint and this method does not meet it.** Recorded that way rather than
 restated downwards.
