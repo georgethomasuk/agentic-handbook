@@ -64,6 +64,12 @@ processes, not a starting choice. Leading with it would teach the wrong lesson.
 
 ## 6 · The per-part template
 
+**Superseded for Part 3, 21 September 2026.** Part 3 is now a folder – a human-readable guide, an
+agent prompt, and templates for every output file. The five-heading shape below described an
+*explanation* of an approach; what is actually wanted is a *how-to guide* somebody can follow. The
+other parts have not been converted yet. See `docs/parts/03-threat-modelling/` for the shape that
+replaces it.
+
 Every part, the same six headings, in this order. No part may add a seventh at the top level.
 
 | Heading | What goes in it |

@@ -1,4 +1,4 @@
-**Status** alternative draft – a how-to rewrite for comparison · **Life** draft · **Reader** you, about to run a threat-modelling pass with an agent
+**Status** draft · **Life** living · **Reader** you, about to run a threat-modelling pass with an agent
 
 # How to run a threat-modelling pass with agents
 
@@ -7,7 +7,17 @@ This is a procedure. Follow it in order.
 It produces a coverage record, a set of findings, and a document your client can argue with. It works
 at the design stage, before there is any code to analyse.
 
-The worked example throughout is [the example system](../reference/example-system.md).
+The worked example throughout is [the example system](../../reference/example-system.md).
+
+## What is in this folder
+
+| | |
+|---|---|
+| **This guide** | What the process is, why it is shaped this way, and what good output looks like. Written for you |
+| [**`prompt.md`**](./prompt.md) | The instruction set to paste into an agent session. Written for the agent |
+| [**`templates/`**](./templates/) | Skeletons for every file the pass produces. Copy the directory |
+
+**Read this once. Use the prompt every time.**
 
 ---
 
@@ -187,29 +197,20 @@ You now have seven holdings: H1, H2, H3a, H3b, H4, H5, H6.
 
 > **You** create the files and reserve the ID blocks. **Agent** writes into them from here on.
 
-Three files and one directory. Create them now, empty, before the agent is given any task.
+**Copy [`templates/`](./templates/) into your repository** and fill in the placeholders. It gives you
+the workbook, the coverage grids, the findings index, a finding template and the adjacent-findings
+log, in the layout the rest of this procedure assumes.
 
-```
-threat_model/
-  workbook.md            the system, scope, assumptions, method, synthesis
-  annex_a_grids.md       thirteen tables – one per category and suit
-  annex_b_findings.md    an index table
-  annex_b/               one file per finding, F-<nnn>-<slug>.md
-```
+Two things in there are load-bearing rather than cosmetic.
 
-**One file per finding is not optional.** Reading one finding should not mean loading all of them, and
-two agents writing into one file will collide.
+**One file per finding.** Reading one finding should not mean loading all of them, and two agent
+sessions writing into one file will collide.
 
-**Reserve finding-ID blocks before any work starts.** Put this table at the top of `annex_a_grids.md`:
+**Finding-ID blocks, reserved before any work starts.** The reservation table is at the top of
+`annex_a_grids.md`. Two sessions both taking *the next free number* will collide, and the collision
+surfaces at merge, after both entries are written. **Gaps cost nothing.** Do not compact them.
 
-| Block | Category | Claimed | Used |
-|---|---|---|---|
-| F-1 … F-20 | Spoofing | | |
-| F-21 … F-40 | Tampering | | |
-| F-41 … F-60 | Repudiation | | |
-
-Two sessions both taking *the next free number* will collide, and the collision surfaces at merge,
-after both entries are written. **Gaps in the numbering cost nothing.** Do not compact them.
+**Gitignore `sources/`.** Elicitation transcripts hold candid commercial and liability content.
 
 ---
 
@@ -363,7 +364,8 @@ The agent writes it in plain language the first time. Not a compressed note to b
 finding is the thing that goes in front of the client, and a statement that cannot survive plain
 English is one that is not yet understood.
 
-**Worked example**, `annex_b/F-048-dashboard-records-no-reads.md`:
+The skeleton is [`templates/finding.md`](./templates/finding.md). **Worked example**,
+`annex_b/F-048-dashboard-records-no-reads.md`:
 
 ```markdown
 # F-48 · The dashboard cannot say who read what
@@ -390,6 +392,10 @@ insurer's own account governance and achievable now. Content-read logging: accep
 
 Then one row goes into the index in `annex_b_findings.md`, and one line into the register. All three
 before the next cell is opened – an agent that batches them will lose them on a context reset.
+
+**Note what the entry carries beyond the threat:** what was considered and set aside, and the reason a
+control was deliberately not taken. That section is what turns a charge sheet into something a client
+will correct rather than defend.
 
 ### If it is not a threat, give it a different number
 
