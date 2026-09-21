@@ -46,6 +46,10 @@ that **every requirement carries a fit criterion** — no untestable obligations
 A single requirements table with three columns: the requirement, the reason, and how you would prove
 it. Nothing else in this part is necessary to get the benefit.
 
+## What's not solved yet
+
+[the gaps, the proxies, the principles still unmet]
+
 ---
 
 <!-- DRAFTING ONLY -->

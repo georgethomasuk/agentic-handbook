@@ -45,6 +45,10 @@ peak. Re-read all of it. Do not publish the corrected-but-unverified price.
 Any always-on machine you can reach privately, running a multiplexer as a service. The specification
 matters far less than the fact that the session does not die when you close the laptop.
 
+## What's not solved yet
+
+[the gaps, the proxies, the principles still unmet]
+
 ---
 
 <!-- DRAFTING ONLY -->

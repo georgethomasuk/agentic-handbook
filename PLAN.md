@@ -64,7 +64,7 @@ processes, not a starting choice. Leading with it would teach the wrong lesson.
 
 ## 6 · The per-part template
 
-Every part, the same five headings, in this order. No part may add a sixth at the top level.
+Every part, the same six headings, in this order. No part may add a seventh at the top level.
 
 | Heading | What goes in it |
 |---|---|
@@ -73,9 +73,14 @@ Every part, the same five headings, in this order. No part may add a sixth at th
 | **The rules that earned their place** | Each rule, and the failure behind it. A rule with no failure behind it does not go in. |
 | **What it cost** | The measurement, dated — or *"not measured"* said plainly. Never an estimate dressed as a figure. |
 | **The smallest version that works** | The 20% a reader can build this week without adopting any of the rest. |
+| **What's not solved yet** | The gaps, the proxies, the principles still unmet. Named, not apologised for. |
 
-The last heading is the one that does the job. It is what makes the handbook reproducible without
-being a repository to clone.
+*The smallest version that works* is the heading that makes the handbook reproducible without being a
+repository to clone.
+
+*What's not solved yet* is what keeps it honest. Added 21 September 2026. Every part carries one, so
+work-in-progress is a property of each document rather than a disclaimer at the top of the site — and
+so there is an obvious home for the things that would otherwise be quietly omitted.
 
 ## 7 · Register
 

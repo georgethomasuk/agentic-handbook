@@ -59,6 +59,10 @@ This is the part with real numbers, and every one must be re-read from source be
 One file per unit of work, holding what it is, how it will be proved, and what state it is in. Pick
 the workflow by asking what could prove it. Nothing else here is needed for the benefit.
 
+## What's not solved yet
+
+[the gaps, the proxies, the principles still unmet]
+
 ---
 
 <!-- DRAFTING ONLY -->

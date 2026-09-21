@@ -79,6 +79,10 @@ line count against the 400-line rule. Re-read each before publishing.
 One page per surface that says what binds, one token file where every value lives once, and a rule
 that a value stated in a picture and not in text does not exist.
 
+## What's not solved yet
+
+[the gaps, the proxies, the principles still unmet]
+
 ---
 
 <!-- DRAFTING ONLY -->

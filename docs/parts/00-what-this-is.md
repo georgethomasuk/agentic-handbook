@@ -32,6 +32,10 @@ one operator, the size of the record. Re-read every figure before it goes in.
 
 The three artefacts to write first if you adopt nothing else.
 
+## What's not solved yet
+
+[the gaps, the proxies, the principles still unmet]
+
 ---
 
 <!-- DRAFTING ONLY -->

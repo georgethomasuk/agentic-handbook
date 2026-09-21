@@ -57,6 +57,10 @@ two artefacts' target versus actual lengths. All dated.
 One STRIDE pass over your trust boundaries, one table per category, one line per finding, and a rule
 that anything dismissed is written down with its reason. The privacy spine can come later.
 
+## What's not solved yet
+
+[the gaps, the proxies, the principles still unmet]
+
 ---
 
 <!-- DRAFTING ONLY -->
