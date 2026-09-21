@@ -44,6 +44,10 @@ Much of this is likely **not measured**. Say so.
 One process whose only job is to check other agents' claims against the source, and a written rule
 about what it is allowed to decide on your behalf.
 
+## What's not solved yet
+
+[the gaps, the proxies, the principles still unmet]
+
 ---
 
 <!-- DRAFTING ONLY -->

@@ -117,8 +117,9 @@ Drafting scaffolding is wrapped so the check can find it:
 ```
 PLAN.md          The project plan. The thing to read first.
 docs/parts/      The eight parts. One published page each.
-notes/           Working notes, extraction scratch, post candidates. Not published.
+notes/           Working notes, extraction scratch, post candidates. Gitignored — local only.
 mkdocs.yml       Site config.
 ```
 
-`notes/` is not published and is not written to the handbook's register.
+`notes/` is **gitignored and local only**. It holds unsanitised extraction scratch, so it must never
+be committed — the publish gate does not scan it. Nothing in it is published or written to the register.

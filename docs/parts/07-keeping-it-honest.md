@@ -55,6 +55,10 @@ the most credible thing about them.
 A dated log with two standing questions, a rule that nothing joins the constitution until it has
 happened three times, and one hook that enforces the rule you break most.
 
+## What's not solved yet
+
+[the gaps, the proxies, the principles still unmet]
+
 ---
 
 <!-- DRAFTING ONLY -->

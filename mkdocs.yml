@@ -30,10 +30,14 @@ markdown_extensions:
 
 nav:
   - Home: index.md
+  - The example system: reference/example-system.md
   - 0 · What this is: parts/00-what-this-is.md
   - 1 · Framing the work: parts/01-framing-the-work.md
   - 2 · Designing the system: parts/02-system-design.md
-  - 3 · Attacking it before building it: parts/03-threat-modelling.md
+  - 3 · Attacking it before building it:
+      - The guide: parts/03-threat-modelling/README.md
+      - The agent prompt: parts/03-threat-modelling/prompt.md
+      - Templates: parts/03-threat-modelling/templates/README.md
   - 4 · Designing the surfaces: parts/04-design.md
   - 5 · Planning the delivery: parts/05-delivery-planning.md
   - 6 · Supervising the run: parts/06-supervision.md

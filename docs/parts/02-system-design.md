@@ -42,6 +42,10 @@ workflows walked, the date the specification moved repositories.
 One page naming your zones and what may cross between them, plus a decision log with one entry per
 choice you would be annoyed to re-litigate. The full arc42 set is not the entry point.
 
+## What's not solved yet
+
+[the gaps, the proxies, the principles still unmet]
+
 ---
 
 <!-- DRAFTING ONLY -->
