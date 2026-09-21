@@ -12,8 +12,9 @@ anyone picking up a drafting session cold
 A **reference handbook** for running a whole software engagement with agents — from first requirement
 to shipped surface — documenting the setup as it actually stands.
 
-Eight parts. One published page per part, each with stable section anchors, so a blog post or a
-LinkedIn post can link one level down instead of re-explaining the machinery.
+Eight parts. **Each part is a folder, not a page** – a guide written for a person, a prompt written
+for an agent, and templates for every file the process produces. Stable section anchors throughout, so
+a blog post can link one level down instead of re-explaining the machinery.
 
 It is generalised out of a live client build. The client is never named.
 
@@ -38,8 +39,11 @@ They are not looking for a prompt library. They are looking for what to write do
 
 ## 4 · What it is not
 
-- **Not a repository to clone.** No starter kit, no template repo. Every part ends with *the smallest
-  version that works*, so the reader builds their own.
+- **Not a starter kit.** There is nothing to install and nothing that runs. The templates are empty
+  skeletons of documents – copy them and fill them in, or read them and write your own. **Revised 21
+  September 2026:** this said *"not a repository to clone"* until Part 3 was drafted, and shipping
+  copyable templates and an agent prompt is a clone of sorts. The distinction that survives is that
+  the reader still has to do the thinking; the templates only say where to put it.
 - **Not a product pitch.** No services page, no call to action. If it sells anything it does so by
   being useful.
 - **Not a tutorial.** It assumes the reader has run agents and has opinions.
@@ -50,43 +54,72 @@ They are not looking for a prompt library. They are looking for what to write do
 | # | Part | The mechanism it carries |
 |---|---|---|
 | 0 | [What this is](docs/parts/00-what-this-is.md) | The claim, the assumptions, what is deliberately out |
-| 1 | [Framing the work](docs/parts/01-framing-the-work.md) | Testable requirements; exclusions written as deliberately as inclusions |
-| 2 | [Designing the system](docs/parts/02-system-design.md) | Zones as bulkheads; decisions recorded once; workflows interrogated for failure |
-| 3 | [Attacking it before building it](docs/parts/03-threat-modelling.md) | Two taxonomies over two different spines; one file per finding |
-| 4 | [Designing the surfaces](docs/parts/04-design.md) | IA by interview; a value lives in exactly one place; the handover spec |
-| 5 | [Planning the delivery](docs/parts/05-delivery-planning.md) | Two rungs; workflow chosen by what could prove it; the packet is the brief |
-| 6 | [Supervising the run](docs/parts/06-supervision.md) | The per-slice supervisor; verification at source; escalation |
-| 7 | [Keeping it honest](docs/parts/07-keeping-it-honest.md) | Retros; the review panel; enforcement beats advice |
-| 8 | [The machine](docs/parts/08-the-machine.md) | The requirement first, then the box, the sessions, the network |
+| 1 | [Framing the work](docs/parts/01-framing-the-work/) | Testable requirements; exclusions written as deliberately as inclusions |
+| 2 | [Designing the system](docs/parts/02-system-design/) | Zones as bulkheads; decisions recorded once; workflows interrogated for failure |
+| 3 | [Attacking it before building it](docs/parts/03-threat-modelling/) | Two taxonomies over two different spines; one file per finding |
+| 4 | [Designing the surfaces](docs/parts/04-design/) | IA by interview; a value lives in exactly one place; the handover spec |
+| 5 | [Planning the delivery](docs/parts/05-delivery-planning/) | Two rungs; workflow chosen by what could prove it; the packet is the brief |
+| 6 | [Supervising the run](docs/parts/06-supervision/) | The per-slice supervisor; verification at source; escalation |
+| 7 | [Keeping it honest](docs/parts/07-keeping-it-honest/) | Retros; the review panel; enforcement beats advice |
+| 8 | [The machine](docs/parts/08-the-machine/) | The requirement first, then the box, the sessions, the network |
 
 **Tooling is last on purpose.** The box is a consequence of needing to supervise several long-running
 processes, not a starting choice. Leading with it would teach the wrong lesson.
 
-## 6 · The per-part template
+## 6 · The shape of a part
 
-**Superseded for Part 3, 21 September 2026.** Part 3 is now a folder – a human-readable guide, an
-agent prompt, and templates for every output file. The five-heading shape below described an
-*explanation* of an approach; what is actually wanted is a *how-to guide* somebody can follow. The
-other parts have not been converted yet. See `docs/parts/03-threat-modelling/` for the shape that
-replaces it.
+**Rewritten 21 September 2026, from drafting Part 3.** The previous version specified five headings
+that argued for an approach – *the problem · the mechanism · the rules that earned their place · what
+it cost*. That is an **explanation**. What is actually wanted is a **how-to guide** somebody can
+follow without having lived through the engagement. Part 3 was drafted twice against the old template
+before this became clear, and both drafts were unusable by a reader coming in cold.
 
-Every part, the same six headings, in this order. No part may add a seventh at the top level.
+### A part is a folder
 
-| Heading | What goes in it |
+| File | Reader | What it carries |
+|---|---|---|
+| `README.md` | **A person** | The process, why it is shaped that way, and what good output looks like |
+| `prompt.md` | **An agent** | The instruction set to paste into a session. Imperative, no justification |
+| `templates/` | **Copied** | An empty skeleton for every file the process produces |
+
+`prompt.md` and `templates/` appear when a part has a procedure an agent runs. Part 0 has neither and
+stays a single page.
+
+**The split is by reader, and it is the point.** A document that tries to explain to a person and
+instruct an agent at the same time does neither.
+
+### The guide's structure
+
+| Section | What goes in it |
 |---|---|
-| **The problem** | What breaks without this. Concrete, from the build. |
-| **The mechanism** | What is actually done. The artefacts, their shape, their reader. |
-| **The rules that earned their place** | Each rule, and the failure behind it. A rule with no failure behind it does not go in. |
-| **What it cost** | The measurement, dated — or *"not measured"* said plainly. Never an estimate dressed as a figure. |
-| **The smallest version that works** | The 20% a reader can build this week without adopting any of the rest. |
-| **What's not solved yet** | The gaps, the proxies, the principles still unmet. Named, not apologised for. |
+| **Context** | What you are producing · what you need before you start · what it costs · **who does what** · the shape of the work |
+| **Numbered sections** | The procedure, in order. Decimal step numbers – `2.3` reads as *third step of the second section* |
+| **Speeding it up** | Only where a real speed-up exists, and always with the signal that says it is safe yet. Never part of the numbered procedure |
+| **Evaluating the quality** | Checks the operator runs on the agent's output. Never questions to ask the agent |
+| **What's not solved yet** | The gaps, the proxies, the principles still unmet. Named, not apologised for |
 
-*The smallest version that works* is the heading that makes the handbook reproducible without being a
-repository to clone.
+### Four rules the guides follow
 
-*What's not solved yet* is what keeps it honest. Added 21 September 2026. Every part carries one, so
-work-in-progress is a property of each document rather than a disclaimer at the top of the site — and
-so there is an obvious home for the things that would otherwise be quietly omitted.
+**Name the actor in every instruction.** Three roles – **you** the operator, **the agent**, **the
+participant** who holds the knowledge. Every numbered step opens with a line saying who does what.
+Without this a guide slides between addressing the reader and describing the agent, and it is never
+clear which.
+
+**Every step carries a worked example**, on [the example system](docs/reference/example-system.md).
+Not a restatement of the rule. The actual question asked, the actual answer, the actual output. A step
+that cannot be shown working has not been understood well enough to publish.
+
+**One example across the whole handbook.** The reader meets one system, not a different one per part,
+so the parts can refer to each other's analysis.
+
+**State the terms.** A term like *holding* or *trust boundary* is defined where it is first needed, in
+one sentence. Stripping the vocabulary out is what made the first two Part 3 drafts unreadable.
+
+### What replaced "the smallest version that works"
+
+That heading made the handbook reproducible without shipping anything. The templates do that job
+better, so it is gone as a required heading. Where a part has a genuinely smaller first version worth
+naming, it belongs in Context, under *what you need before you start*.
 
 ## 7 · Register
 
@@ -134,6 +167,9 @@ the handbook.
 
 Own repository, public on GitHub, rendered with **MkDocs Material** to GitHub Pages.
 
+Each part is a folder whose `README.md` is its landing page, so the structure reads correctly both on
+the site and when browsing the repository on GitHub.
+
 Why not Ghost: the handbook is eight cross-linked documents with anchors, not a blog feed. Why not a
 folder in `my-voice`: that repository is a private working record, and this artefact is meant to be
 shared.
@@ -171,6 +207,7 @@ jobs. The rest are written from George's own account, with the artefacts as evid
 | Q5 | How Parts 1 and 2 were actually run with agents. No method doc found | Parts 1, 2 |
 | Q6 | What about the recent supervisor work is *not* already in the playbook §5a | Part 6 |
 | Q7 | Diagrams — the source estate has almost none. Which parts need one? | all |
+| Q8 | Whether parts without an agent procedure (0, and possibly 1) stay single pages or become folders for consistency | structure |
 
 ## 12 · After the handbook
 

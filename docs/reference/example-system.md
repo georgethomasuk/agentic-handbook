@@ -62,7 +62,7 @@ Each one exists because some part of the handbook needs it. They are not decorat
 | Property | What needs it |
 |---|---|
 | A public write endpoint anyone with the link can reach | Boundary analysis; denial of service |
-| **Two intakes that fork on attribution** | **The fork test**, Part 3 |
+| **Two intakes that fork on attribution** | **The fork test**, [Part 3](../parts/03-threat-modelling/README.md) |
 | A store where both intakes converge | Sensitivity as a field property |
 | Aggregates read by a different organisation | Re-identification in small groups; the read-logging trade-off |
 | A supplier holding live data during the build | The development-machine problem |
