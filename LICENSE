@@ -1,0 +1,29 @@
+Agentic Delivery Handbook
+Copyright 2026 George Thomas
+
+This repository is under two licences, split by what you are likely to do with each part.
+
+1. The guide – CC BY 4.0
+   Everything not listed in section 2: the guide pages, the example system, the index,
+   PLAN.md and README.md.
+
+   You may copy, adapt and share it, including commercially, as long as you credit
+   George Thomas and link to the handbook.
+
+   Suggested credit: "Agentic Delivery Handbook by George Thomas, https://handbook.redmoor.io,
+   CC BY 4.0"
+
+   Full terms: https://creativecommons.org/licenses/by/4.0/legalcode
+
+2. The copyable parts – CC0 1.0
+   - docs/parts/*/prompt.md
+   - docs/parts/*/templates/
+   - scripts/
+   - .github/
+
+   These are meant to be pasted into your own repositories. To the extent possible under law,
+   George Thomas has waived all copyright and related rights in them. No credit is needed.
+
+   Full terms: https://creativecommons.org/publicdomain/zero/1.0/legalcode
+
+Where a file in section 2 is quoted inside a guide page, the quotation is also CC0.

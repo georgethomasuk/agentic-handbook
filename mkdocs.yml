@@ -1,9 +1,13 @@
 site_name: Agentic Delivery Handbook
 site_description: Running a whole software engagement with agents.
 site_author: George Thomas
-site_url: https://georgethomasuk.github.io/agentic-handbook/
+site_url: https://handbook.redmoor.io/
 repo_url: https://github.com/georgethomasuk/agentic-handbook
 edit_uri: ""
+copyright: >-
+  © 2026 George Thomas · Guide text <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>
+  · Prompts, templates and scripts <a href="https://creativecommons.org/publicdomain/zero/1.0/">CC0</a>
+  · <a href="https://github.com/georgethomasuk/agentic-handbook/blob/main/LICENSE">Licence</a>
 
 theme:
   name: material
