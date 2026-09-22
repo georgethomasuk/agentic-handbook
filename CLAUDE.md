@@ -8,8 +8,12 @@ site.
 
 ## Hard rules
 
-**Read `PLAN.md` in full before drafting.** It carries the claim, the part template, the extraction
+**Read `PLAN.md` in full before drafting.** It carries the claim, the shape of a part, the extraction
 rules and the open questions. Do not invent a structure.
+
+**A part is a how-to guide, not an explanation of an approach.** The reader is doing the task, not
+trying to understand your reasoning. Do not write a document that argues for the method – write one
+somebody can follow without having lived through the engagement.
 
 **Never name the client, their end client, or their sector.** Generalise to the shape of the thing,
 never to mush. If a detail cannot be generalised without losing its point, ask — do not publish it
@@ -21,8 +25,21 @@ source documents warn that a stale measurement reads as current. Cite what you r
 **Say "not measured" when it is not measured.** Do not estimate, round, or infer a figure. An
 admitted gap is worth more than a plausible number.
 
-**A rule only goes in "the rules that earned their place" if there is a real failure behind it.**
-Name the failure at the line. A rule invented for tidiness is the thing this handbook argues against.
+**A rule only goes in a guide if there is a real failure behind it.** Name the failure at the line. A
+rule invented for tidiness is the thing this handbook argues against.
+
+**Name the actor in every instruction.** Three roles: **you** the operator, **the agent**, and **the
+participant** who holds the knowledge. Never write an instruction where it is unclear which one acts.
+A guide that slides between addressing the reader and describing the agent is unusable, and it is the
+single failure mode that has cost the most drafting time here.
+
+**Every step carries a worked example**, on the example system in `docs/reference/example-system.md`.
+The actual question, the actual answer, the actual output – not a restatement of the rule. A step that
+cannot be shown working has not been understood well enough to publish.
+
+**Do not strip the vocabulary.** Define a term where it is first needed, in one sentence, and give the
+reference material a home rather than removing it. Two Part 3 drafts were unreadable because the
+taxonomies were generalised away and nothing replaced them.
 
 **Do not apply `my-voice/personal/voice/VOICE.md` here.** That constitution governs George's
 referrer-facing posts. This is a different genre with a different reader. See §Register below.
@@ -100,6 +117,17 @@ scripts/check-sanitised.sh
 It fails if a published file contains a denylisted term or a drafting-only block. Run it before any
 push and before any site build.
 
+**And build the site before pushing:**
+
+```
+scripts/build-site.sh
+```
+
+The publish workflow runs MkDocs in **strict mode**, so a link to a file that is not in `docs/` fails
+the build rather than warning. That has already broken `main` once – a part was converted to a folder
+and `index.md` still linked the old page. The script creates `.venv` on first run and then builds the
+same way the workflow does.
+
 **The denylist cannot live in a public repository**, because the denylist *is* the confidential list.
 It lives at `.sanitise-denylist` in the working copy, is gitignored, and is never committed. The
 repository ships `.sanitise-denylist.example` showing the format only.
@@ -116,10 +144,25 @@ Drafting scaffolding is wrapped so the check can find it:
 
 ```
 PLAN.md          The project plan. The thing to read first.
-docs/parts/      The eight parts. One published page each.
-notes/           Working notes, extraction scratch, post candidates. Gitignored — local only.
+docs/parts/      The eight parts. One folder each.
+docs/reference/  The example system, used by every part.
+notes/           Working notes, extraction scratch, post candidates. Gitignored – local only.
 mkdocs.yml       Site config.
 ```
+
+**Each part is a folder, split by reader:**
+
+```
+docs/parts/NN-name/
+  README.md      the guide — written for a person
+  prompt.md      the instruction set to paste into a session — written for an agent
+  templates/     empty skeletons for every file the process produces — to copy
+```
+
+`prompt.md` and `templates/` exist where a part has a procedure an agent runs. Part 0 has neither.
+
+**Never write one document that both explains to a person and instructs an agent.** It does neither.
+That split is the structure, not a convenience.
 
 `notes/` is **gitignored and local only**. It holds unsanitised extraction scratch, so it must never
 be committed — the publish gate does not scan it. Nothing in it is published or written to the register.

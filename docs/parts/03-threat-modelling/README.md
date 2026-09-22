@@ -15,7 +15,7 @@ The worked example throughout is [the example system](../../reference/example-sy
 |---|---|
 | **This guide** | What the process is, why it is shaped this way, and what good output looks like. Written for you |
 | [**`prompt.md`**](./prompt.md) | The instruction set to paste into an agent session. Written for the agent |
-| [**`templates/`**](./templates/) | Skeletons for every file the pass produces. Copy the directory |
+| [**`templates/`**](./templates/README.md) | Skeletons for every file the pass produces. Copy the directory |
 
 **Read this once. Use the prompt every time.**
 
@@ -197,7 +197,7 @@ You now have seven holdings: H1, H2, H3a, H3b, H4, H5, H6.
 
 > **You** create the files and reserve the ID blocks. **Agent** writes into them from here on.
 
-**Copy [`templates/`](./templates/) into your repository** and fill in the placeholders. It gives you
+**Copy [`templates/`](./templates/README.md) into your repository** and fill in the placeholders. It gives you
 the workbook, the coverage grids, the findings index, a finding template and the adjacent-findings
 log, in the layout the rest of this procedure assumes.
 
