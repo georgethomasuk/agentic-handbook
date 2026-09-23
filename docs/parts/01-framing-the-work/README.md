@@ -1,6 +1,9 @@
-**Status** scaffold – nothing here is drafted · **Life** living · **Reader** you, about to turn a brief into testable requirements
+**Status** scaffold – not yet written · **Life** living · **Reader** you, about to turn a brief into testable requirements
 
 # How to turn a brief into testable requirements
+
+> **Not yet written.** This part is an outline. The finished part is
+> [Part 3, threat modelling](../03-threat-modelling/README.md) – start there.
 
 a requirement set with a fit criterion on every line, and exclusions written as deliberately as inclusions
 

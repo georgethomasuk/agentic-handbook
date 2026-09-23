@@ -1,6 +1,9 @@
-**Status** scaffold – nothing here is drafted · **Life** living · **Reader** you, about to design the system and record the decisions
+**Status** scaffold – not yet written · **Life** living · **Reader** you, about to design the system and record the decisions
 
 # How to design the system and record the decisions
+
+> **Not yet written.** This part is an outline. The finished part is
+> [Part 3, threat modelling](../03-threat-modelling/README.md) – start there.
 
 an architecture description, the zones and their boundaries, and one recorded decision per choice that was genuinely open
 

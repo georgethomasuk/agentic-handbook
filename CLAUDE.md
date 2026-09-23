@@ -65,8 +65,11 @@ is already good in this genre.
 First five lines of every document under `docs/`, before the H1:
 
 ```
-**Status** normative | index | note — what binds · **Life** living | closed · **Reader** who this is for
+**Status** scaffold | draft | reference | template | index – how far it has got · **Life** living | closed · **Reader** who this is for
 ```
+
+The values are defined for readers in the glossary on `docs/reference/example-system.md`. Change them
+there too if they change here. Said `normative | index | note` until 2026-09-23, which no page used.
 
 This is the same convention the source estate uses. It is also, conveniently, a demonstration of the
 handbook's own claim.

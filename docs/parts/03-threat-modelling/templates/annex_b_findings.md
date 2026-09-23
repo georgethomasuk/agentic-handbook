@@ -1,4 +1,4 @@
-# Annex B · Findings — full entries
+# Annex B · Findings – full entries
 
 > **This is an index.** Each finding is a separate file in `annex_b/`, named `F-<nnn>-<slug>.md`
 > and zero-padded so they sort in order.

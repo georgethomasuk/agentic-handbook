@@ -2,7 +2,7 @@
 
 > **The formal record.** Written to be *checkable* – references cited rather than paraphrased.
 >
-> **Not the document the client reads first.** That is the front door, and it points into this one
+> **Not the document the client reads first.** That is the front door, `front_door.md`, and it points into this one
 > rather than restating it.
 
 ## §1 · How to read this
@@ -56,7 +56,19 @@ The narrative. This is the part anyone reads. Include the predictions that faile
 
 ## §6 · Findings register
 
-One line per finding. Full entries in Annex B.
+### 6.1 The register
+
+**This is the register.** One line per finding, appended by each session as it writes the finding.
+Full entries in Annex B.
+
+| Finding | Title | Origin | Treatment | Owner | Status |
+|---|---|---|---|---|---|
+| | | | | | |
+
+### 6.2 Accepted risks – for signature
+
+Written in plain English, because someone has to sign it and an acceptance the signer could not parse
+is not an acceptance. One line per risk, each with its finding ID.
 
 ## §7 · Coverage and limits
 

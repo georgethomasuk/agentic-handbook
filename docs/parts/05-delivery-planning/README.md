@@ -1,6 +1,9 @@
-**Status** scaffold – nothing here is drafted · **Life** living · **Reader** you, about to plan delivery so an agent can be handed a brief
+**Status** scaffold – not yet written · **Life** living · **Reader** you, about to plan delivery so an agent can be handed a brief
 
 # How to plan delivery so an agent can be handed a brief
+
+> **Not yet written.** This part is an outline. The finished part is
+> [Part 3, threat modelling](../03-threat-modelling/README.md) – start there.
 
 a plan of slices and features, each with the proof that closes it, and a packet an agent can be given as its whole brief
 

@@ -7,17 +7,42 @@ This is a procedure. Follow it in order.
 It produces a coverage record, a set of findings, and a document your client can argue with. It works
 at the design stage, before there is any code to analyse.
 
-The worked example throughout is [the example system](../../reference/example-system.md).
+**This is the one stage where the agent does not run unattended.** It interviews a person, cell by
+cell. That is the job of this stage: getting what the participant knows written down as findings,
+each with a treatment, so the stages after it have something to check their work against.
+
+The worked example throughout is [the example system](../../reference/example-system.md). Every term
+this guide uses is also defined in [its glossary](../../reference/example-system.md#glossary).
 
 ## What is in this folder
 
 | | |
 |---|---|
 | **This guide** | What the process is, why it is shaped this way, and what good output looks like. Written for you |
-| [**`prompt.md`**](./prompt.md) | The instruction set to paste into an agent session. Written for the agent |
+| [**`prompt.md`**](./prompt.md) | Three instruction sets to paste into agent sessions – setup, one category, bringing it together. Written for the agent |
 | [**`templates/`**](./templates/README.md) | Skeletons for every file the pass produces. Copy the directory |
 
-**Read this once. Use the prompt every time.**
+**Read this once. Use the prompts every time.**
+
+## The procedure on one screen
+
+For when you come back to it.
+
+| Step | Who | What |
+|---|---|---|
+| 1.1 | Agent drafts, you decide | List the trust boundaries. Aim for five to nine |
+| 1.2 | Agent drafts, you decide | List the data holdings, including the ones nobody controls |
+| 1.3 | Participant answers, you decide | Split a holding only where one question gets two opposite answers |
+| 1.4 | You | Copy the templates. Reserve a block of finding IDs per category |
+| 2.1 | Agent | Research one security category online. Write down the tests that separate it from its neighbours |
+| 2.2 | Agent asks, participant answers | Four moves per cell: what happens · the threat in plain terms · one sentence, yes or no · built or only intended |
+| 2.3 | Agent | Mark the cell `✅`, `➖` with a reason, or `⚠️` with an owner |
+| 2.4 | Agent | Write the finding file, the index row and the register line before the next cell |
+| 2.5 | You | Start the next category. Six in all |
+| 3.1–3.3 | Same as 2, on holdings | Seven privacy suits. The agent reads the real data first |
+| 4.1 | Agent proposes, you confirm | Find mechanisms that are a weakness in one pass and a protection in the other |
+| 4.2 | One agent session | Count the marks by script. Write the synthesis into the workbook |
+| 4.3 | Agent drafts, you cut | Write the front door – the short document the client reads first |
 
 ---
 
@@ -31,6 +56,14 @@ found, tell us what we got wrong.*
 If you find yourself writing a coverage statement and a sign-off table, you are building the wrong
 artefact. That is an end-of-engagement assurance document, and you are at the start.
 
+The pass leaves three things behind:
+
+| | For | What it is |
+|---|---|---|
+| **The front door** | The client | A short document they read first. What you looked at, what you found, what you need from them. Written last, in step 4.3 |
+| **The workbook and its annexes** | Anyone checking the work | The formal record. The system, the method, every cell and every finding in full. The front door points into it rather than repeating it |
+| **Adjacent findings** | You | Real problems that are not threats – a contract gap, a stale document. Kept out of the findings so the findings stay clean |
+
 ## What you need before you start
 
 | | |
@@ -42,17 +75,31 @@ artefact. That is an end-of-engagement assurance document, and you are at the st
 
 ## What it costs
 
-**Figures from one full pass, measured 16 September 2026.**
+**Figures from one full pass, re-read from its record on 23 September 2026.**
 
 | | |
 |---|---|
 | Cells worked | 91, across thirteen tables |
-| Findings produced | 43, taking a register from 16 to 62 |
+| Marks | 40 `✅` · 45 `➖` · 7 `⚠️`. That is 92 marks across 91 cells, because one cell both produced a finding and left one open |
+| Why 40 `✅` is not 43 findings | Cells and findings do not map one to one. A cell can re-find a finding that already existed, and one finding can be marked at two cells |
+| Findings from the pass | 43, taking the register from 16 to 59 |
+| Findings from correcting the system description | 3 more, raised while the system description was being corrected. The register stood at 62 |
 | Findings file before it was split into one file per finding | 2,201 lines |
+| Time | The pass was begun and finished on consecutive days, by the record's change log. **Operator hours were not measured** |
 
-**Budget roughly double what you expect for the reference annexes.** Two came in at about twice
-target. Hold the line on the client-facing document instead – it is the only one anybody reads end to
-end, and it is the one that overran worst.
+**Every written artefact overran its length target.**
+
+| | Target | Actual |
+|---|---|---|
+| The workbook | about 450 lines | 892 |
+| The coverage grids | about 265 lines | 836 |
+| The front door | about 120 lines | 350 |
+
+*Said "two came in at about twice target" until 23 September 2026. Re-read, the workbook is about
+double, and the coverage grids and the front door are both nearly three times.*
+
+**Let the reference material run long. Hold the line on the front door.** It is the only document
+anybody reads end to end, and it overran worst.
 
 ## Who does what
 
@@ -75,6 +122,9 @@ specification, the pass is producing a summary of a document rather than a model
 
 You run **two passes**, not one.
 
+Each pass walks a fixed list of questions (the **taxonomy**) across a fixed list of places in the
+system (the **spine**). One question asked at one place is a **cell**.
+
 | | Security | Privacy |
 |---|---|---|
 | **Taxonomy** | STRIDE, 6 categories | LINDDUN GO, 7 suits |
@@ -95,7 +145,7 @@ is a section on speeding it up at the end, and it is deliberately not part of th
 | **1 · Set up** | 1.1 – 1.4 | Describe the system on both spines. Create the files |
 | **2 · The security pass** | 2.1 – 2.5 | Six categories, walked across your boundaries |
 | **3 · The privacy pass** | 3.1 – 3.3 | Seven suits, walked across your holdings |
-| **4 · Bringing it together** | 4.1 – 4.2 | Compare the passes, then synthesise |
+| **4 · Bringing it together** | 4.1 – 4.3 | Compare the passes, synthesise, write the front door |
 | **Speeding it up** | – | Only once the signals below are present |
 | **Evaluating the quality** | – | Checks to run before calling it done |
 
@@ -198,8 +248,11 @@ You now have seven holdings: H1, H2, H3a, H3b, H4, H5, H6.
 > **You** create the files and reserve the ID blocks. **Agent** writes into them from here on.
 
 **Copy [`templates/`](./templates/README.md) into your repository** and fill in the placeholders. It gives you
-the workbook, the coverage grids, the findings index, a finding template and the adjacent-findings
-log, in the layout the rest of this procedure assumes.
+the front door, the workbook, the coverage grids, the findings index, a finding template and the
+adjacent-findings log, in the layout the rest of this procedure assumes.
+
+**The findings register is §6.1 of the workbook** – one line per finding. The full entry for each
+finding is its own file. The register is the list; the files are the detail.
 
 Two things in there are load-bearing rather than cosmetic.
 
@@ -258,7 +311,7 @@ starts – this is the cheapest place to catch an agent that has misunderstood t
 | Against | Test |
 |---|---|
 | **vs Spoofing** | Assume authentication is perfect. Does the finding survive? If it vanishes it was Spoofing |
-| **vs Tampering** | Ask who benefits. If the log can be altered by the person whose conduct it records, it is Repudiation with Tampering as the mechanism |
+| **vs Tampering** | Ask who can change the record. If it is the person whose actions it records, file it under Repudiation and name tampering as how it is done |
 | **vs Information disclosure** | Under-logging is Repudiation. Over-logging is Information disclosure |
 
 ---
@@ -295,8 +348,9 @@ thought about.
 
 ### Move 3 · State the candidate in one sentence, and get a yes
 
-**Lead with the plain question. Hold the scaffolding.** The agent's analysis can be deep. The sentence
-it hands over must be plain, and the reasoning comes only if the participant asks for it.
+**The agent asks the plain question and keeps its reasoning back.** Its analysis can be deep. The
+sentence it hands over must be plain, and the reasoning comes only if the participant asks for it.
+This rule exists because the participant said *"simplify that"* twice in one sitting.
 
 > **Agent:** So: the dashboard can't say which person at the insurer saw which site's data, and a
 > shared login means it couldn't even narrow it to a person. Finding, or accept?
@@ -385,13 +439,19 @@ a screen capture, which is untraceable by nature.
 A record of which analyst read which site is surveillance of the insurer's own staff, which
 is out of scope. Recorded as a decision, not an oversight.
 
-*Treatment.* Mitigate in part – individual accounts rather than a shared login, which is the
-insurer's own account governance and achievable now. Content-read logging: accept, disclosed.
+*Treatment.* **Split** – mitigate the login limb, accept the read-logging limb.
+
+*Proposed response.* Individual accounts for each analyst instead of a shared login. That is
+the insurer's own account governance and is achievable now. Content-read logging is
+**not built** and is not proposed; the acceptance is disclosed to the client, not assumed.
 
 *Residual.* After individual logins, the system can say who had access, never who looked.
+
+*Owner.* The insurer, for the logins · the company, for accepting the rest · *Status.* Raised
 ```
 
-Then one row goes into the index in `annex_b_findings.md`, and one line into the register. All three
+Then one row goes into the index in `annex_b_findings.md`, and one line into the register in §6.1 of
+`workbook.md`. All three
 before the next cell is opened – an agent that batches them will lose them on a context reset.
 
 **Note what the entry carries beyond the threat:** what was considered and set aside, and the reason a
@@ -433,6 +493,9 @@ follows covers only what differs.
 ## 3.1 · Pick one suit and prepare it
 
 > **You** choose the suit · **Agent** prepares it, and reads the real data before the first question.
+
+LINDDUN GO is published as a deck of cards, so its categories are called **suits**. A suit is to the
+privacy pass what a category is to the security pass.
 
 **The seven LINDDUN GO suits:**
 
@@ -523,16 +586,32 @@ When all seven tables are full, the privacy pass is done.
 The agent reads both passes' findings looking for the same mechanism appearing twice with opposite
 signs. A control in one, a harm in the other.
 
-**Worked example.** The security pass recorded *the dashboard logs no reads* as an accountability gap.
-The privacy pass, at the same mechanism, recorded that logging reads would be surveillance of the
-insurer's own staff.
+**Worked example.** Two cells, from two different sessions, that never saw each other:
 
-**Same absence. One pass calls it a weakness, the other calls it protection.**
+| Pass | Cell | What was recorded |
+|---|---|---|
+| Security | Repudiation at **B3**, the public check-in endpoint | `✅ F-51` Nothing ties a check-in to whoever sent it. Someone with the link could send fifty bleak check-ins for one site, and nothing could say who |
+| Privacy | Non-repudiation at **H3b**, the wellbeing check-in | `➖` No attribution exists, and that is the property. A member of staff can always deny having sent one, which is what makes it safe to be honest |
 
-These are written up as a set rather than left in their separate findings. Each is a live trade-off,
-not a defect, and **fixing the security finding erodes the privacy property**. The client has to
-decide which way it goes, and they can only do that if both readings are on the same page. Neither you
-nor the agent resolves one of these quietly.
+**Same absence. One pass calls it a weakness, the other calls it the protection.**
+
+The obvious fix for F-51 is to remember the device that sent each check-in. That fix removes exactly
+the property the privacy pass relies on.
+
+The agent writes the pair up as one entry, in the cross-cutting section of the workbook (§7.2):
+
+> **F-51 and H3b – anonymity is both the gap and the protection.** A flood of fake check-ins cannot be
+> traced, because nothing identifies a sender. Any control that identifies senders ends the anonymity
+> that makes the check-in worth filling in. Controls that do not identify anyone – a submission rate
+> limit per site, a flag on sudden spikes – narrow the gap without closing it. **This is the company's
+> decision, not the supplier's.**
+
+A pair like this is a live trade-off, not a defect. The client can only decide it if both readings are
+on the same page. Neither you nor the agent resolves one quietly.
+
+In the pass this guide is drawn from, this happened **four times**. F-48 above is one of them: the
+dashboard's missing read log is an accountability gap to the security pass and a protection against
+surveillance to the privacy pass.
 
 ---
 
@@ -550,13 +629,67 @@ into the shared sections itself.
 of every table and reports totals plus any unmarked row. A hand-kept tally drifts, and it drifts
 silently – so the script is the answer, not the agent's arithmetic.
 
-The synthesis session then writes four things:
+The synthesis session then writes four things into the workbook:
 
-1. **Coverage** – rows are the thirteen categories and suits, not the boundaries or holdings. The
-   question is *was this taxonomy actually walked?*
-2. **What the pass added** – the narrative. This is the part anyone reads.
-3. **Accepted risks** – as a signable list, in plain English, because someone has to sign it.
-4. **Limits** – what was deliberately not walked, and what the work does not support being claimed.
+1. **Coverage** (§5.1) – rows are the thirteen categories and suits, not the boundaries or holdings.
+   The question is *was this taxonomy actually walked?*
+2. **What the pass added** (§5.2) – the narrative, including the predictions that failed.
+3. **Accepted risks** (§6.2) – as a signable list, in plain English, because someone has to sign it.
+4. **Limits** (§7) – what was deliberately not walked, and what the work does not support being
+   claimed.
+
+**Worked example**, the coverage table the script produces, first two rows. These are the example
+system's marks, to show the shape. They are not measured figures from a real pass:
+
+| Category | Cells | `✅` | `➖` | `⚠️` | Unmarked |
+|---|---|---|---|---|---|
+| Repudiation | 7 | 4 | 2 | 1 | 0 |
+| Detecting | 7 | 2 | 4 | 1 | 0 |
+
+**Any number in the *Unmarked* column means the pass is not finished.** Do not write the synthesis
+until it is zero everywhere.
+
+---
+
+## 4.3 · Write the front door
+
+> **Agent** drafts it from the workbook · **You** cut it to length and decide what goes to the client.
+
+The **front door** is the short document the client reads first. It says what you looked at, what
+you found, and what you need from them. Everything in it points into the workbook rather than
+repeating it.
+
+**Write it last.** Written before the synthesis, the summary gets written twice – once from guesses,
+once from the results.
+
+The skeleton is [`templates/front_door.md`](./templates/front_door.md). It has seven sections:
+
+| | Section | What it answers |
+|---|---|---|
+| 1 | What this is, and what it is not | *Is this an assurance document?* No, and it says so first |
+| 2 | The system, in brief | *Did they understand what we built?* |
+| 3 | What we did | Where you looked, what you asked, how you worked through it |
+| 4 | What we found | Inside the platform, outside it, and what is still open |
+| 5 | What we need from you | The facts only the client holds, and the risks proposed for acceptance |
+| 6 | What this does not support being claimed | The limits, in one short list |
+| 7 | Where the detail lives | Links into the workbook and annexes |
+
+**Worked example**, the opening of section 4 on the example system:
+
+> **The design holds inside the platform, and three things need to be got right.** Reports reach the
+> core store intact and attributable. Check-ins reach it without anything that identifies the sender.
+> The three things are the shared insurer login (F-48), the untraceable check-in flood (F-51), and
+> small sites in the insurer's dashboard (F-104).
+>
+> **The larger risk sits outside the platform.** Exports to spreadsheets and board packs (H5) leave
+> every control the platform has behind. We cannot fix that from inside the build. Section 5 asks you
+> who owns it.
+
+Note the shape: the good property first, then the gaps, each with its finding ID so the reader can
+follow it into the detail.
+
+**Aim for about 120 lines, and expect to miss.** The one this guide is drawn from came in at 350. Cut
+anything the client does not need to act on. The detail it loses is already in the workbook.
 
 ---
 
@@ -678,5 +811,6 @@ the grounds that optimising against a sample of one is optimising against noise,
 revisited since. The four checks are a considered guess at what readiness looks like. Nobody has yet
 run a pass that used them and then measured whether the faster cells held up.
 
-**Length is a design constraint and this method does not meet it.** Recorded that way rather than
-restated downwards.
+**The front door's length target is not met.** It was set at about 120 lines and the real one came in
+at 350. That is recorded as a miss. The target has not been raised to fit the result, because a
+client-facing document that nobody finishes has failed at its one job.

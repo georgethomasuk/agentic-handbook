@@ -12,8 +12,9 @@ what happens today – if the current process is worse, say so.
 reason. **This section is the point of the document.** A finding that shows only what was found reads
 as a charge sheet; one that shows what was weighed invites correction.
 
-*Treatment.* One word – mitigate · accept · share · investigate · refine spec. Anything needing
-explanation goes in the next line, not here.
+*Treatment.* Lead with one word – mitigate · accept · share · investigate · refine spec. If the
+treatment splits, write **Split** and name the word for each limb. Anything needing explanation goes
+in the next line, not here.
 
 *Proposed response.* What would actually be done. Say plainly where a control is **not built**.
 
