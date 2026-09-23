@@ -7,7 +7,8 @@ than the wording – it is what lets several agent sessions work at once without
 
 | File | What it is |
 |---|---|
-| [`workbook.md`](./workbook.md) | The formal record. System, scope, method, synthesis |
+| [`front_door.md`](./front_door.md) | The short document the client reads first. Written last |
+| [`workbook.md`](./workbook.md) | The formal record. System, scope, method, synthesis. §6.1 is the findings register |
 | [`annex_a_grids.md`](./annex_a_grids.md) | The coverage record. One small table per category |
 | [`annex_b_findings.md`](./annex_b_findings.md) | The findings index. One row per finding |
 | [`finding.md`](./finding.md) | One finding. Copy per finding into `annex_b/` |
@@ -17,6 +18,7 @@ than the wording – it is what lets several agent sessions work at once without
 
 ```
 threat_model/
+  front_door.md
   workbook.md
   annex_a_grids.md
   annex_b_findings.md
@@ -24,7 +26,7 @@ threat_model/
     F-001-<slug>.md
     F-002-<slug>.md
   adjacent_findings.md
-  sources/              raw transcripts — gitignore this
+  sources/              raw transcripts – gitignore this
 ```
 
 **Gitignore `sources/`.** Elicitation transcripts contain candid commercial and liability content

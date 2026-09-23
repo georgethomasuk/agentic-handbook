@@ -77,3 +77,47 @@ Each one exists because some part of the handbook needs it. They are not decorat
 **It carries shape, never substance.** Where a part quotes a figure, that figure is real and comes
 from work actually done. The example illustrates how the method behaves; it never supplies evidence
 that it worked.
+
+## Glossary
+
+Every term the handbook uses in a special sense. Each part also defines a term where it first needs it.
+
+### The three roles
+
+| Term | Meaning |
+|---|---|
+| **You** · the operator | The person running the agent sessions. You direct the work and make the calls the agent cannot |
+| **The agent** | The coding agent in a session. It starts knowing nothing about the system that is not in the files |
+| **The participant** | The person who holds the business knowledge and answers the agent's questions. Often also you |
+
+### Threat modelling – Part 3
+
+| Term | Meaning |
+|---|---|
+| **Trust boundary** | A place where data moves between two parties who trust each other differently. Numbered B1, B2, … |
+| **Holding** | One place personal data comes to rest, treated as a single thing for analysis. Numbered H1, H2, … |
+| **Element** | Either a trust boundary or a holding – whichever the current pass is walking |
+| **Spine** | The list of elements a pass walks. The security pass walks the boundaries; the privacy pass walks the holdings |
+| **Taxonomy** | The fixed list of questions a pass asks. STRIDE for security, LINDDUN GO for privacy |
+| **Category** | One question in STRIDE, such as Repudiation |
+| **Suit** | One question in LINDDUN GO, such as Detecting. LINDDUN GO is published as a deck of cards, hence the name |
+| **Cell** | One category or suit asked at one element. Repudiation at B2 is one cell |
+| **Mark** | The result recorded for a cell: `✅` a finding, `➖` closed with a reason, `⚠️` open and waiting on someone |
+| **Finding** | A way the system can harm someone or be harmed, written up with a treatment. Numbered F-1, F-2, … |
+| **Adjacent finding** | Something real and actionable that is not a threat – a contract gap, a stale document. Numbered ADJ-1, ADJ-2, … |
+| **Treatment** | What is decided about a finding: mitigate, accept, share, investigate, or refine the specification |
+| **Residual** | What is still true about a finding after its treatment is carried out |
+| **Fork test** | Split a holding only when one question gets opposite answers for different records in it |
+| **Register** | The one-line-per-finding list in the workbook |
+| **Workbook** | The formal record of a threat-modelling pass. Written to be checked, not read through |
+| **Front door** | The short document the client reads first. It points into the workbook rather than repeating it |
+
+### The status line
+
+Every page opens with a line such as **Status** draft · **Life** living · **Reader** you.
+
+| Field | Meaning |
+|---|---|
+| **Status** | How far the page has got – *scaffold* (not written), *draft*, *reference*, *template*, *index* |
+| **Life** | *Living* means it will still change. *Closed* means it will not |
+| **Reader** | Who the page is written for – you, or an agent

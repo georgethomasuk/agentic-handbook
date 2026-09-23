@@ -1,6 +1,9 @@
-**Status** scaffold – nothing here is drafted · **Life** living · **Reader** you, about to keep the work honest as it scales
+**Status** scaffold – not yet written · **Life** living · **Reader** you, about to keep the work honest as it scales
 
 # How to keep the work honest as it scales
+
+> **Not yet written.** This part is an outline. The finished part is
+> [Part 3, threat modelling](../03-threat-modelling/README.md) – start there.
 
 retrospectives that change something, a review panel with stated composition, and rules enforced by a check rather than by advice
 

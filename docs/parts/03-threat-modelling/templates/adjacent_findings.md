@@ -1,4 +1,4 @@
-# Adjacent findings — real, actionable, not threats
+# Adjacent findings – real, actionable, not threats
 
 > The pass will surface things that are worth acting on and are **not threats.** A contract clause
 > that does not cover a task that will certainly happen. A document describing an architecture the

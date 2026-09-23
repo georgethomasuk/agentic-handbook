@@ -1,6 +1,9 @@
-**Status** scaffold – nothing here is drafted · **Life** living · **Reader** you, about to build the machine the agents run on
+**Status** scaffold – not yet written · **Life** living · **Reader** you, about to build the machine the agents run on
 
 # How to build the machine the agents run on
+
+> **Not yet written.** This part is an outline. The finished part is
+> [Part 3, threat modelling](../03-threat-modelling/README.md) – start there.
 
 a development box, a session multiplexer, and a network, each chosen from a requirement rather than from preference
 

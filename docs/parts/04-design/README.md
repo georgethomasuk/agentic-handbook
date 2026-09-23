@@ -1,6 +1,9 @@
-**Status** scaffold – nothing here is drafted · **Life** living · **Reader** you, about to get from an information architecture to a handover specification
+**Status** scaffold – not yet written · **Life** living · **Reader** you, about to get from an information architecture to a handover specification
 
 # How to get from an information architecture to a handover specification
+
+> **Not yet written.** This part is an outline. The finished part is
+> [Part 3, threat modelling](../03-threat-modelling/README.md) – start there.
 
 an IA built by interview, a design system derived from it, working prototypes, and a handover specification a build can be run from
 
