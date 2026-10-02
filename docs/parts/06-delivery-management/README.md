@@ -27,8 +27,12 @@ is **a rate limit on the public check-in endpoint**, boundary B3.
 | **This guide** | What the process is, why it is shaped this way, and what good output looks like. Written for you |
 | [**`prompt.md`**](./prompt.md) | Three instruction sets to paste into agent sessions – filling the slots, resolving a workflow, assembling a brief. Written for the agent |
 | [**`templates/`**](./templates/README.md) | The shared core, seven workflows, the slots file and the brief skeleton. Copy the directory |
+| [**The kit**](./kit.md) | A command-line tool, `plan`, that does the mechanical steps – resolving a workflow, assembling a brief, entering a column, claiming and closing a feature |
 
-**Read this once. Use the prompts every time.**
+**Read this once.** Then use the kit, or the prompts where you are working by hand.
+
+**Every step is given twice: by hand, and with the kit.** The by-hand route is the method. The kit
+is that method with the mechanical parts done by a script.
 
 ## The procedure on one screen
 
@@ -41,9 +45,9 @@ For when you come back to it.
 | 1.3 | Participant answers, you decide | Agree the stop list and the decide-and-disclose list |
 | 1.4 | You | Fill the `tooling.*` slots, by hand where you have no tooling |
 | 1.5 | You | Make every command slot fail once, and read the exit status |
-| 1.6 | Agent resolves, you check | Flatten the core, one workflow and the slots into one file |
+| 1.6 | The kit, or an agent | Flatten the core, one workflow and the slots into one text |
 | 2.1 | You | Bind a workflow to the feature, by what has to run to prove it |
-| 2.2 | Agent assembles, you check | Build the brief – the ask first, the context after |
+| 2.2 | The kit, or an agent | Build the brief – the ask first, the context after |
 | 2.3 | You | Hand the brief to a fresh session |
 | 3.1 | Agent | Enter each column by printing it, and work from what was printed |
 | 3.2 | You | Know which exits are yours |
@@ -60,8 +64,8 @@ For when you come back to it.
 
 | | For | What it is |
 |---|---|---|
-| **The filled slots** | The client's reviewers, and you | Every engagement-specific fact the workflows need, in one file. The stack, the data rules, the two lists that say what an unattended run may decide |
-| **A resolved workflow** | The agent | One flat file per workflow you use. The shared core, the workflow and the slots joined, with no placeholder left in it |
+| **The slot values** | The client's reviewers, and you | Every engagement-specific fact the workflows need, in one file. The stack, the data rules, the two lists that say what an unattended run may decide |
+| **A resolved workflow** | The agent | The shared core, one workflow and the slot values joined, with no placeholder left. The kit produces it on demand. By hand it is a file |
 | **A brief** | The agent, once per feature | The task and the column to start at, then everything the plan knows that bears on it |
 
 **The brief is the point of the plan.** A plan that only displays status is a tracker. One that can
@@ -100,6 +104,10 @@ been set up on a second.
 October 2026. The first real brief assembled by walking the plan from the top was 5,501 words, and
 5,064 of them came before the sentence naming the column. Step 2.2 exists because of that brief.
 
+**And the same count on the kit's output**, run on 2 October 2026. The brief it assembles for the
+worked example is 10,131 words, with 44 before the sentence naming the column. Most of that length is
+the eleven later columns, copied whole at the bottom.
+
 **What a column costs to run is Part 7's subject**, not this one's.
 
 ## Who does what
@@ -124,7 +132,8 @@ supplier who writes both lists alone has agreed them with nobody.
 | **4 · Change a workflow** | When a run shows the method is wrong | Put the fix in the right layer |
 
 **Every step works with no tooling.** Each slot has a by-hand filling, and each of the three agent
-prompts stands in for a script that is not published. *What's not solved yet* says what that costs.
+prompts does by hand what [the kit](./kit.md) does by script. *What's not solved yet* says what
+neither route has proved.
 
 ---
 
@@ -134,27 +143,30 @@ Once per engagement, before the first feature is claimed.
 
 ## 1.1 · Copy the templates
 
-> **You** copy the folder.
+> **You** copy the folder, or run one command.
 
 Copy [`templates/workflows/`](./templates/workflows/README.md) and
 [`templates/brief.md`](./templates/brief.md) into the client repository, beside the plan.
 
-**Do not edit `core.yaml` or the workflow files during setup.** Everything that differs between
-engagements has already been taken out and left as a named hole – a **slot**. A workflow edited to
-fit one client is a workflow that has to be read line by line before it can be used for the next.
-That reading is what these templates were extracted to save.
+**Do not edit `core.yaml`, the workflow files or `slots.yaml` during setup.** Everything that differs
+between engagements has already been taken out and left as a named hole – a **slot**. Your values go
+in a file of their own. A workflow edited to fit one client is a workflow that has to be read line by
+line before it can be used for the next. That reading is what these templates were extracted to save.
+
+**With the kit:** `plan init .` copies the workflows and writes the two files below.
 
 **Worked example.**
 
 ```
 plan/
+  kit.yaml               where the kit finds things, and how a claim reaches the main branch
+  values.yaml            your values for the slots
   workflows/
     core.yaml
     build-in-repository.yaml
     …six more
-    slots.yaml
-    resolved/            written in step 1.6
-  brief.md
+    slots.yaml           what each slot needs – not edited
+  tree/                  the plan itself – Part 5
 ```
 
 ---
@@ -165,28 +177,28 @@ plan/
 
 A `{{project.*}}` slot is a fact about this engagement – the full check command, the lockfile, the
 boundaries. Each slot in `slots.yaml` says what it needs, how to meet it by hand, and gives an
-example. You add a `value:` line.
+example. Your value goes in `values.yaml`, under the slot's name.
 
-**Fill what the first workflow uses, not all 77.** `build-in-repository` uses 39. The slots for
-browser work, contract changes and real environments can wait until a feature needs them.
+**Fill what the first workflow uses, not all 77.** `build-in-repository` uses 39, and 17 of those are
+`project.*`. The slots for browser work, contract changes and real environments can wait until a
+feature needs them.
 
 The agent reads the repository and proposes a value for each slot, quoting the file it took it from.
 Use [prompt A](./prompt.md#a-fill-the-slots). **It leaves three slots for step 1.3** –
 `stop_list`, `decide_and_disclose_list` and `real_data_policy`. Those are decisions, not facts, and
 the repository does not hold them.
 
-**Worked example.** Four of the seventeen, filled.
+**With the kit:** `plan check` names every slot a workflow still needs, once a feature binds that
+workflow.
+
+**Worked example.** Four of the seventeen, in `values.yaml`.
 
 ```yaml
 project:
-  constitution:
-    value: "AGENTS.md"
-  boundaries:
-    value: "the seven trust boundaries in threat_model/workbook.md §2.6, B1 to B7"
-  sensitive_boundaries:
-    value: "authentication, checkin/ (B3), anything writing to the aggregate store (H2)"
-  full_gate:
-    value: "make check"
+  constitution: "AGENTS.md"
+  boundaries: "the seven trust boundaries in threat_model/workbook.md §2.6, B1 to B7"
+  sensitive_boundaries: "authentication, checkin/ (B3), anything writing to the aggregate store (H2)"
+  full_gate: "make check"
 ```
 
 The agent proposed `make test` for `full_gate`, quoting the README. You corrected it. The slot asks
@@ -228,17 +240,14 @@ The lists as agreed:
 
 ```yaml
 project:
-  stop_list:
-    value: >
-      AGENTS.md §6 – anything that changes what crosses a trust boundary · a new holding of
-      personal data · a change to what the insurer can see · any wording on a check-in screen ·
-      a migration that cannot be reversed · a new dependency
-  decide_and_disclose_list:
-    value: >
-      AGENTS.md §6 – naming, file placement, test structure · a refactor inside the files the
-      feature already touches · copy wording outside the check-in, where the design is silent
-  real_data_policy:
-    value: "Never. The supplier's machines are holding H4."
+  stop_list: >
+    AGENTS.md §6 – anything that changes what crosses a trust boundary · a new holding of
+    personal data · a change to what the insurer can see · any wording on a check-in screen ·
+    a migration that cannot be reversed · a new dependency
+  decide_and_disclose_list: >
+    AGENTS.md §6 – naming, file placement, test structure · a refactor inside the files the
+    feature already touches · copy wording outside the check-in, where the design is silent
+  real_data_policy: "Never. The supplier's machines are holding H4."
 ```
 
 **The lists exist because of what the gates had become.** In the source engagement, most of the
@@ -255,31 +264,25 @@ person is these two lists and a handful of blocking gates.
 A `{{tooling.*}}` slot is how *you* work – how you claim a feature, where the journal goes, how you
 run a review panel. The same answers travel with you to the next engagement.
 
-**Use the `by_hand` line wherever you have no tooling.** Every slot has one. Tooling makes a column
-cheaper. It never makes a column possible.
+**With the kit, they are already filled.** The kit ships its own values for all 24 – each one a
+`plan` command, a path, or the by-hand line where the kit has no command. You change the three model
+tiers to the ones you run, and anything else you do differently, in a file of your own.
 
-**Worked example.** Four of the twenty-two, filled by hand.
+**Without the kit, use the `by_hand` line.** Every slot has one. Tooling makes a column cheaper. It
+never makes a column possible.
 
-```yaml
-tooling:
-  journal_file:
-    value: ".work/<feature>/journal.md"
-  enter_column:
-    value: >
-      append the column name and the time to the journal, then print that column from
-      plan/workflows/resolved/<workflow>.yaml and work from what was printed
-  panel_runner:
-    value: >
-      one fresh session per seat, each given its profile and the diff, read-only. The operator
-      opens them and pastes the findings back
-  archive_journal:
-    value: "cp .work/<feature>/journal.md \"${JOURNAL_ARCHIVE:?unset}/<feature>.md\""
-```
+**Worked example.** Four of the twenty-four, by hand and with the kit.
+
+| Slot | By hand | With the kit |
+|---|---|---|
+| `journal_file` | `.work/<feature>/journal.md` | The same |
+| `enter_column` | Append the column name and the time to the journal, then print that column from the resolved workflow file | `plan enter <feature> <column>` |
+| `archive_journal` | `cp .work/<feature>/journal.md "${JOURNAL_ARCHIVE:?unset}/<feature>.md"` | `plan archive <feature>` |
+| `panel_runner` | One fresh session per seat, each given its profile and the diff, read-only. You open them and paste the findings back | The same. The kit does not run a panel |
 
 **A value that names you goes in the environment, not in the file.** The archive destination is your
-own records, outside the client repository. Written into `slots.yaml` it would put the supplier's
-name in a tree the client is handed. So the slot holds a variable, and the variable is set on your
-machine.
+own records, outside the client repository. Written into the plan it would put the supplier's name in
+a tree the client is handed. So the slot holds a variable, and the variable is set on your machine.
 
 **That by-hand panel runner needs you present.** The session cannot open fresh sessions for itself,
 so `panel` stops being unattended. That is the cost of having no runner, and it is the right cost –
@@ -298,7 +301,7 @@ a pass.** So before any workflow relies on one, see it fail.
 Point each command at something that is not there – an unset variable, a missing file, a branch that
 does not contain the main branch – and read the exit status. Zero is a defect in the slot.
 
-**Worked example.** `archive_journal`, with the destination unset.
+**Worked example.** `archive_journal`, with the destination unset. By hand:
 
 ```
 $ unset JOURNAL_ARCHIVE
@@ -308,7 +311,17 @@ $ echo $?
 1
 ```
 
-That is the slot working. The filling you did not use:
+With the kit:
+
+```
+$ plan archive feature_checkin_rate_limit
+plan: PLAN_JOURNAL_ARCHIVE is not set – nothing archived. An archive step that succeeds having
+copied nothing leaves you believing there is an archive.
+$ echo $?
+1
+```
+
+Both are the slot working. The filling you did not use:
 
 ```
 $ cp .work/rate-limit/journal.md "$JOURNAL_ARCHIVE/rate-limit.md"
@@ -320,25 +333,26 @@ success and there is no archive.
 
 **Nothing downstream catches this one.** `close` archives the journal and then releases the working
 copy the journal lives in. An archive that quietly copied nothing is found out when somebody wants
-the evidence behind a record, which is after the only copy is gone.
+the evidence behind a record, which is after the only copy is gone. The kit's `plan release` refuses
+until the archived copy exists and matches.
 
 ---
 
-## 1.6 · Resolve the workflow into one file
+## 1.6 · Resolve the workflow
 
-> **Agent** resolves · **You** run two checks on the result.
+> **The kit** resolves on demand · or **the agent** resolves into a file and **you** check it.
 
 A workflow file is not runnable as written. It pulls columns from the core with `use:`, adds to them
-with `also:`, and is full of slots. **Resolving** joins the core, one workflow and the filled slots
-into one flat file with nothing left to look up.
+with `also:`, and is full of slots. **Resolving** joins the core, one workflow and the slot values
+into one flat text with nothing left to look up.
 
-**The agent works from the resolved file and never from the three sources.** The layers exist so
+**The agent works from the resolved text and never from the three sources.** The layers exist so
 that you make each fix in one place. The agent needs each column whole, in one place, at the moment
 it enters it.
 
-Use [prompt B](./prompt.md#b-resolve-a-workflow). The rules it follows:
+The rules:
 
-| In the workflow file | In the resolved file |
+| In the workflow file | Resolved |
 |---|---|
 | `use: core.<name>` | The whole column, copied from `core.yaml` |
 | `also:` | Each field appended to the same field of the copied column. Text becomes further paragraphs. A list gains items at the end. A nested block is appended field by field |
@@ -346,10 +360,17 @@ Use [prompt B](./prompt.md#b-resolve-a-workflow). The rules it follows:
 | `seeds:` | Kept on the copied `panel` column, as its `seeds` list |
 | `standing_constraints:` | The core's list first, then the workflow's |
 | *nothing – these are in the core only* | `stage_protocol`, `exit_kinds`, `report_back`, `compaction` and `delegation`, copied to the top |
-| `{{project.x}}` · `{{tooling.x}}` | The slot's `value` |
-| `modes:` | Left out. A mode is resolved into a file of its own, `<workflow>.<mode>.yaml`, with its changes applied column by column |
+| `{{project.x}}` · `{{tooling.x}}` | The slot's value |
+| `modes:` | Left out. A mode is resolved separately, with its changes applied column by column |
 
-**Then run two checks.** Both must print `0`.
+**With the kit, nothing is stored.** Every command that needs a workflow resolves it at that moment,
+so there is no resolved copy to go stale. `plan resolve <workflow>` prints one when you want to read
+it. A slot with no value stops the resolve and is named – the kit never falls back to the slot's
+example, which is from another system.
+
+**By hand,** use [prompt B](./prompt.md#b-resolve-a-workflow). It writes
+`plan/workflows/resolved/<workflow>.yaml`, which you commit, and which the agent reads when it enters
+a column. Then run two checks. Both must print `0`.
 
 ```
 $ grep -c '{{' plan/workflows/resolved/build-in-repository.yaml
@@ -358,7 +379,8 @@ $ grep -c 'use: core' plan/workflows/resolved/build-in-repository.yaml
 0
 ```
 
-A placeholder left in a resolved file is an instruction with a hole in it.
+A placeholder left in a resolved file is an instruction with a hole in it. Resolve again whenever a
+source changes, and never edit a resolved file – an edit made there is lost at the next resolve.
 
 **Worked example.** The `panel` column in `build-in-repository.yaml` is short:
 
@@ -378,7 +400,7 @@ compaction block – with those seeds attached and every slot filled:
     precondition:
       - command: git fetch -q origin main && git merge-base --is-ancestor origin/main HEAD
         why: the panel reviews the diff it is handed. …
-    entry: >
+    entry: |
       Choose the reviewers from what this change can get wrong. …
       Fill each seat from .review/profiles/ by reuse first, …
     seeds:
@@ -386,13 +408,9 @@ compaction block – with those seeds attached and every slot filled:
         threat_model/workbook.md §2.6, B1 to B7 in a response, a log line or an error."
 ```
 
-**Checked on 2 October 2026:** all seven workflows resolve by these rules against the core, and each
-leaves no placeholder when every slot it uses has a value. That was a trial resolution by script, on
-the example fillings. It shows the files join. It does not show a resolved workflow has been run –
-see *What's not solved yet*.
-
-**Resolve again whenever a source changes**, and never edit a resolved file. An edit made there is
-lost at the next resolve.
+**Checked on 2 October 2026:** the kit's tests resolve all seven workflows against the core, and each
+leaves no placeholder when every slot it uses has a value. That shows the files join. It does not
+show a resolved workflow has been run on a real feature – see *What's not solved yet*.
 
 ---
 
@@ -438,7 +456,8 @@ refuses a real request. That feature binds `real-environment-change`, and the su
 The **brief** is the single document a fresh session is handed for a feature. It is built from the
 plan and the resolved workflow in a fixed order. Nothing in it is written from memory.
 
-Use [prompt C](./prompt.md#c-assemble-a-brief) and the [brief skeleton](./templates/brief.md).
+**With the kit:** `plan prompt <feature> -o .work/<feature>/brief.md`. **By hand:** use
+[prompt C](./prompt.md#c-assemble-a-brief) and the [brief skeleton](./templates/brief.md).
 
 **The ask comes first. The context comes after.**
 
@@ -568,7 +587,13 @@ agreed design in `frame` keys the limit on the token. Neither was remembered by 
 lifted.
 
 **Your check on a brief is one count.** How many words come before the sentence that names the
-column? If the answer is more than a screen, the order is wrong.
+column? If the answer is more than a screen, the order is wrong. The kit prints the count when it
+writes the brief:
+
+```
+$ plan prompt feature_checkin_rate_limit -o .work/feature_checkin_rate_limit/brief.md
+wrote .work/feature_checkin_rate_limit/brief.md – 10131 words, 44 before the sentence naming the column.
+```
 
 ---
 
@@ -579,7 +604,8 @@ column? If the answer is more than a screen, the order is wrong.
 Start a new session for every feature and paste the brief as its first message.
 
 **The brief is a kickoff, not a resume.** It names one column to start at. To pick a feature up
-partway through, assemble a new brief that starts at the column the work has reached.
+partway through, assemble a new brief that starts at the column the work has reached – with the kit,
+`plan prompt <feature> --column <column>`.
 
 **Take that column from the journal, not from the plan.** The plan records which column a feature is
 in only twice – when the feature is claimed and when it is closed. That is deliberate. The plan lives
@@ -592,7 +618,7 @@ defaults to the first column tells the reader the work has not started, about a 
 five columns in.
 
 **Worked example.** The rate limit was handed back at `build-plan` on Thursday and you return to it
-on Monday. The plan says `open` – the column written when it was claimed. The journal's last entry
+on Monday. The plan says `frame` – the column written when it was claimed. The journal's last entry
 says `build-plan`, with the cut agreed. The new brief starts at `build-execute`, 5 of 12.
 
 ---
@@ -606,8 +632,8 @@ are in the resolved workflow.
 
 > **The agent** enters each column by printing it.
 
-The agent runs `tooling.enter_column`. That records the column in the journal and prints the
-column's instructions. Then, before doing anything:
+The agent runs `tooling.enter_column` – with the kit, `plan enter <feature> <column>`. That records
+the column in the journal and prints the column's instructions. Then, before doing anything:
 
 1. It says which column it is entering and its position.
 2. It restates what the column asks and what ends it, **from what was just printed** – not from the
@@ -645,6 +671,15 @@ the source's stated reason for re-reading, and no count of it was kept.
 
 If that restatement is missing, or reads like the brief rather than the column, the session is
 working from memory. Ask it to enter the column again.
+
+**The kit also puts a backstop on every column's exit.** The first exit of every rendered column is
+`plan enter-check <feature> <column>`, which passes only if that column is the most recent one
+entered:
+
+```
+$ plan enter-check feature_checkin_rate_limit check
+plan: the most recent column entered for feature_checkin_rate_limit is `open`, not `check`
+```
 
 ---
 
@@ -790,7 +825,8 @@ result, what it decided without asking, and what was not proved. Then it waits o
 state – not on a reply.
 
 **`close` runs the moment the pull request reads merged.** It marks the feature done, archives the
-journal, and releases the working copy, in that order.
+journal, and releases the working copy, in that order. With the kit that is `plan close`, `plan
+archive` and `plan release`, and the third refuses until the second has been read back.
 
 **Closing is a column because nothing moves a feature's status when it merges.** In the source
 engagement the plan reported two features in flight that had both already merged, one of them nine
@@ -810,14 +846,14 @@ When a run shows the method is wrong, not before.
 
 ## 4.1 · Where a fix goes
 
-> **You** decide the layer. Then resolve again, step 1.6.
+> **You** decide the layer. Then run `plan check`, or resolve again by hand, step 1.6.
 
 The input is the **retro** – the five-line note on what the workflow itself cost, written at
 `record`. Its last line, *Fix*, names where a fix belongs or says `none: one-off`.
 
 | The fix | Goes in |
 |---|---|
-| Differs from one engagement to the next | A slot. Change its `value` |
+| Differs from one engagement to the next | A slot. Change its value in `values.yaml` |
 | Is true of every workflow | `core.yaml` |
 | Is true of one kind of work | That workflow – its own column, or an `also:` on a shared one |
 | Is a lighter path for a narrow case | A `modes:` entry on the workflow |
@@ -842,7 +878,8 @@ an addition to the shared column, using a slot that already exists:
             columns later at `submit`.
 ```
 
-Then resolve again. The resolved `build-execute` gains a sixth exit.
+The resolved `build-execute` gains a sixth exit. With the kit there is nothing to regenerate – the
+next `plan enter` prints it.
 
 ---
 
@@ -902,8 +939,8 @@ seat.
 **Every command slot has been seen to fail.** Step 1.5, written down per slot. A slot with no
 recorded failure is a slot nobody tested.
 
-**No resolved file contains a placeholder.** The two `grep` checks in step 1.6, run on every file in
-`resolved/`.
+**The plan checks clean.** `plan check` covers the templates, the plan and the retros. By hand, run
+the two `grep` checks in step 1.6 on every file in `resolved/`.
 
 **A brief names its column within the first screen.** Count the words before that sentence.
 
@@ -933,35 +970,42 @@ depends on it, or the entry names its destination – an issue by number, a name
 
 # What's not solved yet
 
-**There is no published tool.** Resolving a workflow, assembling a brief and entering a column are
-done here by an agent following a prompt, or by hand. All three are mechanical, and mechanical work
-wants a script. The engagement this was extracted from has one. It is not yet separable from that
-engagement.
+**Neither route has run a real feature.** The by-hand route has not been run at all: prompts A, B
+and C are untried. The kit has tests, and one walk through its commands on the example plan against
+a local repository. No feature has been built with it.
 
-**By hand, nothing forces column entry.** The source's fix was to make entry the command that prints
-the column. The by-hand filling of `tooling.enter_column` is an instruction again – the kind that
-failed three times before the fix.
+**The kit's pull-request path has only met a stand-in.** Claiming and closing by pushing to the main
+branch are tested against a real local repository. Raising a pull request, waiting on its checks and
+merging it are tested against a script standing in for the code host, never against the code host.
 
 **The layered templates have not been run.** The workflows these were extracted from are whole
 files. Splitting them into a core, a workflow and slots – `use:`, `also:`, `as:` – was done during
-extraction. The trial resolution in step 1.6 shows the layers join. No feature has yet been run from
-a file resolved this way.
+extraction. The tests show the layers join. They do not show the joined text works on a session.
+
+**Modes are not applied by the kit.** `treatment-only` and `draft-contract` are written as prose
+changes, column by column, and the kit refuses them rather than guess. A feature in a mode is
+resolved by hand. `draft-contract` has not been run by anybody.
+
+**The kit does not run a review panel.** `tooling.panel_runner` is filled with the by-hand line, so
+`panel` needs you present.
+
+**By hand, nothing forces column entry.** The source's fix was to make entry the command that prints
+the column, and the kit does that. The by-hand filling of `tooling.enter_column` is an instruction
+again – the kind that failed three times before the fix.
+
+**A resolved file kept by hand can drift from its sources.** Nothing checks it against the three
+files it was built from. The kit avoids this by storing nothing.
 
 **The templates have been set up on one engagement.** The 77 slots are the holes that engagement
 left. A second one will find holes that are missing and slots that are really one slot.
 
-**A resolved file can drift from its sources.** It is a generated copy kept in the repository because
-by-hand column entry reads it there. Nothing checks it against the three files it was built from.
+**`single-part` may yet fold into `component-library`.** It is marked in its file.
 
-**`draft-contract` has not been run**, and `single-part` may yet fold into `component-library`. Both
-are marked in their files.
+**Setup cost is not measured.** Neither the hours to fill the slots nor a second engagement's brief.
 
-**Setup cost is not measured.** Neither the hours to fill the slots nor the size of a resolved brief
-on a second engagement.
-
-**Part 5 is not written.** This guide assumes a packet with a goal, acceptance criteria, verification
-commands and named dependencies, and a plan with levels above the feature. The handbook does not yet
-say how to write either.
+**Part 5 is not written.** This guide and the kit both assume a plan of missions, milestones, slices
+and features, and a packet with a goal, acceptance criteria and verification commands. The handbook
+does not yet say how to write either, and the kit's idea of a plan will have to match Part 5's.
 
 ---
 

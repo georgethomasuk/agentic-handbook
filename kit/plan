@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+# Runs the kit. Uses uv where it is installed, so there is nothing to set up; otherwise any Python
+# 3.11 or later with PyYAML.
+here="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+if command -v uv >/dev/null 2>&1; then
+  exec uv run --quiet --script "$here/plan.py" "$@"
+fi
+exec python3 "$here/plan.py" "$@"

@@ -17,7 +17,7 @@
 # Shared columns come from core.yaml. {{project.*}} and {{tooling.*}} slots are defined in slots.yaml.
 
 name: single-part
-description: >
+description: |
   One registered part, from its registry entry to a merged component: measure what the registry
   hands it, design its display AND its interaction in a live scratch page, reconcile with the shared
   layer, build it with its harness entries and tests, have the operator use it, answer the behaviour
@@ -34,20 +34,20 @@ columns:
   - name: check
     delegate:
       model: "{{tooling.reading_tier}}"
-      send: >
+      send: |
         the blocker check and the enumeration. Give it {{project.constitution}}, the owning
         component's documentation whole, the packet, this part's entry in {{project.part_registry}},
         what claims it there, and the two merged sibling parts nearest this one in shape, named with
         the reason they were chosen. Ask for what the registry declares about THIS part, what
         {{project.shared_layer}} already provides, and what the siblings do – read, not assumed.
-      keep: >
+      keep: |
         which pieces of the shared layer this part can actually reuse and which it only resembles.
         A part that adopts a neighbour's mechanism ships a generalisation nobody reviewed. Also any
         drift between the packet and what the registry says today.
-      escalate: >
+      escalate: |
         the registry and the packet disagree about what this part holds, or what claims it has
         changed since the packet was written.
-    entry: >
+    entry: |
       Confirm every feature this one depends on has merged. **Read the registry entry before
       anything else** – this part's entry in {{project.part_registry}} is the specification.
 
@@ -66,7 +66,7 @@ columns:
   - use: core.open
 
   - name: frame
-    entry: >
+    entry: |
       Three things, in one scratch page, ending in one agreement.
 
       **Measure what this part is actually handed.** Not what it could draw: what the registry
@@ -121,12 +121,12 @@ columns:
       - anything that looks like a pattern a sibling also has – noted for the operator, not acted on
     exit:
       - human_gate: display and interaction agreed, in a live scratch page the operator has used
-        why: >
+        why: |
           a gate that a static picture can pass is the gate that fails. Missing interaction design is
           otherwise found after the component is built.
         blocking: true
     compact:
-      offer: >
+      offer: |
         Measuring is reading, and `frame` ends in an agreement. `build` needs the agreement, the
         measurements and the provisional list, not the registry rows they came from.
       carry:
@@ -135,7 +135,7 @@ columns:
         - the blockers raised against the shared layer
 
   - name: build
-    entry: >
+    entry: |
       Reconcile with the shared layer, build the part, and give it its harness entries.
 
       **Reconcile.** {{project.shared_layer}} is the interaction layer every part uses, and the
@@ -195,7 +195,7 @@ columns:
         why: a test renderer returns the number you set
 
   - name: user-review
-    entry: >
+    entry: |
       Show it to the operator, and watch them use it. Not a screenshot and not a description: the
       operator drives it in {{project.component_harness}}.
 
@@ -224,7 +224,7 @@ columns:
   # After the build, on purpose. This is an inspection of the built part, and it finds what is
   # invisible from inside the component.
   - name: behaviour
-    entry: >
+    entry: |
       An inspection, not a write-up. Answer {{project.behaviour_questions}} and write each answer
       into this part's entry in {{project.part_registry}}.
 
@@ -261,7 +261,7 @@ columns:
 
   # Not `core.panel`. Two fixed seats, not a composed panel.
   - name: panel
-    entry: >
+    entry: |
       **Two seats, deliberately.** A registered part is bounded work, and the specialist seats that
       matter on a boundary crossing or a migration have nothing to find here.
 
@@ -288,7 +288,7 @@ columns:
   - use: core.prepare-pr
   - use: core.submit
     also:
-      entry: >
+      entry: |
         The draft pull request was opened at `build`. Here, write its body and mark it ready.
   - use: core.record
   - use: core.merge
