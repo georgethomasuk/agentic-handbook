@@ -1,0 +1,180 @@
+# Build, proved in the repository.
+#
+# For a bounded feature whose truth lives in the repository: tests, and running it locally against a
+# real running system, can prove it. Choose this when nothing outside the repository – a deployed
+# environment, a real cloud account, a browser over a built surface – is needed to prove the work.
+# If one is, a different workflow fits (see README.md, "Choosing a workflow").
+#
+# Shared columns come from core.yaml. {{project.*}} and {{tooling.*}} slots are defined in slots.yaml.
+
+name: build-in-repository
+description: >
+  Verify the feature's inputs, claim it, agree its observable design and who owns what, cut the build
+  into steps and agree the cut, run each build step red → green → perturb in a worker of its own,
+  exercise the result against a running system, review it with a panel seated by failure mode, write
+  what happened, merge, and release the claim.
+
+uses: core
+
+# The column whose human gate agrees the design. `build-plan` cuts what was agreed there.
+agreed_at: frame
+
+# The operator stays close through the design columns, and is not asked again once the cut is agreed.
+unattended_from: build-execute
+
+columns:
+
+  - name: check
+    delegate:
+      model: "{{tooling.reading_tier}}"
+      send: >
+        the blocker check and the read sweep. Give it the packet's dependency list,
+        {{project.constitution}}, the decisions and contracts the packet cites, the owning component's
+        documentation, and any Carried forward notes in the brief. Ask for the merged state of each
+        blocker, read from {{tooling.pr_state}}, and a list of every place the repository and the
+        packet disagree – quoted, with paths.
+      keep: >
+        whether a disagreement is packet drift or an unresolved question about who owns what, and
+        whether it is small enough to design around. That is the judgement the gate below asks for,
+        and a design that starts from a mislabelled seam builds on it for the rest of the feature.
+      escalate: >
+        the sweep finds the packet and the repository disagree in more than one place, or about
+        anything load-bearing.
+    entry: >
+      Confirm every feature this one depends on has merged, and that the repository still matches the
+      packet. The packet is dated: everything it names about files, commands and counts was true that
+      day and is a hypothesis now. Report what has moved as a finding against the packet, before
+      planning around it.
+    produces:
+      - every blocker confirmed merged, and every external input confirmed to exist
+      - packet drift, and any unresolved question about ownership, reported before planning
+    exit:
+      - human_gate: blockers and external inputs verified
+        why: a status line is not evidence that a prerequisite exists
+
+  - use: core.open
+
+  - name: frame
+    entry: >
+      State the observable behaviour, what owns each piece of state and for how long, the
+      accessibility behaviour where there is a surface, and the files and components affected.
+      Resolve every choice the packet leaves open. Draw a state table or interface sketch wherever it
+      removes ambiguity.
+
+      **Look outside the repository before agreeing it.** Knowledge of any library has a cutoff and
+      the installed version is the fact, so read the documentation for the version in
+      {{project.lockfile}} rather than recalling it. Three things earn the search: whether something
+      already does this and is maintained well enough to depend on; a reference implementation to
+      compare the shape against; and the failure modes people actually report.
+
+      **Search for how the approach fails, not for how to do it.** A search that comes back agreeing
+      with the design was the wrong search. Bring back what you found against it, and the alternative
+      you rejected with the reason. A dependency you would adopt goes into the agreement here, by
+      name. Where there is genuinely nothing to learn, say you skipped it – a design that was never
+      researched must not read like one that was.
+
+      **Where this work implements a designed surface, read {{project.design_reference}} first.**
+      Where it speaks, it binds. Where it is silent on something this work needs, that is a design
+      question for the operator, not a file to go and find.
+
+      Agree this design before editing any code.
+    produces:
+      - the agreed design – the observable behaviour, and the state table or interface sketch
+      - what owns each piece of state and data, and for how long
+      - the accessibility behaviour agreed, where there is a surface
+      - the files and components in scope
+      - every open choice in the packet, resolved, with the reason
+      - what the research found, the version each finding was checked against, what it found against
+        the design, and the alternative rejected – or a statement that no research was warranted
+    exit:
+      - human_gate: design and ownership agreed
+        why: a feature that works while owning the wrong state creates the next feature's conflict
+        blocking: true
+    compact:
+      offer: >
+        Everything up to here was reading – the constitution, the cited decisions and contracts, the
+        owning component, the upstream notes. `build-plan` needs the agreement, not the sources. This
+        is the largest safe drop in the workflow.
+      carry:
+        - the agreed design, and the state table or interface sketch, pasted whole
+        - what owns each piece of state and data, and for how long
+        - the accessibility behaviour agreed, and the files and components in scope
+        - every open choice resolved, and why
+        - any packet drift found at `check`, and what is actually there now
+        - what the research found and what it found against the design, because the sources are
+          exactly what this boundary drops
+
+  - use: core.build-plan
+  - use: core.build-execute
+
+  - name: prove
+    entry: >
+      Run the thing, before anyone reviews it. A green gate says the tests agree with the code; it
+      does not say the change works. This comes before the panel because a reviewer briefed on a diff
+      nobody has executed spends its effort on defects the first run would have found.
+
+      **Open by naming which kind of surface this change owns, and therefore how it gets exercised.**
+      One line, before doing either – the choice is recorded, not a silent turn.
+
+      **A visible surface:** exercise the real built surface with {{project.browser_check}}, not only
+      a component harness or a test renderer. Keyboard and focus order, status announcements, each of
+      {{project.viewports}}, reduced motion, the console, and the network activity the feature causes.
+
+      **Application behaviour** – a model, query, command, worker, migration or service – run it
+      against a real running system, {{project.local_system}}, or a shared environment where only that
+      has the state. Then read the result back out. A command that returned is not a command that
+      worked: read the exit status, then the output, then the records it claims to have written. A
+      worker that started is not a worker that finished, and a migration that applied is not a
+      backfill that is correct. Exercise the failure paths too – malformed input, a missing record,
+      the second run that must change nothing – because the happy path is what the tests already had.
+
+      **No runnable surface at all** – a type-only change, configuration only CI reads – say so, name
+      what stands in for execution, and say why tests suffice here when they do not suffice in
+      general. That statement goes in the record. It is an argument, not a waiver.
+
+      Fix findings on the branch and repeat. A finding that is real but not this feature goes to
+      {{tooling.issue_tracker}} by number, or to a named downstream feature – not into the panel's
+      inbox.
+    produces:
+      - which surface this change owns, and so how it was exercised – stated first
+      - what was exercised and against what
+      - what was read back, not merely what returned
+      - the failure paths exercised, and what each did
+      - each finding and what closed it, or the issue or feature that now owns it
+      - what this column did not prove
+    exit:
+      - attest: the change exercised against a running system, and what was observed stated
+        why: >
+          not "the tests pass" and not "the command succeeded". Where neither path is possible, the
+          argument for why tests suffice is written here and lands in the record.
+      - attest: every finding fixed, or carried to a named feature or an issue by number
+        why: "\"whoever comes next\" is not a destination"
+    compact:
+      offer: >
+        Page snapshots, console output, command transcripts, query results and a fix loop that may
+        have run more than once are all behind you. The panel reasons about what the diff can get
+        wrong, from the diff. What has to survive is what you observed, not what it printed.
+      carry:
+        - which surface this change owns, and how it was exercised
+        - what was exercised and against what
+        - what was read back, as distinct from what returned
+        - the failure paths exercised and what each did
+        - each finding, what closed it, and where
+        - findings carried rather than fixed, and who now owns them
+        - what this column did not prove – the part that evaporates first
+
+  - use: core.panel
+    seeds:
+      - "Where the change moves data: the sensitivity of each field travelling with it, what the audit
+        log records, and what leaves {{project.boundaries}} in a response, a log line or an error."
+      - "Where it owns state: the ownership agreed at `frame`, and whether the code honours it."
+      - "Where it is visible: keyboard, focus and announcement journeys, and an action unreachable at
+        the narrowest of {{project.viewports}}."
+      - "Where it adds tests standing in for a human check: whether each could pass while the property
+        it guards is false."
+
+  - use: core.prepare-pr
+  - use: core.submit
+  - use: core.record
+  - use: core.merge
+  - use: core.close

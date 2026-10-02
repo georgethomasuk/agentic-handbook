@@ -1,0 +1,306 @@
+# One part, built against a registry that already declares it.
+#
+# For one bounded part – one visualisation, one widget, one control – where a registry entry already
+# says what the part is handed, what it must hold, and what claims it. Use `component-library` when a
+# whole library must be cut out of a design reference. Use this when the registry declares a part and
+# nothing draws it yet.
+#
+# Deliberately the lightest workflow in the set. The others carry many columns because they govern
+# work whose shape is unknown at the start. A registered part is bounded before it begins, and the
+# registry's own check says when it is finished. What is left is design, build and a short review,
+# so the panel is two fixed seats rather than a composed one.
+#
+# Two blocking gates survive the lightness, and both exist for one reason: a part cannot be judged
+# from the inside. The design is agreed in a live page the operator has used, and the built part is
+# used by the operator before it is inspected.
+#
+# Shared columns come from core.yaml. {{project.*}} and {{tooling.*}} slots are defined in slots.yaml.
+
+name: single-part
+description: >
+  One registered part, from its registry entry to a merged component: measure what the registry
+  hands it, design its display AND its interaction in a live scratch page, reconcile with the shared
+  layer, build it with its harness entries and tests, have the operator use it, answer the behaviour
+  questions by inspection, and prove every option is connected.
+
+uses: core
+
+agreed_at: frame
+
+unattended_from: build
+
+columns:
+
+  - name: check
+    delegate:
+      model: "{{tooling.reading_tier}}"
+      send: >
+        the blocker check and the enumeration. Give it {{project.constitution}}, the owning
+        component's documentation whole, the packet, this part's entry in {{project.part_registry}},
+        what claims it there, and the two merged sibling parts nearest this one in shape, named with
+        the reason they were chosen. Ask for what the registry declares about THIS part, what
+        {{project.shared_layer}} already provides, and what the siblings do – read, not assumed.
+      keep: >
+        which pieces of the shared layer this part can actually reuse and which it only resembles.
+        A part that adopts a neighbour's mechanism ships a generalisation nobody reviewed. Also any
+        drift between the packet and what the registry says today.
+      escalate: >
+        the registry and the packet disagree about what this part holds, or what claims it has
+        changed since the packet was written.
+    entry: >
+      Confirm every feature this one depends on has merged. **Read the registry entry before
+      anything else** – this part's entry in {{project.part_registry}} is the specification.
+
+      Read the two merged parts nearest this one in shape, and say why those two. The house pattern
+      is carried by the siblings, not by a document about them. **Not "the two most recently
+      merged"** – several parts can land together, and then that instruction cannot be followed.
+    produces:
+      - what the registry declares for this part, and what claims it
+      - what the shared layer already provides that this part can reuse, as distinct from what it
+        merely resembles
+      - the two siblings read and why those two, and the layout and harness structure they share
+      - any drift between the packet and the registry
+    exit:
+      - human_gate: the registry declaration, what claims the part, and the reusable shared layer enumerated
+
+  - use: core.open
+
+  - name: frame
+    entry: >
+      Three things, in one scratch page, ending in one agreement.
+
+      **Measure what this part is actually handed.** Not what it could draw: what the registry
+      entries claiming it declare – how many items, how they are distributed, whether a value may be
+      zero, how long the labels run. A part designed against a shape the data never takes is the
+      commonest way this work goes wrong.
+
+      **Design the display in {{project.scratch_area}}.** Not in the component, and not on the
+      project's design tokens. The scratch page has its own values so that nothing in it reads as a
+      decision until it is agreed here.
+
+      **Wire the interaction in the same page. It is wired, not drawn.** A static picture is not
+      this step. The scratch page is live and can hover, press and take focus. The gate below does
+      not close until all four of these work in it: the linked highlight on pointer AND focus, in
+      both directions; the press, whatever selecting or muting means here; the detail on a single
+      item; and the keyboard route to each. Interaction sits inside this gate because a display
+      agreed without its behaviour is agreed twice.
+
+      **An interaction may accelerate a fact. It may never be the only carrier of one.** For every
+      interaction designed here, answer: what carries this fact when the interaction is unavailable?
+      A printed or static surface has no hover, no focus and no press.
+
+      **A scratch page settles a mechanism and cannot always settle a fit.** Where an interaction's
+      surface is a SHARED component, the scratch version is not that component and cannot judge it.
+      Record such a ruling as **provisional**, name what would settle it, and re-judge it at
+      `user-review`. A provisional ruling written down like a settled one is how this gate quietly
+      fails.
+
+      **Count the fixtures here**, because this workflow has no other column for it. For every
+      dataset the part will be built and judged against, name the population it stands in for, count
+      it, and say which of its shapes the fixture does not carry.
+
+      **Put every visible decision ON the scratch page.** As its own panel: the question as asked,
+      the problem shown on the measured data, where it bites, each lettered option drawn, the
+      recommendation, and what to look at to judge it. Otherwise the operator has to match a
+      numbered question in one window to a picture in another. A decision that cannot be seen stays
+      in the hand-back message, and says why.
+
+      **Declare what this part needs from {{project.shared_layer}} that does not exist.** That is a
+      blocker, not a task. It goes to the operator to schedule, not into this branch. A part that
+      widens the shared layer on its way past is how the layer stops being reviewable.
+    produces:
+      - what the claiming registry entries declare, measured from the registry, not assumed
+      - the display design, in the scratch page, on its own values
+      - the interaction WIRED in that page – highlight both ways, press, detail on one item, and the
+        keyboard route to each
+      - for every interaction, what carries the same fact when it is unavailable
+      - every ruling marked settled or provisional, each provisional one naming what would settle it
+      - every visible decision as a panel on the scratch page
+      - for every fixture, the population it stands in for, counted, and the shapes it omits
+      - anything needed from the shared layer that does not exist, raised as a blocker
+      - anything that looks like a pattern a sibling also has – noted for the operator, not acted on
+    exit:
+      - human_gate: display and interaction agreed, in a live scratch page the operator has used
+        why: >
+          a gate that a static picture can pass is the gate that fails. Missing interaction design is
+          otherwise found after the component is built.
+        blocking: true
+    compact:
+      offer: >
+        Measuring is reading, and `frame` ends in an agreement. `build` needs the agreement, the
+        measurements and the provisional list, not the registry rows they came from.
+      carry:
+        - everything under `produces`, in full
+        - every provisional ruling and what would settle it – nothing else remembers it was provisional
+        - the blockers raised against the shared layer
+
+  - name: build
+    entry: >
+      Reconcile with the shared layer, build the part, and give it its harness entries.
+
+      **Reconcile.** {{project.shared_layer}} is the interaction layer every part uses, and the
+      part is one drawing. **A part never computes, rounds, formats, sorts or scales.** Values
+      arrive already prepared. Where the part wants something the layer does not offer, the answer
+      is the blocker raised at `frame`, not a widening taken here.
+
+      **Build.** Where a library draws geometry, it draws geometry and nothing else. Every title,
+      key, caption and colour is the project's own, because a library's defaults are a design nobody
+      in this repository chose.
+
+      **Follow the house pattern for harness entries**, as the merged siblings show it. One entry
+      carries every control and is not a measuring instrument. The fixed comparisons are separate
+      entries. Fixtures are named for what they are.
+
+      Write the tests as the part takes shape, then perturb: break what each assertion guards, run
+      it, expect exactly one failure, restore. A perturbation that produces no failure means the
+      perturbation missed.
+
+      **A test renderer computes no layout.** Nothing in the component's own suite proves a width, a
+      size or a resolved colour. A claim of that kind is proved in a browser, and **a claim about
+      browser engines is measured in every engine it claims** – each of {{project.engines}}. The
+      same text measures differently in each, and a floor taken in one ships a part that draws
+      outside its own declared width in another.
+
+      **Run {{project.engine_check}} once per engine before this column exits.** Do not rely on a
+      check that can skip an engine and still exit cleanly: it reports a pass for an engine it never
+      started.
+
+      **Hand over at first render anything `frame` marked provisional.** Build it far enough to
+      drive, and stop: no tests, no polish, no edge treatment. Work built and tested on a
+      provisional ruling can be withdrawn the moment the operator uses the part. Settled rulings
+      are built properly.
+
+      **Open the draft pull request at this column's first commit**, so CI runs while the operator
+      reviews.
+
+      Only {{project.stop_list}} stops this column. Anything taken under
+      {{project.decide_and_disclose_list}} is recorded for `Decided without asking`.
+    produces:
+      - the part, in the house layout
+      - what it reuses from the shared layer, and what it deliberately does not
+      - the harness entries – one carrying every control, and the fixed comparisons
+      - the tests, and for each the perturbation that proved it, or a statement that it could not be
+        perturbed alone
+      - every claim measured in a browser, with the engines it was measured in NAMED
+      - a green {{project.scoped_check}}, and the engine check green in every engine claimed
+      - the draft pull request
+      - any deviation from the `frame` agreement, and why
+    exit:
+      - command: "{{project.scoped_check}}"
+      - command: "{{project.engine_check}}"
+        why: once per engine the part claims, after a fresh build of the harness
+      - attest: every new assertion perturbed, and exactly the expected test seen to fail
+        why: a first run that passes is weaker evidence than one seen to fail
+      - attest: every claim about geometry or colour measured in a browser, with its engines named
+        why: a test renderer returns the number you set
+
+  - name: user-review
+    entry: >
+      Show it to the operator, and watch them use it. Not a screenshot and not a description: the
+      operator drives it in {{project.component_harness}}.
+
+      **Re-judge every provisional ruling from `frame` here**, against the real shared components
+      rather than the scratch page's stand-ins.
+
+      **A review server serves only what the operator reviews.** Serve a directory holding only the
+      scratch page and the built harness – never the root of the working copy. Check what the
+      address lists before sharing it. A working copy served from its root exposes its local
+      configuration and its version-control directory to everyone who can reach the address.
+
+      **Every option in a decision states what it prints**, where the part has a printed form.
+      Otherwise the print consequence comes back as a second decision after the first was ruled.
+
+      Take what the operator does, not only what they say. This gate finds defects no test could
+      have named: a control that reads as inert because its effect cannot be provoked, a key that
+      moves under the pointer.
+    produces:
+      - what the operator did, what they expected, and where the part disagreed with them
+      - every provisional ruling from `frame`, now settled or explicitly still open
+      - every defect found, and whether it was fixed or scheduled
+    exit:
+      - human_gate: the operator has used it and its behaviour is agreed
+        blocking: true
+
+  # After the build, on purpose. This is an inspection of the built part, and it finds what is
+  # invisible from inside the component.
+  - name: behaviour
+    entry: >
+      An inspection, not a write-up. Answer {{project.behaviour_questions}} and write each answer
+      into this part's entry in {{project.part_registry}}.
+
+      **Each answer is a measurement or a ruling, never a plausible default.** A guessed number
+      reads like a decision and stops anyone taking the measurement. A field nobody can answer stays
+      undeclared, and the open question is recorded.
+
+      **Run every range off both ends.** Size is taken at the floor, in the engine that draws
+      widest. The item count is run past the declared maximum, because a cap that fails invisibly is
+      worse than one that refuses.
+
+      **Rebuild the harness after every perturbation is restored, before reading any browser
+      result.** The preview serves what is on disk. A build that still holds a perturbation is
+      graded as a finding.
+
+      Then prove every adopted option is connected. Every control the part declares is exercised and
+      seen to change what it claims to change. A control whose effect cannot be provoked reads as
+      dead.
+
+      **The gate is {{project.registry_check}}**: this part returns with nothing left open.
+    produces:
+      - the behaviour answers written into the registry, each with what measured it
+      - every range run off both ends, and what happened at each end
+      - every declared control exercised and seen to act
+      - the registry check passing for this part
+      - every defect this inspection found – they are expected
+      - any field left undeclared, with the open question recorded rather than guessed
+    exit:
+      - command: "{{project.registry_check}}"
+        why: the only mechanical signal that the part is finished rather than merely drawn
+      - attest: every declared control provoked and seen to act
+      - attest: no plausible default written into a field nobody measured
+        why: a guessed number is worse than a gap, because the gap is the thing that gets filled
+
+  # Not `core.panel`. Two fixed seats, not a composed panel.
+  - name: panel
+    entry: >
+      **Two seats, deliberately.** A registered part is bounded work, and the specialist seats that
+      matter on a boundary crossing or a migration have nothing to find here.
+
+      - **Idiom.** Is this good, idiomatic code on the version actually installed: state held that
+        should be derived, effects that should not exist, hand-rolled versions of what the framework
+        ships, types that assert rather than prove.
+      - **Whole-change judgement.** The generalist, with nothing it was sent to find. Whether the
+        design is right, whether it will age, and what fell between.
+
+      Run them read-only and findings-only, from {{tooling.reviewer_library}}, apart from this
+      session. Put each high-severity finding to a verifier before acting on it: a reviewer's
+      argument feels like proof and is not one.
+
+      **Generalising across the set of parts is NOT this panel's job.** A seat here sees one part's
+      diff and cannot see the others. The operator reviews the set after each merge. Anything
+      set-shaped that this panel notices is written down for that review, not acted on here.
+    produces:
+      - both seats' findings, each triaged
+      - what was acted on, what was refuted, and what was deferred
+      - anything set-shaped, written down for the operator rather than fixed here
+    exit:
+      - attest: both seats run, and every high-severity finding verified before it was acted on
+
+  - use: core.prepare-pr
+  - use: core.submit
+    also:
+      entry: >
+        The draft pull request was opened at `build`. Here, write its body and mark it ready.
+  - use: core.record
+  - use: core.merge
+  - use: core.close
+
+standing_constraints:
+  - "{{project.part_registry}} is the authority for a part's declared numbers."
+  - A part never computes, rounds, formats, sorts or scales. Values arrive prepared.
+  - A part is done when {{project.registry_check}} passes for it, not when it renders.
+  - Never write a plausible default into an undeclared field. A gap is better than a guess.
+  - An interaction may accelerate a fact. It may never be the only carrier of one.
+  - A test renderer computes no layout. A claim about engines is measured in every engine it claims.
+  - Generalising across the set of parts is the operator's, after each merge. Never a packet's, on
+    its way past.
+  - Synthetic content only.

@@ -1,0 +1,400 @@
+# Build, proved in a browser.
+#
+# For a visible experience, or the browser and application foundation under one, where the parts to
+# build it with already exist. Tests are not enough here: the change is proved on the real built
+# surface, and a person judges whether the result is right before the detailed browser sweep runs.
+#
+# Use `component-library` when the parts do not exist yet. Use the `treatment-only` mode at the
+# foot of this file when the parts exist and only how they look moves.
+#
+# Shared columns come from core.yaml. {{project.*}} and {{tooling.*}} slots are defined in slots.yaml.
+
+name: build-in-browser
+description: >
+  Verify the feature's inputs and who owns what, claim it, look at the surface as it runs today,
+  agree the proposed journey or state design with a small sketch, cut the build into steps and agree
+  the cut, run each build step red → green → perturb in a worker of its own, put the live result in
+  front of a person, prove what they accepted on the real built surface, review it with a panel
+  seated by failure mode, write what happened, merge, and release the claim.
+
+uses: core
+
+# The column whose human gate agrees the design. `build-plan` cuts what was agreed there.
+agreed_at: frame
+
+unattended_from: build-execute
+
+columns:
+
+  - name: check
+    delegate:
+      model: "{{tooling.reading_tier}}"
+      send: >
+        the blocker check and the read sweep – the whole of this column's reading and none of its
+        judgement. Give it {{project.constitution}}, the packet, the upstream Carried forward notes,
+        the owning component's documentation, the decisions and contracts the packet cites, and the
+        current tests and {{project.component_harness}} entries. Ask for each blocker's merged state
+        from {{tooling.pr_state}}, each named external input confirmed to exist, an inventory of
+        which module today holds each of the five responsibilities below, and every place the packet
+        and the repository disagree.
+      keep: >
+        two calls, and they are what the gate below asks for. Which surface SHOULD own each
+        responsibility – the inventory says where they live now, which is a different question and
+        is often the defect. And the classification. Both set how the work is cut, and a guess made
+        by a worker is still a guess.
+      escalate: >
+        the inventory shows a responsibility split across surfaces, or the packet assumes an owner
+        the repository contradicts.
+    entry: >
+      Confirm every feature this one depends on has merged and every external input the packet names
+      exists. State which surface owns each of five responsibilities: **rendering, interaction
+      state, durable state, validation, and building what is sent**. Report packet drift, or an
+      unresolved question about who owns one, before planning around it.
+
+      Classify the work. **Experience** – its value is a visible interaction. **Foundation** – its
+      value is application structure, browser state, networking or build output. **Hybrid** – both
+      carry weight. The classification changes what evidence the later columns gather. It does not
+      change how hard they look.
+    produces:
+      - every blocker confirmed merged and every named external input confirmed to exist
+      - which surface owns rendering, interaction state, durable state, validation and building what
+        is sent
+      - the work classified – experience, foundation or hybrid
+      - packet drift, or an unresolved ownership question, reported before planning around it
+    exit:
+      - human_gate: blockers, inputs, ownership, current test surfaces and classification verified
+        why: a visible feature built on a guessed state boundary creates conflicts in the next feature
+
+  - use: core.open
+
+  - name: recon
+    delegate:
+      model: "{{tooling.reading_tier}}"
+      send: >
+        the browser sweep over what already exists – the first paragraph of the entry and nothing
+        after it. Ask for observations with the selector or screenshot behind each one, never a
+        verdict. This column carries more page snapshots, structure dumps and console logs than any
+        other, and almost none of that is an input to `frame`.
+      keep: >
+        **the design reference, read in full in this session.** The second paragraph of the entry is
+        never sent. A worker returns a confident summary whether or not it read the thing, and a
+        design that was described rather than read is the failure this column guards against. Where
+        the reference is a picture rather than a document, the reason is stronger: a worker cannot
+        show you one.
+      escalate: >
+        the sweep reports a defect that pre-dates this feature on the surface about to change, or
+        the states it found do not match what the packet describes. Both mean `frame` is about to
+        design against a baseline nobody has agreed.
+    entry: >
+      Start {{project.component_harness}} or {{project.local_system}} and inspect the current
+      surface with {{project.browser_check}} before proposing a change. The component harness when
+      the unit is one component. The real application when routing, persistence, submission or
+      behaviour across components matters. Exercise the relevant current states at each of
+      {{project.viewports}}: keyboard and focus order, accessible names and status announcements,
+      reduced motion, console output and the network activity involved. Summarise what is actually
+      there, including defects that pre-date the feature. Reading the source does not complete this
+      column.
+
+      **Then read {{project.design_reference}} for the surface you are about to build – all of it
+      that covers this surface, not only the specification.** The specification binds where it
+      speaks, and the material around it answers its silences. Report every place it settles
+      something left open elsewhere, every place the repository disagrees with it, and every silence
+      this work needs settled. A silence is a design question for the operator, not a reason to
+      stop.
+    produces:
+      - what is actually present in the running surface, observed in a browser
+      - the current states at each of {{project.viewports}} – keyboard, focus, accessible names,
+        status announcements, reduced motion, console and network activity
+      - defects that pre-date this feature, named rather than absorbed
+      - the design reference read – what it settles, where the repository disagrees with it, and
+        every silence put to the operator
+    exit:
+      - human_gate: the current surface and its relevant states inspected in a browser
+        why: the proposed change needs an observed baseline, not an inferred one
+      - human_gate: the design reference for this surface read, or a statement that the packet names none
+        why: >
+          silence is exactly what a reader cannot notice. A design agreed after reading only the
+          specification can carry an element the full reference does not contain.
+
+  - name: frame
+    entry: >
+      Explain the observable journey, the state transitions, which component or application layer
+      owns what, and the responsive and accessibility behaviour.
+
+      **For experience work, sketch the current and the proposed surface in monospace text**,
+      including every alternate state the feature changes. **For foundation work, sketch the state,
+      ownership or data flow**, and state the visual and interaction invariants that must not change.
+      Hybrid work shows both. The sketch is a decision aid, not a mock-up.
+
+      List the exact scenarios that will be reviewed later. Separate settled requirements from
+      judgement calls, and resolve every choice the packet leaves open.
+
+      **Settle here how the reviewer will reach the live surface: {{project.review_route}}.** The
+      reviewer is usually not on the machine the server runs on, so a loopback address is not an
+      address. Read the values off the machine. A request made from the machine itself proves
+      nothing – the reviewer's first reply at `user-review` is the probe.
+
+      **Look outside the repository before agreeing it.** Knowledge of any library has a cutoff and
+      the installed version is the fact, so read the documentation for the version in
+      {{project.lockfile}} rather than recalling it. Three things earn the search: whether something
+      already does this and is maintained well enough to depend on; a reference implementation to
+      compare the shape against; and the failure modes people actually report.
+
+      **Search for how the approach fails, not for how to do it.** A search that comes back agreeing
+      with the design was the wrong search. Bring back what you found against it, and the alternative
+      you rejected with the reason. A dependency you would adopt goes into the agreement here, by
+      name. Where there is genuinely nothing to learn, say you skipped it.
+
+      Agree the direction before editing.
+    produces:
+      - the sketch – current and proposed, every alternate state the feature changes
+      - the invariants that must not change, and what owns each kind of state
+      - the exact review scenarios `user-review` and `browser-sweep` are both scored against
+      - every judgement call resolved, with the direction agreed and the reason
+      - the route by which the reviewer will reach the live surface
+      - what the research found, the version each finding was checked against, what it found against
+        the design, and the alternative rejected – or a statement that no research was warranted
+    exit:
+      - human_gate: sketch, behaviour, ownership, review scenarios and judgement calls agreed
+        why: this is the inexpensive point to discover that a working surface would be the wrong surface
+        blocking: true
+    compact:
+      offer: >
+        Everything up to here was reading and looking – the packet, the constitution, the contracts,
+        the current tests, and a browser session over states about to change. `build-plan` needs the
+        agreement, not the sources. This is the largest safe drop in the workflow.
+      carry:
+        - the sketch, pasted whole – current and proposed, every alternate state drawn
+        - the invariants, and what owns each of the five responsibilities
+        - the review scenarios, exactly as listed
+        - every judgement call resolved here, with the direction and the reason
+        - the classification, and any packet drift or ownership question reported at `check`
+        - what `recon` found in the browser that the packet did not say
+        - what the research found and what it found against the design
+
+  - use: core.build-plan
+    also:
+      entry: >
+        **Name the test level per step.** Pure state tests for state rules. Component tests for
+        semantics and interaction. Browser tests only where a browser owns the behaviour. And name
+        the {{project.component_harness}} entries each step owes.
+
+        **The corpus hides in a harness entry here.** An entry renders the properties it was given,
+        so a component green across every entry can still be wrong for the content it will actually
+        receive. Count harness entries and seeded states with the fixtures.
+
+        **Check the review scenarios against the cut as well as the criteria.** For each scenario
+        from `frame`, name the step that leaves a harness entry reaching it. `user-review` and
+        `browser-sweep` are both scored against those scenarios, so a scenario no step makes
+        reachable is a review that cannot happen.
+      produces:
+        - per step, the harness entries it owes
+        - each review scenario with the step that makes it reachable, and any scenario none does
+      exit:
+        - human_gate: every review scenario made reachable by a named step
+          why: >
+            a scenario with no harness entry fails at the point the surface is supposed to be
+            reviewed, one column after the build finished.
+      compact:
+        carry:
+          - the sketch and the invariants from `frame`, pasted whole
+          - the review scenarios exactly as listed, and the step that makes each reachable
+
+  - use: core.build-execute
+    also:
+      delegate:
+        send: >
+          Also give each worker the review scenarios it owes harness entries for.
+        keep: >
+          And the browser. A worker cannot show you a picture, so anything that has to be looked at
+          waits for `user-review`, which is a column and not a step.
+      review_each_step:
+        suspicion: >
+          state held that should be derived, and effects that should not exist. A control shipped
+          without the keyboard, focus or announcement path its scenario asked for. A property
+          threaded through a component that should own it.
+      entry: >
+        **Each step checks at the scope of its own change, with {{project.scoped_check}}, not the
+        full gate.** The owning component's suite plus the one browser test that could see the
+        change. With several steps running, the full gate contends with itself and fails in files
+        the change never opened.
+
+        Use the existing component system, design tokens and accessible primitives.
+      produces:
+        - a harness entry for every review scenario, with the step that added it
+      exit:
+        - attest: every review scenario reachable in a harness entry, with none missing
+          why: a scenario with no entry fails at `user-review`, one column later
+      compact:
+        carry:
+          - the harness entries that now exist for each review scenario, by name
+
+  - name: user-review
+    entry: >
+      Leave {{project.component_harness}} or the application running at an address the reviewer can
+      reach, by the route settled at `frame`, and present the work. This comes BEFORE the detailed
+      browser sweep, so direction arrives while acting on it still costs one fix rather than a
+      repeat of the sweep.
+
+      Give the reviewer: the address, a short summary of the change, a numbered manual test plan
+      written as action and expected result, the states and screen sizes to inspect, anything
+      automation has not proved, and a short list of the visual, interaction and structural judgement
+      calls. This column asks whether the shape is right. `browser-sweep` then proves what was
+      accepted. Keep the server up while the review is active.
+
+      If feedback changes the result: implement it, re-run the focused tests and
+      {{project.full_gate}}, refresh the running surface, and stay in this column until accepted.
+    produces:
+      - an address reachable from the reviewer's machine, live while the review is active
+      - a numbered manual test plan, written as action and expected result
+      - the reviewer's own words on what they accepted, rejected or judged
+      - every finding fixed, or carried forward to a named downstream feature
+      - what automation has not proved yet
+      - the direction agreed, in enough detail that `browser-sweep` can score against it
+    exit:
+      - human_gate: live visual, interaction, responsive and accessibility review accepted
+        why: >
+          whoever owns the product decides whether the experience is right, and decides it before
+          the detailed sweep. A direction given here costs one fix. The same direction given after
+          the sweep costs the whole sweep again.
+        blocking: true
+      - attest: every review finding fixed, or carried forward to a named downstream feature
+    compact:
+      never: >
+        the loop between this column and `browser-sweep` runs both ways. They are one drop, taken
+        after the sweep.
+
+  - name: browser-sweep
+    entry: >
+      Start {{project.built_surface}} and review it with {{project.browser_check}}. Not a test
+      renderer, not the component harness in source mode, not reading the code. Exercise every agreed
+      scenario at each of {{project.viewports}}.
+
+      **Experience** work emphasises visible states, responsive layout, keyboard and focus,
+      accessible names and status announcements, reduced motion, overflow and touch targets.
+      **Foundation** work emphasises state transitions, reload and multi-tab behaviour, build output,
+      browser storage, requests, what is sent, failures, console output and the declared visual
+      invariants. Hybrid proves both.
+
+      Capture a small set of representative screenshots, synthetic content only. They support the
+      review. They do not replace the interaction or semantic checks. Compare the result against the
+      agreed sketch, the acceptance criteria and the direction given at `user-review`. Fix every
+      finding on the branch and repeat this column.
+
+      A finding whose fix changes something the reviewer judged goes back to `user-review` before
+      the panel.
+    produces:
+      - every agreed scenario exercised against the real built surface, at every screen size
+      - a small set of representative screenshots, synthetic content only
+      - the result compared against the sketch, the criteria and the direction agreed at `user-review`
+      - every finding fixed on the branch, and the column repeated
+      - anything sent back to `user-review`, and what the second look settled
+    exit:
+      - attest: the browser sweep is clean, and nothing it changed reopens what `user-review` accepted
+        why: >
+          this gate confirms there is a concrete browser review to inspect, not only a green test
+          suite, and that the surface the reviewer accepted is still the surface the panel is handed.
+    compact:
+      offer: >
+        Two review columns end here – a live review loop that may have run several times, then the
+        sweep that proved what it agreed. The panel reasons about what the diff can get wrong, from
+        the diff.
+      carry:
+        - the reviewer's own words on anything accepted, rejected or judged
+        - every scenario exercised, at which screen sizes and in which browsers, and each result
+        - each review and sweep finding, what was changed to close it, and where
+        - anything a sweep finding sent back to `user-review`, and what the second look settled
+        - findings carried forward, and the downstream feature that now owns them
+        - the paths to the retained screenshots
+        - what automation did not prove – the part that evaporates first
+
+  - use: core.panel
+    seeds:
+      - "Competing owners for one piece of state, stale effects, and needless re-rendering."
+      - "A keyboard, focus or announcement journey that breaks, and an action unreachable or
+        overflowing at the narrowest of {{project.viewports}}."
+      - "Browser evidence that passes while the real journey is broken – a selector or fixture
+        that matches something other than what the user meets."
+    also:
+      entry: >
+        After each fix, re-run the affected browser checks as well as the automated ones.
+
+  - use: core.prepare-pr
+
+  - use: core.submit
+    also:
+      entry: >
+        The body also carries the browsers, states and screen sizes the sweep covered, and the
+        manual review plan with its result.
+
+  - use: core.record
+  - use: core.merge
+  - use: core.close
+
+standing_constraints:
+  - Accessibility and correct semantics outrank visual fidelity to a reference.
+  - "{{project.visual_authority}} is the authority on how things look; {{project.content_authority}}
+    is the authority on what they say."
+  - A browser review of the real built surface is required. A source build or a test renderer is not
+    browser evidence.
+  - The live review surface stays available until the reviewer accepts it or asks for it to stop.
+  - Synthetic content only in tests, harness entries, screenshots, recordings and review records.
+
+# ── Mode ────────────────────────────────────────────────────────────────────────────────────
+
+modes:
+
+  - name: treatment-only
+    when: >
+      the parts exist and only their treatment moves – colour, spacing, type, order at a narrow
+      width. No journey changes, no state moves, no owner changes. If the work turns out to move
+      any of those, leave the mode and run the full workflow from `recon`.
+    unattended_from: build-execute
+    agreed_at: frame
+    columns:
+      check: >
+        Also enumerate the design, content, accessibility and contract rules that apply, each with
+        the line it comes from. Decide which bind THIS unit and which merely surround it. A unit
+        that adopts a neighbouring rule ships a deviation nobody asked for.
+      recon: skip
+      frame: >
+        Replace the sketch with a list: the full set of items and states the rule applies to, the
+        invariants that must not change, every printed value that needs its contrast measured, and
+        any component seam affected. Agree every deviation from the reference, and the review
+        scenarios, before editing.
+      build-plan: >
+        One build step. There is no cut to agree, and the cut gate is skipped. The fixture count is
+        still owed, here.
+      build-execute: >
+        One worker. Write the tests first and watch them fail: reading order, keyboard and focus,
+        coverage of the counted content, and the narrow-width cases. Recreate the behaviour inside
+        the existing components – never port markup, inline styles or script from the reference.
+        Keep the reading order correct where the visual order changes. Then perturb every test that
+        shared a red cause.
+      user-review and browser-sweep: replaced by `inspect`, below
+      panel: skip
+
+    inspect:
+      entry: >
+        Read {{project.emitted_styles}} for every styling rule whose effect is not obvious, and the
+        value it actually resolves to. Where the order of rules matters, check the emitted order.
+        Measure contrast for each printed value that needed it, against {{project.contrast_bar}}.
+        Then render and exercise the relevant harness entries at each of {{project.viewports}}, with
+        keyboard, focus and reduced motion.
+      produces:
+        - every non-obvious styling rule, and the value it actually resolved to
+        - the measured contrast for each printed value that needed one
+        - the result at each screen size, including keyboard, focus and reduced motion
+        - anything not proved, and any behaviour left to a downstream unit
+      exit:
+        - attest: the emitted styles and their order verified
+          why: >
+            a green source build does not prove that a styling rule was emitted at all. The rule can
+            be written, compile, and produce nothing.
+        - human_gate: visual and interaction review passed at every screen size
+          blocking: true
+
+    standing_constraints:
+      - Accessibility and measured contrast outrank a reference value that cannot clear the bar.
+      - A measured value recalled from memory is a measured value invented. Write the record from
+        the journal.

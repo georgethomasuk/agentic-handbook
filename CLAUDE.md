@@ -111,7 +111,7 @@ repositories. It is drafting scaffolding and is stripped before publishing — s
 
 ## The publish gate
 
-Advice does not hold. This repository enforces its own rule, which is also Part 7's argument.
+Advice does not hold. This repository enforces its own rule, which is also Part 8's argument.
 
 ```
 scripts/check-sanitised.sh
@@ -147,7 +147,7 @@ Drafting scaffolding is wrapped so the check can find it:
 
 ```
 PLAN.md          The project plan. The thing to read first.
-docs/parts/      The eight parts. One folder each.
+docs/parts/      The nine parts. One folder each.
 docs/reference/  The example system, used by every part.
 notes/           Working notes, extraction scratch, post candidates. Gitignored – local only.
 mkdocs.yml       Site config.

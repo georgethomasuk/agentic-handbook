@@ -1,0 +1,593 @@
+# The shared core – columns and rules every workflow uses.
+#
+# A workflow file pulls a column from here with `use: core.<name>`. It never restates one. A copy of
+# a column in every workflow file is one more place each fix has to be made.
+#
+# A workflow adds to a shared column with an `also:` block shaped like the column itself. Whatever
+# is under `also:` is appended to the matching field – `also: {entry: …}` adds paragraphs to the
+# entry, `also: {exit: […]}` adds exits. `seeds:` gives the panel its starting suspicions. A workflow
+# adds its own standing constraints the same way, in a top-level `standing_constraints:` list.
+#
+# `as: <name>` runs a shared column under another name. A workflow that needs two panels uses
+# `core.panel` twice, each with its own name.
+#
+# `modes:` at the foot of a workflow lists lighter or narrower variants. A mode says when it
+# applies and what it changes, column by column. Everything it does not mention is unchanged.
+#
+# Two kinds of placeholder:
+#   {{project.*}}  filled once per client engagement – the stack, the rules, the boundaries
+#   {{tooling.*}}  filled once per operator – how you claim work, keep a journal, run a panel
+# Every slot is defined, with an example, in slots.yaml.
+
+name: core
+
+# ── How a session moves through any workflow ────────────────────────────────────────────────
+
+stage_protocol: >
+  Enter every column with {{tooling.enter_column}}. It records which column the work is in and
+  prints that column's instructions. Work from what it printed, not from memory of the brief –
+  the further into a session, the more of the brief is behind you, and a column worked from memory
+  is a column whose exit conditions get skipped.
+
+  A column's `precondition` commands run before anything in its entry.
+
+  Name the column and its position, restate what it asks and what ends it, and stop at its exit
+  conditions. A blocking human gate means hand back. After the workflow's `unattended_from` column,
+  hand back only at a blocking human gate or for an item on the stop list.
+
+exit_kinds:
+  command: >
+    A shell predicate. Run it; exit 0 passes. Prefer this wherever the property can be checked by a
+    machine.
+  attest: >
+    The agent checks the property itself, writes the evidence into the journal, and continues. Not a
+    weaker gate – it names where the answer comes from. The evidence still has to exist.
+  human_gate: >
+    A named person answers. Any exit that cannot be a command must be written as a human gate, so the
+    queue of work waiting on a person is visible rather than implied. `blocking: true` means the
+    session stops and hands back; a non-blocking gate is answered at the next hand-back.
+
+report_back: >
+  Whoever reads a hand-back has not read the brief and last looked at this feature days ago. Open by
+  re-orienting – which feature, which column, what happened – not with the first item of a
+  checklist. Name a thing before its properties. One point per paragraph, the concrete before and
+  after first. A finding is one sentence plus where to look.
+
+  When the hand-back needs decisions, number them, one per block, each with lettered options and a
+  recommendation that says what would make it wrong. Each block carries the fact that makes it a
+  choice, inside the block. The test: if "1B, 2A, 3 – your call" would not be a complete reply, the
+  block is not a decision yet.
+
+compaction: >
+  Keep a journal at {{tooling.journal_file}}. Create it at the first column, append to it at every
+  boundary that asks, and never rewrite what is in it. It is working state, not a second record –
+  but it is the state that outlives a compaction, and `record` is written from it.
+
+  A column may carry `compact:`, which marks the boundary at its exit. `offer` + `carry` means the
+  boundary is safe: say why, write every `carry` item to the journal, then offer the compaction and
+  wait. `never` means something load-bearing exists only in this conversation. Offering is the
+  agent's job; compacting is the operator's. Never mid-column, never on the agent's own initiative.
+  An unmarked boundary is not permission.
+
+delegation: >
+  A column may carry `delegate:`, which sends part of it to a worker – a fresh agent that starts
+  with nothing but its brief. `send` is what the worker establishes. `keep` is what does not leave
+  this session. `escalate` is what would make the column worth a higher tier.
+
+  Read what a worker returns as a report, not as a finding. It establishes facts against named
+  artefacts; whether those facts clear the column's exit is decided here. A worker returns a
+  confident paragraph whether or not it was the one qualified to write it, so a gate answered by
+  pasting that paragraph has been answered by a model nobody chose for it.
+
+  Two things a worker cannot carry. It cannot show you a picture – anything whose value is in
+  seeing it is opened in this session, because a description of a design reference is not the
+  reference. And it cannot hold authorisation – a gate, an approval or an opt-in given in this
+  conversation does not travel into a worker, and does not travel back out of one.
+
+  The tier a `delegate` block names is a default. Before the workflow's `unattended_from` column,
+  ask the operator before raising it. From that column on, raise it yourself and write the reason
+  in the journal. Nothing under `keep` is ever delegated downward.
+
+# ── Standing constraints – apply in every column of every workflow ──────────────────────────
+
+standing_constraints:
+  - "{{project.data_rules}}"
+  - "{{project.boundaries}}"
+  - Fixtures are synthetic unless {{project.real_data_policy}} says otherwise.
+  - The review panel runs apart from the working session; its per-seat output does not land here.
+  - After the workflow's `unattended_from` column, the run stops only at a blocking human gate or on
+    {{project.stop_list}}. Items on {{project.decide_and_disclose_list}} are decided and disclosed in
+    the pull request's `Decided without asking` section.
+  - Nothing merges itself except the plan-only claim and close changes. A human merges the feature.
+
+# ── Columns ─────────────────────────────────────────────────────────────────────────────────
+
+columns:
+
+  - name: open
+    entry: >
+      Claim the feature where everyone else looks, before any work starts: {{tooling.claim}}. Until
+      the claim is visible there, the plan still offers this feature to the next session that asks
+      what to pick up. A status set on your own branch is invisible until that branch merges.
+
+      The claim is small and carries no judgement – the status, and the column the work is entering.
+      Your working branch must contain it, so that the claim is not silently reverted when the
+      feature merges. Check that rather than assuming it.
+
+      Deciding to claim at all is yours. If the claim is refused, that refusal is a question for the
+      operator, never a step to finish by hand.
+    produces:
+      - the claim, visible where the plan is read – status in progress, and the column entered next
+      - the working branch with the claim in its base, checked rather than assumed
+      - a working copy that is yours until `close`
+    exit:
+      - command: "{{tooling.claim_check}}"
+        why: >
+          the check is the property, not a report of it. A claim that was raised but never landed,
+          or landed on a base the branch does not contain, looks identical to one that worked until
+          the feature merges and quietly un-claims itself.
+
+  # `build-plan` and `build-execute` are used by every workflow that builds in steps. "The agreed
+  # design" means whatever the workflow's own agreement column produced – the workflow names that
+  # column with `agreed_at:`.
+
+  - name: build-plan
+    entry: >
+      Work out how to build this, then cut that into build steps, and agree the cut before any code is
+      written. Plan only – no edits, no test files, no fixtures.
+
+      **Cut on the work, not on the acceptance criteria.** The steps are a build order: what has to
+      exist before the next thing can stand on it, what can be proved on its own, what leaves the
+      codebase coherent when it lands. A cut drawn by walking the criteria list produces steps shaped
+      like a document rather than like the change. It separates work that wants doing in one go, and
+      puts a seam wherever the criteria happen to have a full stop.
+
+      **Three properties make a good build step, and they pull against each other.** It can go red on
+      its own; it leaves the codebase green and coherent when it lands; and it is small enough that a
+      worker briefed on it alone can hold the whole of it. Where they conflict, say which you traded
+      away and why. A step that cannot go red on its own is sometimes the right call. It is never the
+      right call silently.
+
+      **Going red on its own is what cutting buys.** When several criteria go red on fewer causes than
+      there are criteria, one red run proves only as many facts as there are causes. Cutting
+      separates the causes, so a later step's test can fail naming each remaining criterion
+      individually – which is evidence the test reads what it claims to, rather than failing for
+      everything at once.
+
+      **For each step, name five things:** what it must make true; the tests that will pin it, by
+      level; the files and components it expects to touch; which earlier step it depends on; and the
+      model tier it runs at.
+
+      **The tier is {{tooling.default_tier}} unless the step argues its way up to
+      {{tooling.escalated_tier}}, and the argument goes in the plan.** Most steps are execution inside
+      a boundary this column has already drawn. Four things earn the higher tier, and naming one is
+      the whole justification: the plan under-determines the step, so it would have to make a design
+      call rather than execute one; it touches {{project.sensitive_boundaries}}; getting its
+      perturbation right is harder than the code; or it must reason about dense interaction with
+      earlier steps. A plan that puts every step at the higher tier has not made the judgement.
+
+      **Then check the criteria against the finished cut.** For each acceptance criterion, name the
+      step after which it is true and tested. A criterion advanced by several steps is normal – say
+      which one closes it. A step that closes no criterion is normal – a seam, a refactor, a fixture
+      the next step needs. A criterion no step closes is the defect this check exists to find:
+      coverage is invisible in every individual step and visible only in the sum.
+
+      **Order them serially by default, and say which pairs need not be.** Serial is the default
+      because the gain here is context, not wall-clock time, and a step that runs after another can be
+      told what that one did. Two steps may run in parallel only where nothing connects them – no
+      shared file, fixture or migration, and no ordering in the criteria. Name each parallel pair and
+      what you checked.
+
+      **Count the corpus once, here.** For every fixture, and every hand-maintained list a guard
+      selects by, name the real population it stands in for, count that population, and say which of
+      its shapes the fixture does not carry. Each step then states which part of the count its own
+      fixture covers.
+
+      **Write the plan to {{tooling.build_plan_file}} before this column exits** – not to the
+      conversation. `build-execute` briefs workers that were never in this conversation, and this
+      column's compaction offer is only safe because the plan is on disk.
+    produces:
+      - the build plan, written to {{tooling.build_plan_file}}
+      - how the change is built – the reasoning the cut follows, and what each boundary is between
+      - per step – what it makes true, its tests by level, the files it expects to touch, the step it
+        depends on, and its tier
+      - for every step at the higher tier, which of the four reasons earned it, and the count at each tier
+      - any step that cannot go red on its own or land coherent, with what was traded away and why
+      - the running order, with each parallel pair named and what was checked
+      - for every fixture and hand-maintained list, the population it stands in for, counted, and the
+        shapes it omits
+      - each acceptance criterion with the step that closes it, and any criterion none closes
+    exit:
+      - command: "test -s {{tooling.build_plan_file}}"
+        why: >
+          the one precondition `build-execute` cannot recover from. A worker handed no plan writes
+          its own.
+      - human_gate: the cut agreed – the reasoning behind it, the steps, their order and their tiers
+        why: >
+          the rest of the build runs without stopping. Once steps start landing, moving a boundary
+          means re-cutting work that is already green. The reasoning is what is being agreed, not just
+          the list.
+        blocking: true
+      - human_gate: every acceptance criterion closed by a named step
+        why: >
+          a criterion no step closes is far cheaper to find here than after the steps have landed.
+      - human_gate: every fixture named against the population it stands in for, counted, with the shapes it omits
+        why: >
+          a green suite over a shape the real data never takes is indistinguishable, in a pull
+          request, from a green suite over the real thing. Counting here is minutes; after the steps
+          land it is a reseed, a re-run and a re-prove.
+      - human_gate: the panel run authorised, where {{tooling.panel_runner}} requires the operator's words
+        why: >
+          everything after this gate runs unattended, so authorisation is asked for at the gate the
+          operator is already at. Quote the reply into the journal.
+        blocking: true
+    compact:
+      offer: >
+        Cutting the work is a search – reasoning through the implementation, drawing and redrawing
+        boundaries, walking criteria against the result. Its output is one file on disk. This
+        boundary is safe only because the plan is a file.
+      carry:
+        - the path to the build plan, and which step closes each criterion
+        - the agreed design, pasted whole – every worker is briefed from it
+        - the corpus count, and which step's fixture covers which part of it
+        - the running order, and any parallel pair with the reason nothing connects them
+        - anything the cut surfaced that contradicts the agreed design
+        - the operator's panel authorisation, quoted verbatim
+
+  - name: build-execute
+    delegate:
+      model: "{{tooling.default_tier}}"
+      send: >
+        one worker per build step, in the order `build-plan` set, at the tier that step's plan entry
+        names. Give it the step's goal, what it must make true, the agreed design, the
+        files it expects to touch, the part of the corpus count its fixture covers, and – the one that
+        is easy to drop – a summary of what every earlier step changed, one line per file. Ask it to
+        run red → green → perturb inside its step and return the record named under `produces`.
+
+        **Every brief carries the shared-working-copy rules, whether or not a pair runs in
+        parallel.** Workers share one working copy, one branch and one index, and a worker that
+        finishes while another is mid-edit is the same hazard as a declared pair. Stage named paths
+        only, never everything – a sweep commits another worker's half-written files under your
+        message. Restore a perturbation from a copied backup, never from the stash or from version
+        control – the stash is shared, and version control restores the last commit. A lock on the
+        index means another worker is mid-commit: wait and retry. Name which paths are the step's
+        own, so "not mine" can be decided without reading another brief.
+
+        **Tell each worker what another worker's mess looks like**, or it reports that worker's red
+        as its own finding: uncommitted files in a component it does not own, and a whole-component
+        check failing on a file outside its list. The instruction is to name the file, say it is not
+        theirs, and carry on – not to fix it, and not to stop.
+      keep: >
+        every judgement and all of the authority. Design decisions the agreed design did not
+        settle come back as questions, not as choices already taken. A step proposes a deviation and
+        this session decides it, unless it is on {{project.stop_list}}. The attests below stay here
+        too: no step closes its own exit. Also kept: the running order, each step's tier, and the
+        decision to start each step at all.
+      escalate: >
+        re-read the four higher-tier reasons against each step before launching it – the plan was
+        written before any step had run. Raising a step's tier is this session's call; write the reason
+        in the journal. Lowering one the plan argued up is not offered.
+    review_each_step:
+      suspicion: >
+        drift from the agreed design that reads as a detail – a value re-declared where a shared one
+        exists, a state the design named rendered as a variant of another. Then the seam with steps
+        already landed: a second source of truth for something an earlier step owns. And whether the
+        step built to its own red, or to the previous step's.
+      escalate: >
+        a finding whose fix is on {{project.stop_list}} – most often one that contradicts the agreed
+        design, moves an ownership seam, or changes what a user sees. A finding the step disputes is
+        not one: read the code and decide.
+    entry: >
+      Read the build plan from {{tooling.build_plan_file}} and work it in order. **If it is missing or
+      empty, stop and hand back.** Do not reconstruct the cut from memory or from the packet – a
+      reconstructed plan is a second, unagreed cut wearing the first one's name.
+
+      Run each step as its own worker, briefed as `delegate` says. Serially, unless `build-plan`
+      argued a pair could run together and you still agree on reading its reasons.
+
+      **Send each step what the earlier steps did.** A worker has not seen them, and a test written in
+      step N can go red for step N−1's reason. In one session that is survivable because the same
+      agent remembers. Across workers it is not: step N reads that red as its own missing behaviour
+      and builds to it. So read the failure text, never just the colour, and give each worker the
+      prior changes so it can tell the two apart.
+
+      **Take a step's perturbation record at its word, and ask for the evidence where you are not
+      convinced.** A perturbation deliberately breaks the code under a test to show the test can fail.
+      Where a record is thin – a perturbation with no named failing test, a red never separated from
+      fixture noise – ask the step to show what it did. That is cheaper than a re-run and it is the
+      same evidence.
+
+      **Commit each step before the next starts.** A perturbation is evidence about one specific diff,
+      and restoring a file from version control restores the last commit, not the working copy of a
+      minute ago – with several steps in flight, that is somebody else's work as well as your own.
+
+      Review each step against its own diff as it lands, one reviewer, inline, using
+      `review_each_step`. A finding usually folds into the next step. A ruling that inserts a new step
+      is a normal outcome, not a failure of the cut – insert it and record that the cut grew and why.
+
+      **Only {{project.stop_list}} stops this column.** Everything on
+      {{project.decide_and_disclose_list}} is decided here and recorded for the pull request's
+      `Decided without asking` section. Two steps returning conflicting edits to one file mean the
+      cut was wrong about the footprint: re-cut the remaining steps yourself and record the new cut,
+      unless it changes the agreed design.
+
+      Run {{project.full_gate}} once, at the end, after the last step is green.
+    produces:
+      - per step – the red observed per criterion and what separated it from noise, which reds shared
+        one cause, the green, and the perturbation in full – what was broken, which test failed
+      - per step – what changed, one line per file, and the tier it actually ran at
+      - per step – its review findings and what was decided about each, and any step a review inserted
+      - every deviation a step proposed, and what this session decided
+      - everything taken under {{project.decide_and_disclose_list}}, with the reason
+      - every acceptance criterion, with the step that closed it
+      - a green full gate
+      - anything left undone, worked around, or impossible inside the agreed design
+    exit:
+      - command: "{{project.full_gate_capped}}"
+      - attest: every acceptance criterion closed by a named step that reported it green
+        why: >
+          the cut follows the work, not the criteria, so coverage is a property of the sum and of
+          nothing smaller.
+      - attest: a perturbation record for every step, naming what was broken and which test failed
+        why: >
+          a perturbation that produces no failure means the perturbation missed, not that the code is
+          right. A step whose criteria went red on one cause still owes each of them a perturbation of
+          its own – several tests red on one shared error prove only that the error exists.
+      - attest: every deviation a step proposed, decided here rather than inside the step
+        why: >
+          a worker holds no authority to change the agreed design. A deviation taken inside a step and
+          reported as done is the design changing without the gate that exists to change it.
+      - attest: every step reviewed, each finding decided, and any inserted step named
+        why: >
+          most review findings fold into the next step and are never seen again. That is the right
+          cost, and also why nothing else would notice a column that stopped reviewing halfway.
+    compact:
+      offer: >
+        The steps are the largest accumulation here even when delegated – briefs, returned records,
+        commits, retries and a full gate run. The column after this works the result and the diff,
+        and needs none of it.
+      carry:
+        - what changed, one line per file, across every step
+        - every deviation proposed and what was decided
+        - the tests that now exist for each criterion, by name and by step
+        - the perturbation record per step
+        - per step, its review findings and decisions, and every inserted step
+        - anything left undone, worked around, or impossible inside the agreed design
+        - the full gate result, and anything it surfaced that was fixed on the way
+        - what running the steps cost, for the retro – how many steps, the tier each ran at, any that
+          needed a second pass or a higher tier
+
+  - name: panel
+    # A workflow adds `seeds:` – the failure modes typical of its kind of work – when it uses this.
+    precondition:
+      - command: "{{project.base_is_fresh}}"
+        why: >
+          the panel reviews the diff it is handed. A stale base means it reviews work that changes
+          under it, or a diff that silently reverts what landed while you were building. Rebase
+          before the panel is briefed, never after – a rebase mid-review invalidates every finding
+          that named a line.
+    entry: >
+      Choose the reviewers from what this change can get wrong. Name concrete failure modes, not
+      subject areas – not "accessibility" but "an error the screen reader never announces because
+      focus never moves". Each suspicion is one seat. Start from this workflow's `seeds`, then let the
+      diff add or remove seats. Always consider whether the change is the one the packet authorised.
+
+      Fill each seat from {{tooling.reviewer_library}} by reuse first, extension second, and a new
+      profile only when nothing covers the failure mode. Name a new profile for the failure mode it
+      catches, never for a topic, and commit it on this branch: it is part of the deliverable.
+
+      Run the seats with {{tooling.panel_runner}}, against the complete branch, apart from this
+      session. If your runner needs the operator's explicit authorisation, it was asked for at the
+      last blocking gate before the unattended stretch; quote it from the journal before invoking
+      anything. If the journal holds no such quote, hand back and ask. A panel that cannot run in
+      isolation does not fail loudly – it falls back to this session reviewing its own work, which is
+      the thing the panel exists to replace.
+
+      Each seat runs read-only and findings-only. Put every high-severity finding to an adversarial
+      refuter before acting on it. Triage every finding: fix it where it belongs, re-run the checks
+      the fix touches, and re-review the fix. A finding returned unverified is neither confirmed nor
+      dismissed – decide it yourself and say which way.
+
+      A failure mode nobody had a seat for is a finding about the panel as well as the code. Close it
+      by sharpening a seat's suspicion, adding a profile on this branch, or raising an issue with
+      {{tooling.issue_tracker}}. Recording it only in the journal is the same as dropping it.
+
+      Record the panel's counts – seats, findings raised, refuted, acted on – as the runner returned
+      them, in the feature's `### Panel tally`. Never count them by hand.
+    produces:
+      - the named seats, each with the concrete failure mode it exists to catch
+      - every new or extended reviewer profile, committed on this branch
+      - one ranked panel report
+      - every finding triaged – fixed where it belongs, or a stated decision – and every unverified
+        finding with the way it was decided
+      - every failure mode nobody had a seat for, closed by one of the three routes
+      - the panel tally, as returned, in `### Panel tally`
+      - the checks re-run after each fix
+    exit:
+      - attest: each seat named for the failure mode it will investigate
+        why: a reviewer briefed with a topic summarises; one briefed with a suspicion investigates
+      - attest: the operator's authorisation quoted from the journal, where the runner requires one
+        why: >
+          authorisation given in a conversation does not travel into a worker or across a
+          compaction. The quote is what makes it survive.
+      - attest: every finding triaged, fixed, and the fix re-reviewed
+        why: the pull request should present a reviewed result, not use its human reviewer as the first panel
+      - attest: every panel gap closed with a profile on this branch or an issue
+        why: >
+          a gap written only in a journal or a running list has no owner and no state, so nothing
+          closes it. An issue has both.
+      - attest: the panel tally recorded as returned, with nothing hand-counted
+        why: >
+          which seats earn their cost is a question about many panels, not this one. A tally written
+          into prose cannot be asked that question.
+    compact:
+      offer: >
+        The ranked report is the largest artefact the workflow produces, and once every finding is a
+        fixed commit or a stated decision it has done its work. `record` is written from the journal,
+        so what goes into the journal now is what the record will say.
+      carry:
+        - each seat, the suspicion it carried, and whether it found anything
+        - every finding – severity, claim, whether the refuter confirmed it, and what was done
+        - every unverified finding, the decision taken, and why
+        - any failure mode nobody had a seat for, and how it was closed
+        - reviewer profiles added or extended, and the failure mode each now catches
+        - the checks re-run after the fixes
+
+  - name: prepare-pr
+    entry: >
+      The last code fix is in and the pull request body has not been written. Prune what this branch
+      added to comments and docstrings now, so the reviewer reads the diff once, already trimmed.
+
+      List every comment block the branch adds with {{tooling.added_comments}}. Read each one against
+      one test: does it say why the code is as it is, for someone reading it with no history? Cut
+      what records how the code got here – review IDs, dates, "it was", "previously". That history
+      already has a home you are about to write: the record, the pull request body, or this commit's
+      message.
+
+      Trim in place. A trim that needs a code change is not this column's. Commit the trim on its own.
+    produces:
+      - the list of added comment blocks, read one by one, and how many there were
+      - one comment-only commit, or "nothing to cut" against that count
+      - any cut fact that was not history, and which of record, pull request body or commit message took it
+    exit:
+      - command: "{{project.comment_check}}"
+      - attest: every added comment block read against the test, not only the ones that looked like history
+        why: >
+          a pass that looks only for history words misses the long explanation with none in it,
+          which is the half that most needs cutting
+      - attest: the trim is its own commit
+        why: a trim mixed into a code change cannot be reviewed as comments-only
+
+  - name: submit
+    entry: >
+      Open the pull request with {{tooling.open_pr}}, after the reviews above have passed. Write the
+      body for someone who was not present:
+
+      - why the change was needed, and what changed
+      - decisions and deviations from the packet
+      - acceptance coverage – each criterion and the test that proves it
+      - the commands actually run, and against what
+      - how the change was exercised, from this workflow's proving column
+      - the panel seats and what they found
+      - **Decided without asking** – everything taken under {{project.decide_and_disclose_list}}, or `none`
+      - **Not proved** – a non-empty account of what was not proved or was carried forward
+
+      Watch CI with {{project.ci_watch}} and fix failures on this branch. CI and the local gate are
+      separate evidence; neither stands in for the other.
+    produces:
+      - the pull request, with every section above
+      - a green CI run, and anything CI caught that the local gate did not
+    exit:
+      - command: "{{project.ci_watch}}"
+      - attest: the body carries enough evidence for a final review by someone who was not there
+        why: >
+          the reviewer who merges reads the body, not the journal. A body that says "tests pass"
+          has asked them to redo the proving.
+      - attest: "`Not proved` is non-empty"
+        why: >
+          every change leaves something unproved. An empty section means nobody looked, not that
+          nothing was left.
+    compact:
+      offer: >
+        The pull request body is now the durable account of the run, and `record` is written from it
+        and the journal rather than from memory. What remains is two documents and a merge.
+      carry:
+        - the pull request number and link
+        - the CI result, and anything CI caught that the local gate did not
+        - anything left out of the body, and why
+
+  - name: record
+    entry: >
+      Append a `## Record` below the packet. Never write over the packet – the packet is why the work
+      was asked for, and the record is what came of it.
+
+      Use only these headings: **Decisions taken** · **Carried forward** · **Verification actually
+      run** · **Review** · **Also fixed (not the feature)** · **Lesson**. The set is closed because
+      Carried forward is lifted by its exact heading into the brief of every feature that depends on
+      this one. Rename it and it reaches nobody.
+
+      - **Decisions taken** – choices the packet did not settle, each with the reason it won.
+      - **Carried forward** – gaps and traps left deliberately, each with its consequence and what
+        closes it. Written for a later feature. If no feature depends on this one, name the
+        destination – an issue, a register, a named feature – in the entry itself. "Whoever comes
+        next" is not a destination.
+      - **Verification actually run** – where the packet's commands were not enough, and what was
+        done instead. The difference, not a restatement.
+      - **Review** – who looked, what came back, and what was accepted.
+      - **Also fixed** – incidental repairs, so a later reader of the history does not misread them.
+      - **Lesson** – the one thing that generalises. If it repeats an earlier feature's, say which.
+
+      Write it from the journal and the pull request body, reading both, not from memory of the
+      session. Compactions sit behind this column; the journal was kept for this moment.
+
+      Every real problem found in passing that is not this feature goes to {{tooling.issue_tracker}}
+      when found, and is cited here by number.
+
+      Then write a short retro on the workflow itself with {{tooling.retro}} – what the process cost,
+      not what the feature did. Five labelled lines: Friction · Worked · Cheaper · Faster · Fix.
+      Cheaper and Faster are about decisions inside this run, answered even on a clean run. A Faster
+      line names what proof its change would give up. Fix names where the fix goes, or says
+      `none: one-off`. Do not read other retro entries before writing yours.
+    produces:
+      - "`## Record` under the six closed headings, written from the journal and the pull request body"
+      - every problem found in passing, raised as an issue and cited by number
+      - a retro entry, in its own file, under the length limit
+      - "{{tooling.record_fields}}"
+    exit:
+      - command: "{{tooling.plan_check}}"
+      - attest: the record is enough for the next feature that depends on this one
+        why: >
+          Carried forward is the one part of a record written for someone else. If it would not
+          change what the next feature does, it has not said anything.
+      - attest: every Carried forward entry either reaches a dependent feature or names a destination
+        why: >
+          a note addressed to work nothing depends on is read zero times, and nothing about the file
+          says so. It looks written, filed and delivered.
+      - attest: a retro entry written, without reading the others
+        why: >
+          retro entries kept in one shared file drifted longer with every author, because each read
+          the ones above before writing. An author who reads no siblings cannot inherit their drift.
+
+  - name: merge
+    entry: >
+      The hand-back the unattended stretch ends on. Give the operator, in one message: the pull
+      request, its CI result, its `Decided without asking` section, and what was not proved.
+
+      A human merges the feature. Nothing else may. Wait on the pull request's state with
+      {{tooling.wait_for_merge}}, not on a reply, and enter `close` the moment it reads merged. If the
+      operator asks for changes instead, make them on the branch, re-run what they could reach, and
+      hand back again.
+    produces:
+      - the merged feature, confirmed by reading its state rather than assuming it
+    exit:
+      - human_gate: merged
+        why: nothing merges the feature itself
+        blocking: true
+
+  - name: close
+    entry: >
+      Mark the feature done where everyone looks, and release what it held. Nothing moves the status
+      on merge, so an unclosed feature sits in flight indefinitely and every queue, count and
+      dependency check downstream reads a stale line.
+
+      Close it with {{tooling.close}}. It refuses unless the feature has merged, and makes three
+      changes only: status done, the column removed, the merge date read from the merge itself –
+      never typed. It adds no prose; the record was written at `record`.
+
+      Then archive the journal with {{tooling.archive_journal}}, and only after that release the
+      working copy with {{tooling.release_workspace}}. The order matters: the journal usually lives
+      in the working copy, so releasing first destroys the only evidence behind every "verification
+      actually run" line you have just written. Session narration belongs to you as the supplier; the
+      plan is what the client receives.
+    produces:
+      - the feature marked done, with a merge date read rather than typed
+      - the journal archived, before the working copy is released
+      - the working copy released
+    exit:
+      - command: "{{tooling.close_check}}"
+      - command: "{{tooling.archive_journal}}"
+        why: >
+          an archive step that quietly succeeds having copied nothing leaves you believing there is an
+          archive. If the destination is unset, this must fail, not skip.
+      - command: "{{tooling.release_workspace}}"
+        why: the last act of the column, after the archive has confirmed

@@ -1,11 +1,11 @@
-**Status** scaffold – not yet written · **Life** living · **Reader** you, about to build the machine the agents run on
+**Status** scaffold – not yet written · **Life** living · **Reader** you, about to supervise an agent run
 
-# How to build the machine the agents run on
+# How to supervise an agent run
 
 > **Not yet written.** This part is an outline. The finished part is
 > [Part 3, threat modelling](../03-threat-modelling/README.md) – start there.
 
-a development box, a session multiplexer, and a network, each chosen from a requirement rather than from preference
+a supervisor per build step, verification taken at source rather than reported, and an escalation route that reaches a person
 
 The worked example throughout is [the example system](../../reference/example-system.md).
 
@@ -19,7 +19,7 @@ The worked example throughout is [the example system](../../reference/example-sy
 
 **Read this once. Use the prompt every time.**
 
-> **Draft order: 9th.** See `PLAN.md` section 10.
+> **Draft order: 4th.** See `PLAN.md` section 10.
 
 ---
 
@@ -92,11 +92,12 @@ close one, say so here]
 
 ## Source material
 
-- `redmoor_infra/docs/devbox.md` — the specification, the sizing evidence, the containment argument,
-  the rejected alternatives, and the price correction.
-- `redmoor_infra/ansible/group_vars/devbox.yml` — the multiplexer version and pinning, the service
-  definition, the memory ceiling, the network configuration.
-- `redmoor_docs/deep_dives/20260815_CI_Cost_And_Remote_Development.md` — the research behind it.
+- `platform/docs/supervisor-playbook.md` — all nine sections. Written 2026-08-27, direct owner
+  channel added the following day.
+- `platform/plan/workflows/*.yaml` — where a workflow declares the point from which it runs unattended.
+- `platform/tools/fleet/` — the adjacent pattern: parallel resolvers in their own worktrees, each
+  checked by a reviewer, with **a shell script and not a model holding the loop**. Decide whether this
+  belongs here or in Part 8.
 
 ## Open
 

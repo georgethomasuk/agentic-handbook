@@ -44,6 +44,12 @@ nav:
       - Templates: parts/03-threat-modelling/templates/README.md
   - 4 · Designing the surfaces (not yet written): parts/04-design/README.md
   - 5 · Planning the delivery (not yet written): parts/05-delivery-planning/README.md
-  - 6 · Supervising the run (not yet written): parts/06-supervision/README.md
-  - 7 · Keeping it honest (not yet written): parts/07-keeping-it-honest/README.md
-  - 8 · The machine (not yet written): parts/08-the-machine/README.md
+  - 6 · Managing the delivery:
+      - 6 · Managing the delivery: parts/06-delivery-management/README.md
+      - The agent prompts: parts/06-delivery-management/prompt.md
+      - Templates: parts/06-delivery-management/templates/README.md
+      - Workflow templates: parts/06-delivery-management/templates/workflows/README.md
+      - The brief skeleton: parts/06-delivery-management/templates/brief.md
+  - 7 · Supervising the run (not yet written): parts/07-supervision/README.md
+  - 8 · Keeping it honest (not yet written): parts/08-keeping-it-honest/README.md
+  - 9 · The machine (not yet written): parts/09-the-machine/README.md

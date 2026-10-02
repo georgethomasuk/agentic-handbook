@@ -1,0 +1,390 @@
+# Contract change.
+#
+# For a change to an interface whose producers and consumers ship independently: an API, an event
+# or message schema, a shared database schema, a file format, a library's public surface. Slow on
+# purpose. The proposal is understood and reviewed before anything is implemented, and the complete
+# result is proved and reviewed after.
+#
+# Two panels, not one. The first reviews a design with no diff. The second reviews the diff against
+# what the first approved. The reason holds for any such interface: the first diff is too late to
+# discover that a field belongs somewhere else.
+#
+# Terms. The **contract** is the authoritative definition of the interface. A **governed artefact**
+# is anything published under the contract that carries a version – a document, a schema release, a
+# message definition. A **surface** is any place that reads or writes the contract's shape.
+#
+# Shared columns come from core.yaml. {{project.*}} and {{tooling.*}} slots are defined in slots.yaml.
+
+name: contract-change
+description: >
+  Establish the contract's lifecycle state as fact, claim the work, map every surface that reads or
+  writes the contract, design the change and review the proposal before implementing it, cut the
+  build into steps, update every surface on one branch, prove the whole repository and account for
+  every fixture, review the actual implementation, write what happened, merge, and release the claim.
+
+uses: core
+
+agreed_at: proposal-review
+
+unattended_from: build-execute
+
+columns:
+
+  - name: explore
+    entry: >
+      Confirm every feature this one depends on has merged, then establish the change before
+      designing it. Read {{project.constitution}}, {{project.contract_sources}}, the packet and the
+      decisions it cites. State the current behaviour, the problem, the proposed capability, what is
+      explicitly not changing, and the evidence that would make the change worthwhile.
+
+      **Establish the lifecycle as a fact**, using {{project.contract_lifecycle}}: whether the
+      contract is a draft or released; the state of each governed artefact it affects; whether
+      anything stored under the current shape exists; and which deployed versions may still produce
+      or consume the current shape. Keep the different version numbers apart – the contract's, each
+      artefact's, and any content hash.
+
+      If the release or stored state cannot be established, stop and ask. Compatibility cannot be
+      designed around a guess. Edit nothing in this column.
+    produces:
+      - the current behaviour, the problem, the proposed capability, and what is not changing
+      - the lifecycle established as fact – contract draft or released, the state of each governed
+        artefact, whether stored data exists, which deployed versions still use the current shape
+      - the evidence that would make the change worthwhile
+    exit:
+      - human_gate: the requested change, what is not changing, the lifecycle state and the evidence of need understood
+        why: a convenience before release and a compatible change after release are different changes
+        blocking: true
+
+  - use: core.open
+
+  - name: impact-map
+    entry: >
+      Build the understanding pack at {{tooling.design_pack_file}}, on disk, not in the
+      conversation. Read outward in dependency order and record every surface as
+      `surface → reads or writes what → compatibility consequence → proving test`.
+
+      Walk every group in {{project.contract_surface_groups}}. The pack is incomplete until each one
+      has been walked. The groups any contract has:
+
+        1. The specification, the change log, and the recorded decisions on lifecycle.
+        2. The authoritative definition, and any deliberately looser check that sits ahead of it.
+        3. Every canonical example, valid fixture, invalid fixture and the rejection it expects.
+        4. Fixtures used elsewhere, and every place a test builds an example inline.
+        5. Generators, generated output, and hand-written bindings, in each language.
+        6. Every producer, validator and consumer.
+        7. Deployed artefacts and stored data that must remain readable.
+
+      **Search the repository. Do not infer this list from the expected architecture.** Call out an
+      expected surface that does not exist – code generation not yet built, say – rather than
+      pretending it was reviewed.
+
+      Select no design and edit no surface in this column.
+    produces:
+      - the understanding pack, on disk
+      - every surface recorded as `surface → reads or writes what → compatibility consequence →
+        proving test`, found by searching
+      - every expected surface that turned out NOT to exist, called out
+    exit:
+      - human_gate: the pack enumerates the authorities, fixtures, inline examples, bindings, consumers and deployed compatibility
+        why: a contract change is incomplete when its forgotten consumer is discovered after merge
+        blocking: true
+
+  - name: design
+    entry: >
+      Extend the pack with candidate designs and one explicit recommendation. For each candidate
+      show: a before-and-after example; where the change sits; how many are allowed; type and
+      format; required or optional; defaults, and what happens to an unknown field; lifecycle;
+      sensitivity and logging classification; the effect on the contract's version and on each
+      governed artefact's version and hash; producer and consumer compatibility; the rules for
+      coexistence or migration; and the exact fixtures and tests that would move.
+
+      **State what old producers send to new consumers, and what new producers send to old
+      consumers.**
+
+      **A released governed artefact is immutable.** Adopting the change means a new version of it,
+      never an edit to history in place.
+
+      **Look outside the repository before agreeing it.** Read the documentation for the version in
+      {{project.lockfile}} rather than recalling it. **Search for how the approach fails, not for how
+      to do it.** Bring back what you found against the design, and the alternative you rejected
+      with the reason – a rejected alternative is what makes an agreed one defensible later. Where
+      there is nothing to learn, say you skipped it.
+
+      Recommend one design. Do not implement it.
+    produces:
+      - candidate designs with before-and-after examples, and one recommendation
+      - the compatibility matrix – what old producers send new consumers, and the reverse
+      - the rejected alternatives, each with its reason
+      - the version and hash effect of the recommended design
+      - what the research found, the version each finding was checked against, and what it found
+        against the design – or a statement that none was warranted
+    exit:
+      - human_gate: the pack contains reviewable before-and-after examples and a compatibility matrix
+        why: reviewers need a concrete proposed contract, not an adjective such as "additive"
+    compact:
+      offer: >
+        Three columns of reading end here, and their output is already a file. The pack holds the
+        surfaces, the candidates, the examples and the matrix, so the conversation that produced it
+        is the cheapest thing in the workflow to drop. Point the journal at the pack.
+      carry:
+        - the path to the pack, and what each section now contains
+        - the lifecycle facts established at `explore`
+        - any expected surface that turned out not to exist – a later column must report that gap,
+          not imagine it
+        - the recommended design in one line, and the alternatives rejected with their reasons
+        - what the research found and what it found against the design
+
+  # The first of two panels. It reviews a proposal: there is no diff yet.
+  - use: core.panel
+    as: proposal-review
+    seeds:
+      - "A version or coexistence break: an old producer or consumer that stops working."
+      - "Incomplete coverage of the governed artefacts and fixtures."
+      - "A version or hash that moves where the change was meant to be additive, or a released
+        artefact edited in place."
+      - "Two language bindings that disagree about the same shape."
+      - "A producer and a consumer that disagree about the same shape."
+      - "Something leaving {{project.boundaries}} or reaching a log line because of the new shape."
+      - "A migration claim that deployed reality does not support."
+    also:
+      entry: >
+        **The evidence is the pack, the candidate designs and the current contract.** Brief each seat
+        with those and its suspicion. There is no branch diff to review, so the base-freshness
+        precondition does not apply to this run.
+
+        **Ask for the panel authorisation here, before invoking anything, where the runner needs
+        one.** It covers this run only. The second panel's is asked for at `build-plan`.
+
+        Resolve the report's findings INTO the pack. Then present the selected design, the
+        compatibility decision, the affected surfaces and the remaining judgement calls to the
+        operator. Nothing in the contract changes before approval.
+
+        This workflow runs two panels against one packet. Record each run's tally as its own block,
+        labelled with its column. Append; never replace the earlier one.
+      produces:
+        - every finding resolved INTO the pack, not left in the conversation
+        - the approved decisions in one place – shape, lifecycle, compatibility, version and hash,
+          migration, sensitivity classification
+      exit:
+        - human_gate: the panel run authorised, where the runner requires the operator's words
+          why: asked for and given in this session, not inherited from the brief
+          blocking: true
+        - human_gate: the contract's shape, lifecycle, compatibility, version, migration and sensitivity decisions approved
+          why: the first diff is too late to discover that the field belongs elsewhere
+          blocking: true
+      compact:
+        carry:
+          - the agreed seats and suspicions – `implementation-review` reuses them, restated against
+            the implementation
+          - where each finding was resolved in the pack
+          - the approved decisions in one place
+          - any judgement call the operator settled, in their words
+          - that this authorisation is now spent, and `build-plan` must ask for the second panel's
+
+  - use: core.build-plan
+    also:
+      entry: >
+        **The baseline is not confirmed here.** Confirming it means running suites, and this column
+        only plans. Name which components the baseline covers, so `build-execute` runs the right
+        ones at its step 0.
+
+        **Cutting matters most on this workflow.** A contract change touches the definition, the
+        prose, the examples, the governed artefacts, the fixtures, the generated output, the
+        bindings and every consumer at once. Uncut, it shows a wall of failures on a handful of
+        causes.
+
+        **Atomicity is kept by the branch, not by the column.** Steps commit one after another onto
+        one branch and merge as one pull request. What the cut must NOT do is land a state in which
+        the definition has moved and its consumers have not. Name, per step, what leaves the
+        repository coherent. Where a pair cannot be split that way, say so and keep them together.
+
+        **Four obligations belong to the cut, not to any one step.** Say which step owns each, or
+        that the whole cut carries it. The old definitions, fixtures and versions deliberately kept
+        for coexistence, and the step that must keep them green. Every artefact version and hash
+        expected to move, and why – or that none is. Generated output changed only through its
+        source. No released governed artefact edited in place, in any step.
+
+        **The contract's permission is not the population.** "The loader allows both shapes" is a
+        statement about the definition. It can stand in for counting while a fixture models a shape
+        no real artefact uses. Count the artefacts.
+      produces:
+        - the components the baseline covers, named for `build-execute`
+        - the four contract obligations placed – the coexistence set and the step that keeps it
+          green; versions and hashes expected to move, or none; generated output through its source;
+          no released artefact edited in place
+      exit:
+        - human_gate: the coexistence set named – what must stay green, and which step owns keeping it so
+          why: >
+            one session can hold this in its head and a set of workers cannot. A step that breaks a
+            coexistence fixture it was never told about reports itself green. The sum fails, one
+            column later, with the cause several commits back.
+      compact:
+        carry:
+          - the coexistence set, and the step that owns each part of it
+          - that the panel authorisation quoted here is for `implementation-review`
+
+  - use: core.build-execute
+    also:
+      delegate:
+        send: >
+          Also give each worker the impact map's row for every surface it may touch, and the
+          coexistence fixtures it must not break.
+        keep: >
+          **Kept absolutely on this workflow: any change to the contract or to a released governed
+          artefact beyond what `proposal-review` approved.** A worker that takes one inside a step
+          has moved the contract without the gate that exists to move it.
+      review_each_step:
+        suspicion: >
+          both sides of the seam, which no single step sees whole. A generated binding that no
+          longer means what the definition means. A producer and a consumer that agree only because
+          they were changed in the same step. An old version kept for coexistence that nothing now
+          exercises. Then the freeze: content or a hash moving where the change was meant to be
+          additive, and a stable identifier changing shape.
+        escalate: >
+          also any finding whose fix needs a coordinated change in a repository this branch does not
+          own. A surface in the map that the review finds unaddressed is not an escalation: it goes
+          to the next step.
+      entry: >
+        **Step 0, before the first build step: confirm the baseline green** on the components
+        `build-plan` named. **A red baseline is a stop, not something to work through.** Every step
+        after it reports a red nobody can read, because no step can tell its own break from the one
+        it inherited.
+
+        Keep old definitions and fixtures where compatibility needs coexistence. Never edit a
+        released governed artefact in place. Do not hand-edit generated output without changing its
+        source. Do not widen the approved design to make a failing test pass. Missing code
+        generation is reported, not imagined.
+      produces:
+        - each surface in the impact map, and what was actually done to it, across every step
+        - every artefact version and hash that moved, and why – or that none moved
+        - the coexistence set, observed still green after the last step
+        - anything reported missing rather than implemented
+      exit:
+        - attest: every surface in the approved impact map implemented, or explicitly reported missing, by a named step
+          why: >
+            the impact map is the list a contract change is judged complete against, and no single
+            step's report covers it. A forgotten consumer is invisible in every step and visible
+            only in the sum.
+      compact:
+        carry:
+          - each surface in the impact map, and what was done to it
+          - every version and hash that moved, and the coexistence set kept
+
+  - name: prove
+    entry: >
+      Prove the completed contract before asking anyone to accept it. Run {{project.full_gate}} for
+      the whole repository, not only the contract's own component.
+
+      Then account explicitly for every canonical example, valid fixture, invalid fixture and the
+      rejection it names, every fixture used elsewhere, and every example a test builds inline.
+      Prove every language binding and every affected producer and consumer.
+
+      Where a deliberately looser check sits ahead of the full contract, prove it is still no
+      stricter than the contract.
+
+      Re-run {{project.regenerate}} and require a clean diff. Where code generation does not exist,
+      state that gap rather than claiming generated parity.
+
+      Search for stale field names and obsolete examples. List every version and hash that changed
+      and why, and every old version deliberately kept. Fix failures and repeat the entire proof.
+    produces:
+      - a green full gate over the whole repository
+      - the fixture accounting – each canonical example, valid and invalid fixture, expected
+        rejection and inline example, and how each was covered
+      - a clean regeneration diff, or the generation gap recorded in its place
+      - proof that any looser check is still no stricter than the contract
+      - anything the proof could not reach
+    exit:
+      - command: "{{project.full_gate_capped}}"
+      - attest: every canonical and inline example accounted for, across every language binding
+      - attest: generated output reproduces cleanly, or the missing generation is recorded
+      - attest: every version and hash change is intentional and reviewable
+    compact:
+      offer: >
+        The proof is long and repetitive by design. `implementation-review` needs the result of each
+        run, not its output, and the result is a table you have to write anyway.
+      carry:
+        - the exact commands run, and the result of each
+        - the fixture accounting
+        - whether regeneration was clean, or the gap recorded instead
+        - how any looser check was shown to be no stricter than the contract
+        - every version and hash that changed, and every old version kept
+        - anything the proof could not reach
+
+  # The second panel. It reviews the diff against what the first one approved.
+  - use: core.panel
+    as: implementation-review
+    also:
+      entry: >
+        **Reuse the seats agreed at `proposal-review`**, each suspicion restated against the
+        implementation. The evidence is the actual diff, the completed impact map and the proof.
+
+        Compare the implementation line by line against the approved before-and-after examples, the
+        compatibility matrix and the list of affected surfaces.
+
+        The authorisation for this run was given at `build-plan`. The one given at `proposal-review`
+        covered that run only.
+
+        A finding whose fix would move the contract beyond what `proposal-review` approved is on
+        {{project.stop_list}}, and is a hand-back.
+
+        After the fixes, re-run {{project.full_gate}} as well as the focused checks. Then assemble
+        the final before-and-after contract, the compatibility result, the versions and hashes
+        changed, the full-gate evidence, the findings, and anything not proved. The operator accepts
+        them at `merge`, from the pull request.
+
+        Record this run's tally as its own block, after the first panel's.
+      produces:
+        - one ranked report against the actual diff, the impact map and the proof
+        - the final contract, compatibility result, fixture changes and full-gate evidence, assembled
+          for acceptance at `merge`
+      compact:
+        carry:
+          - the tallies for both runs
+          - the final before-and-after contract, the compatibility result, and what moved
+          - anything left as a judgement call for the operator at `merge`
+
+  - use: core.prepare-pr
+  - use: core.submit
+  - use: core.record
+  - use: core.merge
+  - use: core.close
+
+standing_constraints:
+  - A change to a released contract is always asked for first. It is approved at `proposal-review`,
+    and anything beyond that approval stops the unattended run.
+  - Release, deployment and stored-data state are facts to verify, never assumptions.
+  - A released governed artefact is immutable. A change creates a new version and keeps the history.
+  - The definition, the prose, the examples, the generated output and every binding are one change.
+  - Canonical examples, fixtures and every example a test builds inline all count as fixtures to
+    account for.
+  - The full gate passes for the whole repository before the implementation is accepted.
+  - Generated output changes through its source. Missing generation is reported, not imagined.
+
+# ── Mode ────────────────────────────────────────────────────────────────────────────────────
+
+modes:
+
+  - name: draft-contract
+    status: >
+      NOT YET RUN. The source workflow tells a draft from a released contract at `explore` and then
+      treats both the same. This mode is the lighter path that distinction implies. Treat the first
+      feature to use it as a trial, and write what it cost into the retro.
+    when: >
+      `explore` establishes, as fact, that the contract is a draft: nothing released under it, no
+      stored data in the current shape, and no deployed producer or consumer outside this
+      repository. If any of the three cannot be established, this is not the mode.
+    columns:
+      design: >
+        The compatibility matrix is replaced by one line stating the three facts from `explore`,
+        with how each was established. Before-and-after examples are still owed.
+      build-plan: >
+        The coexistence set is empty by fact, so its gate is answered by citing `explore`, not by
+        listing fixtures. Versions and hashes may move freely; say that they will.
+      build-execute: >
+        Governed artefacts may be edited in place, because none is released. Everything else holds:
+        the impact map is still the completeness list, and generated output still changes through
+        its source.
+      prove: >
+        Unchanged. A draft contract has just as many surfaces.
+    kept: both panels, the impact map, and the full-repository gate
