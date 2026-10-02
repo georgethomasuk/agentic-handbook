@@ -76,7 +76,7 @@ goal.
 
 | | |
 |---|---|
-| **A plan with packets** | Features, each with a goal, acceptance criteria, verification commands and its dependencies named. Part 5 covers writing them and is not yet written |
+| **A plan with packets** | Features, each with a goal, acceptance criteria, verification commands and its dependencies named. [Part 5](../05-delivery-planning/README.md) covers writing them |
 | **A constitution** | The one document every session reads first. The slots point at it |
 | **The trust boundaries** | From [Part 3](../03-threat-modelling/README.md). Two slots are filled from that table |
 | **A code host with pull requests and CI** | Every workflow ends in a pull request a person merges |
@@ -105,7 +105,7 @@ October 2026. The first real brief assembled by walking the plan from the top wa
 5,064 of them came before the sentence naming the column. Step 2.2 exists because of that brief.
 
 **And the same count on the kit's output**, run on 2 October 2026. The brief it assembles for the
-worked example is 10,131 words, with 44 before the sentence naming the column. Most of that length is
+worked example is 10,321 words, with 47 before the sentence naming the column. Most of that length is
 the eleven later columns, copied whole at the bottom.
 
 **What a column costs to run is Part 7's subject**, not this one's.
@@ -516,7 +516,7 @@ real text of that section, shortened.
 Platform build › The check-in window can open › Staff complete a check-in on their own
 phone › this feature · status ready · packet written 28 September
 
-Traces: finding F-51 · boundary B3
+Traces: gate G2.3 · finding F-51 · boundary B3
 
 ## Your task
 
@@ -592,7 +592,7 @@ writes the brief:
 
 ```
 $ plan prompt feature_checkin_rate_limit -o .work/feature_checkin_rate_limit/brief.md
-wrote .work/feature_checkin_rate_limit/brief.md – 10131 words, 44 before the sentence naming the column.
+wrote .work/feature_checkin_rate_limit/brief.md – 10321 words, 47 before the sentence naming the column.
 ```
 
 ---
@@ -1003,9 +1003,9 @@ left. A second one will find holes that are missing and slots that are really on
 
 **Setup cost is not measured.** Neither the hours to fill the slots nor a second engagement's brief.
 
-**Part 5 is not written.** This guide and the kit both assume a plan of missions, milestones, slices
-and features, and a packet with a goal, acceptance criteria and verification commands. The handbook
-does not yet say how to write either, and the kit's idea of a plan will have to match Part 5's.
+**The worked example has never been built.** The rate limit and the plan around it are in
+[the example plan](../05-delivery-planning/example-plan.md). Its briefs are real kit output. Nothing
+in it has been run through a workflow.
 
 ---
 
@@ -1035,6 +1035,6 @@ does not yet say how to write either, and the kit's idea of a plan will have to 
 
 - Whether `single-part` stays a workflow of its own (see PLAN §11, 2026-10-02).
 - The by-hand `enter_column` filling has not been run. Neither has prompt B or prompt C.
-- The worked example's plan levels and field names must be reconciled with Part 5 when it is written.
+- The worked example's plan levels and field names were reconciled with Part 5 on 2026-10-02.
 
 <!-- END DRAFTING ONLY -->

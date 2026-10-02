@@ -1,5 +1,7 @@
 ---
 title: Staff complete a check-in on their own phone
+traces:
+  gate: [G2.1]
 ---
 
 # Slice · Staff complete a check-in on their own phone

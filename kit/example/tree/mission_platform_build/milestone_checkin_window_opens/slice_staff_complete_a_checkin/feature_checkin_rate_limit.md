@@ -5,6 +5,7 @@ workflow: build-in-repository
 blocked_by: [feature_anonymous_checkin_token]
 briefed: 2026-09-28
 traces:
+  gate: [G2.3]
   finding: [F-51]
   boundary: [B3]
 ---
@@ -30,6 +31,30 @@ changed without a release.
 
 The check-in endpoint is public by design (boundary B3): anyone with the link can write to it. Staff
 at one site often share one outbound address on the site's wifi.
+
+- **Constitution:** `AGENTS.md`, data rules and the two lists.
+- **Threat model:** finding F-51.
+- **Pattern to mimic:** the token check in `checkin/views.py`.
+
+## The contract to implement
+
+Nothing another feature depends on. How the limit is keyed, and which library enforces it, are
+settled at `frame`.
+
+## Scope
+
+**In scope**
+- Refusing requests over a limit, and the configuration that sets it.
+
+**Out of scope**
+- Alerting on a flood.
+- Blocking an address.
+
+**Expected surface (not a limit)**
+- `checkin/`
+
+**Do not touch**
+- The check-in screens' wording. The question set and its copy are agreed outside the build.
 
 ## Acceptance criteria
 

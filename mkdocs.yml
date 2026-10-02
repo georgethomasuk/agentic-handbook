@@ -43,7 +43,11 @@ nav:
       - The agent prompts: parts/03-threat-modelling/prompt.md
       - Templates: parts/03-threat-modelling/templates/README.md
   - 4 · Designing the surfaces (not yet written): parts/04-design/README.md
-  - 5 · Planning the delivery (not yet written): parts/05-delivery-planning/README.md
+  - 5 · Planning the delivery:
+      - 5 · Planning the delivery: parts/05-delivery-planning/README.md
+      - The agent prompts: parts/05-delivery-planning/prompt.md
+      - The example plan: parts/05-delivery-planning/example-plan.md
+      - Templates: parts/05-delivery-planning/templates/README.md
   - 6 · Managing the delivery:
       - 6 · Managing the delivery: parts/06-delivery-management/README.md
       - The agent prompts: parts/06-delivery-management/prompt.md

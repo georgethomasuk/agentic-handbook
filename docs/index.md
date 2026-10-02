@@ -2,8 +2,9 @@
 
 # Agentic Delivery Handbook
 
-> **Working draft. Two parts are drafted: [Part 3, threat modelling](parts/03-threat-modelling/README.md)
-> and [Part 6, managing the delivery](parts/06-delivery-management/README.md). Start with Part 3.** The
+> **Working draft. Three parts are drafted: [Part 3, threat modelling](parts/03-threat-modelling/README.md),
+> [Part 5, planning the delivery](parts/05-delivery-planning/README.md) and
+> [Part 6, managing the delivery](parts/06-delivery-management/README.md). Start with Part 3.** The
 > other parts are outlines, marked *not yet written* below. Every term is defined in
 > [the glossary](reference/example-system.md#glossary).
 
@@ -33,7 +34,7 @@ does that part's mechanical steps by script. Said "nothing to install and nothin
 | 2 | [Designing the system](parts/02-system-design/README.md) | Zones as bulkheads; decisions recorded once | Not yet written |
 | 3 | [**Attacking it before building it**](parts/03-threat-modelling/README.md) | Two taxonomies, two spines; one file per finding | **Draft – guide, prompts and templates** |
 | 4 | [Designing the surfaces](parts/04-design/README.md) | IA by interview; a value lives in one place | Not yet written |
-| 5 | [Planning the delivery](parts/05-delivery-planning/README.md) | Four plan levels; the packet is the brief | Not yet written |
+| 5 | [**Planning the delivery**](parts/05-delivery-planning/README.md) | Four plan levels; the packet is the brief | **Draft – guide, prompts, templates and a worked plan** |
 | 6 | [**Managing the delivery**](parts/06-delivery-management/README.md) | Workflow chosen by what could prove the work; the brief built from the plan | **Draft – guide, prompts, templates and a kit** |
 | 7 | [Supervising the run](parts/07-supervision/README.md) | The supervisor per build step; verification at source | Not yet written |
 | 8 | [Keeping it honest](parts/08-keeping-it-honest/README.md) | Enforcement beats advice | Not yet written |

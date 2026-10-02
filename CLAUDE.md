@@ -34,6 +34,8 @@ A guide that slides between addressing the reader and describing the agent is un
 single failure mode that has cost the most drafting time here.
 
 **Every step carries a worked example**, on the example system in `docs/reference/example-system.md`.
+For Parts 5 and 6, quote the example plan in `kit/example/tree/` and real kit output – do not invent
+a second plan.
 The actual question, the actual answer, the actual output – not a restatement of the rule. A step that
 cannot be shown working has not been understood well enough to publish.
 
@@ -161,7 +163,8 @@ Drafting scaffolding is wrapped so the check can find it:
 PLAN.md          The project plan. The thing to read first.
 docs/parts/      The nine parts. One folder each.
 docs/reference/  The example system, used by every part.
-kit/             The `plan` command, its tests and an example plan. Reads the Part 6 templates in place.
+kit/             The `plan` command and its tests. Reads the Part 6 templates in place.
+kit/example/     The example plan – a whole plan on the example system. Parts 5 and 6 quote it.
 notes/           Working notes, extraction scratch, post candidates. Gitignored – local only.
 mkdocs.yml       Site config.
 ```

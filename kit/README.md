@@ -15,7 +15,7 @@ for somebody changing it.
 | `plan` | The command. A shell wrapper that runs `plan.py` under `uv`, or under `python3` where there is no `uv` |
 | `plan.py` | The whole kit, one file. Its only dependency is PyYAML |
 | `tooling.yaml` | The kit's own values for the `tooling.*` slots |
-| `example/tree/` | A five-node plan on the example system. `plan init --example` copies it |
+| `example/tree/` | The example plan: 24 features on the example system, used by every worked example in Parts 5 and 6. `plan init --example` copies it |
 | `test_plan.py` | The tests |
 
 **The kit reads the workflow templates where they are published**, in
