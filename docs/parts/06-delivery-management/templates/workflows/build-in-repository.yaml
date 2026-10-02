@@ -8,7 +8,7 @@
 # Shared columns come from core.yaml. {{project.*}} and {{tooling.*}} slots are defined in slots.yaml.
 
 name: build-in-repository
-description: >
+description: |
   Verify the feature's inputs, claim it, agree its observable design and who owns what, cut the build
   into steps and agree the cut, run each build step red → green → perturb in a worker of its own,
   exercise the result against a running system, review it with a panel seated by failure mode, write
@@ -27,20 +27,20 @@ columns:
   - name: check
     delegate:
       model: "{{tooling.reading_tier}}"
-      send: >
+      send: |
         the blocker check and the read sweep. Give it the packet's dependency list,
         {{project.constitution}}, the decisions and contracts the packet cites, the owning component's
         documentation, and any Carried forward notes in the brief. Ask for the merged state of each
         blocker, read from {{tooling.pr_state}}, and a list of every place the repository and the
         packet disagree – quoted, with paths.
-      keep: >
+      keep: |
         whether a disagreement is packet drift or an unresolved question about who owns what, and
         whether it is small enough to design around. That is the judgement the gate below asks for,
         and a design that starts from a mislabelled seam builds on it for the rest of the feature.
-      escalate: >
+      escalate: |
         the sweep finds the packet and the repository disagree in more than one place, or about
         anything load-bearing.
-    entry: >
+    entry: |
       Confirm every feature this one depends on has merged, and that the repository still matches the
       packet. The packet is dated: everything it names about files, commands and counts was true that
       day and is a hypothesis now. Report what has moved as a finding against the packet, before
@@ -55,7 +55,7 @@ columns:
   - use: core.open
 
   - name: frame
-    entry: >
+    entry: |
       State the observable behaviour, what owns each piece of state and for how long, the
       accessibility behaviour where there is a surface, and the files and components affected.
       Resolve every choice the packet leaves open. Draw a state table or interface sketch wherever it
@@ -91,7 +91,7 @@ columns:
         why: a feature that works while owning the wrong state creates the next feature's conflict
         blocking: true
     compact:
-      offer: >
+      offer: |
         Everything up to here was reading – the constitution, the cited decisions and contracts, the
         owning component, the upstream notes. `build-plan` needs the agreement, not the sources. This
         is the largest safe drop in the workflow.
@@ -108,7 +108,7 @@ columns:
   - use: core.build-execute
 
   - name: prove
-    entry: >
+    entry: |
       Run the thing, before anyone reviews it. A green gate says the tests agree with the code; it
       does not say the change works. This comes before the panel because a reviewer briefed on a diff
       nobody has executed spends its effort on defects the first run would have found.
@@ -144,13 +144,13 @@ columns:
       - what this column did not prove
     exit:
       - attest: the change exercised against a running system, and what was observed stated
-        why: >
+        why: |
           not "the tests pass" and not "the command succeeded". Where neither path is possible, the
           argument for why tests suffice is written here and lands in the record.
       - attest: every finding fixed, or carried to a named feature or an issue by number
         why: "\"whoever comes next\" is not a destination"
     compact:
-      offer: >
+      offer: |
         Page snapshots, console output, command transcripts, query results and a fix loop that may
         have run more than once are all behind you. The panel reasons about what the diff can get
         wrong, from the diff. What has to survive is what you observed, not what it printed.

@@ -13,6 +13,9 @@ Read it at **[handbook.redmoor.io](https://handbook.redmoor.io)**.
 Each part is a folder with three things in it: **a guide** written for you, **a prompt** you paste
 into an agent session, and **templates** for every file the process produces.
 
+[`kit/`](kit/README.md) is the one thing here that runs: a command-line tool, `plan`, that does the
+mechanical steps of Part 6.
+
 ## The parts
 
 | # | Part |

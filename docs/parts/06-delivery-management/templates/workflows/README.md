@@ -15,7 +15,7 @@ hole – a **slot** – which you fill once per engagement, or once for yourself
 |---|---|---|
 | [`core.yaml`](./core.yaml) | The columns and rules every workflow shares – claim, cut the build, run the build steps, review panel, pull request, record, merge, close – and the protocols for entering a column, reporting back, compacting and sending work to a worker | Nobody. Copy as is |
 | The seven workflow files, listed under [Choosing a workflow](#choosing-a-workflow) | One workflow each. A workflow writes its own distinctive columns and pulls the rest from the core | Nobody. Copy as is |
-| [`slots.yaml`](./slots.yaml) | Every hole in the files above, with what it needs, how to do it by hand, and an example | You – `project.*` once per engagement, `tooling.*` once for yourself |
+| [`slots.yaml`](./slots.yaml) | Every hole in the files above, with what it needs, how to do it by hand, and an example | Nobody. Your values go in `values.yaml`, beside this folder – `project.*` once per engagement, `tooling.*` once for yourself |
 
 **The core exists because the shared columns were duplicated.** In the workflows these were extracted
 from, the claim, panel, pull request, record and close columns were repeated in every workflow file.
@@ -79,18 +79,20 @@ what "prove" has to mean for that kind of work.
 **You** do this once per engagement, before the first feature is claimed. [The guide](../../README.md)
 walks each step with a worked example; this is the short form.
 
-1. Copy this folder into the client repository, next to the plan.
-2. Add a `value:` to every `project.*` slot the first workflow uses. Use the `by_hand` line where the
-   engagement has no tooling for it yet.
+1. Copy this folder into the client repository, next to the plan. With [the kit](../../kit.md),
+   `plan init .` does it.
+2. Give every `project.*` slot the first workflow uses a value, in `values.yaml`. Use the `by_hand`
+   line where the engagement has no tooling for it yet.
 3. Read the stop list and the decide-and-disclose list aloud to the client's lead. These two lists
    decide what an unattended run may do without asking. They are the slots most worth disagreeing
    about early.
-4. Add a `value:` to every `tooling.*` slot from your own copy. If you have none, use the `by_hand`
-   lines.
+4. Give every `tooling.*` slot a value from your own copy. The kit carries its own. If you have
+   neither, use the `by_hand` lines.
 5. Check that every command slot fails when it cannot run. Point it at a missing file and read the exit
    status.
-6. Resolve each workflow you will use into one flat file – the core, the workflow and the slots joined,
-   with no `use:` and no placeholder left. The agent works from that file, never from these.
+6. Resolve each workflow you will use – the core, the workflow and the slot values joined, with no
+   `use:` and no placeholder left. The agent works from that, never from these. The kit resolves on
+   demand. By hand it is one flat file per workflow.
 
 **Step 5 exists because a check that skips reads as a pass.** An archive step that exits cleanly having
 copied nothing leaves you believing there is an archive – and `close` releases the working copy, where

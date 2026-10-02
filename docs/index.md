@@ -19,8 +19,10 @@ shows what that looks like.
 Each part is a folder with three things in it: **a guide** written for you, **a prompt** you paste
 into an agent session, and **templates** for every file the process produces.
 
-There is nothing to install and nothing that runs. The templates are empty skeletons – the thinking
-is still yours.
+Every part can be followed with nothing installed. The templates are empty skeletons – the thinking
+is still yours. One part also ships a tool: [the kit](parts/06-delivery-management/kit.md) in Part 6
+does that part's mechanical steps by script. Said "nothing to install and nothing that runs" until
+2026-10-02.
 
 ## The parts
 
@@ -32,7 +34,7 @@ is still yours.
 | 3 | [**Attacking it before building it**](parts/03-threat-modelling/README.md) | Two taxonomies, two spines; one file per finding | **Draft – guide, prompts and templates** |
 | 4 | [Designing the surfaces](parts/04-design/README.md) | IA by interview; a value lives in one place | Not yet written |
 | 5 | [Planning the delivery](parts/05-delivery-planning/README.md) | Four plan levels; the packet is the brief | Not yet written |
-| 6 | [**Managing the delivery**](parts/06-delivery-management/README.md) | Workflow chosen by what could prove the work; the brief built from the plan | **Draft – guide, prompts and templates** |
+| 6 | [**Managing the delivery**](parts/06-delivery-management/README.md) | Workflow chosen by what could prove the work; the brief built from the plan | **Draft – guide, prompts, templates and a kit** |
 | 7 | [Supervising the run](parts/07-supervision/README.md) | The supervisor per build step; verification at source | Not yet written |
 | 8 | [Keeping it honest](parts/08-keeping-it-honest/README.md) | Enforcement beats advice | Not yet written |
 | 9 | [The machine](parts/09-the-machine/README.md) | The requirement first, then the hardware | Not yet written |

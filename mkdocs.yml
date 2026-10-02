@@ -47,6 +47,7 @@ nav:
   - 6 · Managing the delivery:
       - 6 · Managing the delivery: parts/06-delivery-management/README.md
       - The agent prompts: parts/06-delivery-management/prompt.md
+      - The kit: parts/06-delivery-management/kit.md
       - Templates: parts/06-delivery-management/templates/README.md
       - Workflow templates: parts/06-delivery-management/templates/workflows/README.md
       - The brief skeleton: parts/06-delivery-management/templates/brief.md

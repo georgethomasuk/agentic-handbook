@@ -1,0 +1,41 @@
+# The kit's own values for the `tooling.*` slots – how the workflows' operator-level steps are done
+# when the kit is the tooling. Yours may differ: point `tooling_values` in kit.yaml, or
+# PLAN_TOOLING_VALUES, at a file shaped like this one, and its values win.
+#
+# `<feature>` and `<workflow>` are filled in when a brief or a column is rendered. `<column>` and
+# `<number>` are left for the session to fill.
+
+tooling:
+  enter_column: "`plan enter <feature> <column>`"
+  journal_file: ".work/<feature>/journal.md"
+
+  claim: "`plan claim <feature> --land`"
+  claim_check: "plan claim-check <feature>"
+  close: "`plan close <feature> --pr <number> --land`"
+  close_check: "plan close-check <feature>"
+  plan_check: "plan check"
+  retro: "`plan retro <feature>`"
+  archive_journal: "plan archive <feature>"
+  release_workspace: "plan release <feature>"
+
+  build_plan_file: ".work/<feature>/build-plan.md"
+  design_pack_file: ".work/<feature>/design-pack.md"
+  register_file: ".work/<feature>/register.md"
+
+  pr_state: "gh pr view <number> --json state"
+  open_pr: "`gh pr create --body-file .work/<feature>/pr-body.md`"
+  wait_for_merge: "`gh pr view <number> --json state -q .state` reading MERGED"
+  issue_tracker: "`gh issue create`"
+  added_comments: "`git diff origin/main -U0 | grep -E '^\\+\\s*(#|//|/\\*|\\*)'`"
+
+  # Change these three to the model tiers you run.
+  reading_tier: "the small tier"
+  default_tier: "the mid tier"
+  escalated_tier: "the top tier"
+
+  # The kit does not run a panel. This is the by-hand filling: it needs the operator present.
+  reviewer_library: ".review/profiles/"
+  panel_runner: >
+    one fresh session per seat, each given its profile and the diff, read-only – opened by the
+    operator, who pastes the findings back
+  record_fields: "nothing beyond the six headings"

@@ -29,7 +29,7 @@
 # Shared columns come from core.yaml. {{project.*}} and {{tooling.*}} slots are defined in slots.yaml.
 
 name: component-library
-description: >
+description: |
   Survey every design document for the parts that recur across them, settle what those parts DO
   before deciding who owns what, decompose them into a hierarchy that names what exists and what
   must be built, measure each part against the reference to produce a register of numbered
@@ -52,21 +52,21 @@ columns:
   - name: check
     delegate:
       model: "{{tooling.reading_tier}}"
-      send: >
+      send: |
         the blocker check and the enumeration. Give it {{project.constitution}}, the packet, the
         upstream Carried forward notes, the owning component's documentation,
         {{project.design_reference}} and {{project.design_tokens}}. Ask for every blocker's merged
         state from {{tooling.pr_state}}, and for what the token, primitive and part layers currently
         contain, each named with the file it lives in.
-      keep: >
+      keep: |
         which layer owns what, and the merge of that enumeration with the packet. An enumeration is
         a list. Deciding what the list obliges is the column's output. Packet drift is kept too: a
         worker can see that two documents disagree and cannot decide which one the work follows.
-      escalate: >
+      escalate: |
         a blocker is not merged, or the design reference does not cover the surface this feature
         builds. The first makes the feature premature. The second makes `survey` a design question
         for the operator rather than a survey.
-    entry: >
+    entry: |
       Confirm every feature this one depends on has merged and every external input exists. Read
       {{project.constitution}}, the packet, the owning component's documentation,
       {{project.design_reference}}, and the tokens the surface will draw from. Report packet drift
@@ -87,19 +87,19 @@ columns:
   - name: survey
     delegate:
       model: "{{tooling.reading_tier}}"
-      send: >
+      send: |
         the inventory of what ALREADY EXISTS – the last paragraph of the entry and nothing before
         it. Ask for each token, primitive and existing part with the file it lives in, the
         properties it takes, and the harness entry that renders it. Observations with the path behind
         each, never a verdict about whether something fits.
-      keep: >
+      keep: |
         **the parts inventory, and the reading of the design reference behind it.** Deciding that
         two regions are one part is the judgement this column exists to make, and it cannot be made
         from a worker's description of either.
-      escalate: >
+      escalate: |
         a part the packet assumes exists does not, or two existing parts already do the same job
         differently. Both change what `decompose` is choosing between.
-    entry: >
+    entry: |
       Read every document in {{project.design_reference}} that covers this surface, not only the one
       this feature names.
 
@@ -122,11 +122,11 @@ columns:
       - every disagreement between documents, named and left unresolved
     exit:
       - human_gate: the design reference read and the parts inventory produced
-        why: >
+        why: |
           silence is exactly what a reader cannot notice. A design agreed after reading only the
           specification can carry an element the full reference does not contain.
       - human_gate: the inventory covers every relevant document, not only this feature's screen
-        why: >
+        why: |
           a part scoped to one screen is a part rebuilt on the next one. This is the cheapest moment
           in the workflow to notice that two screens want the same thing.
 
@@ -136,19 +136,19 @@ columns:
   - name: behaviour
     delegate:
       model: "{{tooling.reading_tier}}"
-      send: >
+      send: |
         DRAFTING the question list from the parts inventory – the rows, the kind of part each one
         is, and the prompt set in the entry. One line per question, with the inventory row and the
         reference region behind it. Ask it to mark every question the specification or a recorded
         decision already answers, with the citation, so the operator is handed only what is open.
-      keep: >
+      keep: |
         **the answers, all of them.** This column exists to put questions in front of the person who
         can settle them. A worker answering plausibly is the exact failure it replaces. Deciding
         which questions are worth asking is kept too – a long list is a list nobody reads.
-      escalate: >
+      escalate: |
         an answer contradicts the specification, a recorded decision or an agreed acceptance
         criterion. That is a specification defect, settled before `decompose` starts.
-    entry: >
+    entry: |
       Produce the **behavioural register**. It is the appearance register's twin, built the opposite
       way round: there is nothing to measure it against, so every row is ELICITED. The source is the
       operator, and the column's product is answered questions.
@@ -187,14 +187,14 @@ columns:
         specification defect rather than absorbed
     exit:
       - human_gate: every behavioural row answered, and the fixture obligation named
-        why: >
+        why: |
           a question answered here costs a minute. The same question answered after the build costs
           a review round against work already carrying the wrong answer, and an answer that was
           derived rather than asked has to be unwound, not patched.
         blocking: true
 
   - name: decompose
-    entry: >
+    entry: |
       Turn the inventory into a hierarchy, and classify every node **reuse · compose · build**.
       *Reuse* – a primitive or part already exists and fits; name it. *Compose* – existing parts
       wired together, owning no treatment of its own. *Build* – genuinely new. Only `build` nodes
@@ -243,16 +243,16 @@ columns:
       - command: "test -s {{tooling.build_plan_file}}"
         why: a worker handed no plan writes its own
       - human_gate: the hierarchy, the build-or-reuse call on every node, and the tiering agreed
-        why: >
+        why: |
           this is the inexpensive point to discover that several nodes are one node with a property.
           It is also the last point before measuring starts.
         blocking: true
       - human_gate: the build order and the tier each part runs at
-        why: >
+        why: |
           both are executed without stopping once the loop starts, and a part launched at the wrong
           tier is discovered by reading its output, not by anything failing.
     compact:
-      offer: >
+      offer: |
         Everything up to here was looking – the packet, the tokens, the primitives and every document
         in the design reference. The remaining columns need the inventory and the hierarchy, not the
         sources, and the plan is on disk. This is the largest safe drop in the workflow.
@@ -270,25 +270,25 @@ columns:
   - name: measure
     delegate:
       model: "{{tooling.reading_tier}}"
-      send: >
+      send: |
         the measurement RUNS, and only after you have established the pairs yourself. Do one region
         here first – outline it, pair it, compare it – because that is where the tooling breaks and
         where you learn what a wrong pair looks like. Then give the worker the paired selectors
         verbatim, both addresses and the region list, and ask for **the whole output per region,
         matching lines included**, with the command beside each. The fixture count is delegated too:
         it is a script and its output is a table.
-      keep: >
+      keep: |
         **choosing what to measure against what.** The pair is the judgement. A wrong pair produces
         a confident comparison against the wrong element, and every register row is downstream of
         it. Turning output into rows is kept as well: each differing line is a register row, a
         question for the operator, a deviation to keep, or noise. **Never ask for differing lines
         only** – a matching line on an unrelated comparison can reveal that the reference is not
         what it was assumed to be. A filter tuned to what you expect discards what you did not.
-      escalate: >
+      escalate: |
         the tool is broken, the reference serves something other than what its path claims, or a
         pair cannot be established for a region. The first two invalidate every number taken after
         them.
-    entry: >
+    entry: |
       Produce the register: the ordered list of numbered divergences the build loop consumes. **It
       is measured, never eyeballed, and it is written BEFORE anything is built.**
 
@@ -323,18 +323,18 @@ columns:
       - the population every fixture stands in for, counted with a script, and the shapes no fixture carries
     exit:
       - human_gate: every register row backed by a computed-style comparison rather than a screenshot
-        why: >
+        why: |
           work handed back as done on a screenshot that looked right can hold several wrong choices
           the first measured comparison finds, and regions built before measuring hold rows nobody
           queued. Both are the same failure: the register was written from what a picture looked like.
       - human_gate: every fixture named against the population it stands in for, counted, with the shapes it omits
-        why: >
+        why: |
           a fixture the wrong shape and a fixture too small are the same defect from opposite
           directions, and a review panel is the most expensive place to catch either.
       - human_gate: the questions for the operator answered, or their rows deferred
         blocking: true
     compact:
-      offer: >
+      offer: |
         The register and the fixture count are the whole output of this column. The browser sessions
         behind them are not an input to the loop.
       carry:
@@ -346,7 +346,7 @@ columns:
   # plan every part is briefed from pre-dates the numbers it executes against. This column
   # reconciles the two. It does not redraw the hierarchy.
   - name: build-plan
-    entry: >
+    entry: |
       The plan you are about to execute was written two columns ago, before the registers existed.
       Read it against them and agree the result. Plan only – no edits, no test files, no fixtures.
 
@@ -389,19 +389,19 @@ columns:
         why: once parts start landing, moving a boundary means re-building work that is already green
         blocking: true
       - human_gate: every question against the hierarchy ruled on here, not carried into the loop
-        why: >
+        why: |
           a worker holds no authority to revise the hierarchy. A question carried unanswered into the
           loop is answered by whichever part trips over it first.
         blocking: true
       - human_gate: every register row assigned, and every part with no rows accounted for
-        why: >
+        why: |
           a row assigned to nothing is never built and never missed. A part with no rows is the same
           failure inverted, and it presents as a part that finished early.
       - human_gate: the panel run authorised, where {{tooling.panel_runner}} requires the operator's words
         why: everything after this gate runs unattended. Quote the reply into the journal.
         blocking: true
     compact:
-      offer: >
+      offer: |
         Reconciling is a read – two registers, a hierarchy and a plan, walked against each other. The
         output is one file on disk. This boundary is safe only because the plan is a file.
       carry:
@@ -418,24 +418,24 @@ columns:
   - name: build-execute
     delegate:
       model: "{{tooling.default_tier}}"
-      send: >
+      send: |
         one worker per `build` part, in the agreed order, at the tier the plan names. Give it the
         part's hierarchy entry, its rows from BOTH registers, the part of the fixture count its
         fixture covers, the tokens and primitives it must build from, and – the one that is easy to
         drop – a summary of what every earlier part changed, one line per file. Ask it to work the
         four steps in the entry and return the record named under `produces`.
-      keep: >
+      keep: |
         every judgement and all of the authority. A part that finds it should be two parts, or
         should reuse something the plan said to build, returns that as a question. So does a
         divergence spotted in passing – it goes into the register, and putting it there is this
         session's call. No part closes its own exit. Also kept: the build order, each part's tier,
         and the browser – a worker cannot show you a picture.
-      escalate: >
+      escalate: |
         re-read the four tier reasons against each part before launching it. Raising one is this
         session's call; write the reason in the journal. Lowering one the plan argued up is not
         offered.
     review_each_part:
-      suspicion: >
+      suspicion: |
         a part that built the treatment and missed the contract underneath it. These parts are
         components other work will compose, so the expensive defect is not a wrong value. It is a
         named region, property or state that reads fine in the part's own harness and is wrong for
@@ -443,11 +443,11 @@ columns:
         rather than the behaviour that produces it; a primitive rebuilt rather than reused; a
         semantic contract the hierarchy put somewhere else; and anything that fails only once a
         LATER part composes it.
-      escalate: >
+      escalate: |
         a finding whose fix is on {{project.stop_list}} – here, most often one that changes the
         hierarchy. Everything else folds into the next part or into a new register row, and is
         recorded rather than asked about.
-    entry: >
+    entry: |
       Read the plan from {{tooling.build_plan_file}} and work it in order. **If it is missing or
       empty, stop and hand back.** A reconstructed plan is a second, unagreed decomposition wearing
       the first one's name.
@@ -498,15 +498,15 @@ columns:
       - everything taken under {{project.decide_and_disclose_list}}, with the reason
     exit:
       - attest: every register row struck, with an empty or fully answered comparison behind it
-        why: >
+        why: |
           the register is the definition of done for the part layer. A row struck without a
           comparison behind it is the screenshot failure returning under another name.
       - attest: every question a part returned, decided here rather than inside the part
-        why: >
+        why: |
           a part that silently became two parts, or reused something the plan said to build, is the
           decomposition changing without the gate that exists to change it.
     compact:
-      offer: >
+      offer: |
         The part loop is the largest accumulation in the workflow even when delegated. `compose`
         works the assembled surface and the register, both of which survive on their own.
       carry:
@@ -519,7 +519,7 @@ columns:
           that needed a second pass or a higher tier
 
   - name: compose
-    entry: >
+    entry: |
       Wire the finished parts into the surface and exercise it with {{project.browser_check}} at
       each of {{project.viewports}}. **This is the first column allowed to judge the whole screen**,
       and the ordering is the point.
@@ -540,12 +540,12 @@ columns:
       - anything that belongs to a part, returned to the register rather than patched in place
     exit:
       - attest: the composed surface reviewed in a browser, not inferred from passing part tests
-        why: >
+        why: |
           a test renderer may load no stylesheet at all, so a part suite can be wholly green against
           an unstyled screen.
 
   - name: user-review
-    entry: >
+    entry: |
       Hand the running surface to the reviewer and stop. Everything the loop verifies is a proxy: a
       passing assertion says a value moved, a comparison says it moved to the reference's number,
       and neither says the result is right. The eye being corrected here is the agent's, so a loop
@@ -577,7 +577,7 @@ columns:
       - "A register row struck without a comparison behind it."
       - "A rewrite that dropped a finding no test held."
     also:
-      entry: >
+      entry: |
         Create a durable new profile only when the failure mode has recurred across several
         features. A review rule written on the branch it governs judges its own author: that is
         allowed, and it is declared in the pull request body in one sentence naming what to read
