@@ -10,6 +10,7 @@ import contextlib
 import io
 import json
 import os
+import re
 import stat
 import subprocess
 import sys
@@ -109,6 +110,13 @@ class PlanCase(unittest.TestCase):
         text = path.read_text()
         self.assertIn(old, text)
         path.write_text(text.replace(old, new))
+
+    def orphan(self, key: str) -> None:
+        """Remove `key` from every `blocked_by`, so nothing in the plan depends on it."""
+        for path in (self.repo / "plan" / "tree").rglob("*.md"):
+            text = path.read_text()
+            cut = re.sub(rf"^(blocked_by: \[.*?)\b{key}\b(, )?", r"\1", text, flags=re.M)
+            path.write_text(re.sub(r"^(blocked_by: \[.*?), \]", r"\1]", cut, flags=re.M))
 
     def brief(self, key: str = RATE_LIMIT, column: str | None = None, only: bool = False) -> str:
         tree, graph = self.load()
@@ -286,7 +294,10 @@ class TemplateCheckTests(PlanCase):
 
 class TreeCheckTests(PlanCase):
     def test_the_example_plan_is_clean(self) -> None:
-        self.assertEqual(self.tree_findings(), ([], []))
+        errors, warnings = self.tree_findings()
+        self.assertEqual(errors, [])
+        # What is left is true of the example and said in its own Reading sections.
+        self.assertTrue(all("is answered by one feature" in w for w in warnings), warnings)
         result, out, _ = quiet(plan.check, self.kit)
         self.assertEqual(result, 0)
         self.assertIn("plan ok", out)
@@ -334,20 +345,68 @@ class TreeCheckTests(PlanCase):
         (self.repo / SLICE / "milestone_misplaced" / "README.md").write_text("---\ntitle: x\n---\n")
         self.assertIn("a milestone cannot sit inside a slice", self.errors())
 
+    def unread(self) -> list[str]:
+        return [w for w in self.tree_findings()[1] if "has no reader" in w]
+
     def test_carried_forward_with_no_reader_warns(self) -> None:
-        self.edit(RATE_LIMIT, f"blocked_by: [{TOKEN}]", "blocked_by: []")
-        warnings = "\n".join(self.tree_findings()[1])
-        self.assertIn("`### Carried forward` has no reader", warnings)
+        self.assertEqual(self.unread(), [])
+        self.orphan(TOKEN)
+        self.assertEqual(len(self.unread()), 1)
+        self.assertIn(TOKEN, self.unread()[0])
 
     def test_carried_forward_naming_an_issue_has_a_reader(self) -> None:
-        self.edit(RATE_LIMIT, f"blocked_by: [{TOKEN}]", "blocked_by: []")
+        self.orphan(TOKEN)
         self.edit(TOKEN, "Closes when something bounds", "Raised as issue #12. Closes when something bounds")
-        self.assertEqual(self.tree_findings()[1], [])
+        self.assertEqual(self.unread(), [])
 
     def test_a_bare_number_is_not_a_destination(self) -> None:
-        self.edit(RATE_LIMIT, f"blocked_by: [{TOKEN}]", "blocked_by: []")
+        self.orphan(TOKEN)
         self.edit(TOKEN, "Closes when something bounds", "See #12. Closes when something bounds")
-        self.assertEqual(len(self.tree_findings()[1]), 1)
+        self.assertEqual(len(self.unread()), 1)
+
+    def test_a_packet_needs_its_tie_breaker(self) -> None:
+        self.edit(RATE_LIMIT, "## Where to err", "## Notes")
+        self.assertIn("a packet with no `## Where to err`", self.errors())
+
+    def test_a_criterion_nothing_builds_is_an_error_whatever_the_rehearsal_traces(self) -> None:
+        # The rehearsal traces every criterion of this milestone. It proves them and builds none,
+        # so it must not be what makes G2.3 look answered.
+        self.edit(RATE_LIMIT, "gate: [G2.3]", "gate: [G2.1]")
+        self.assertIn("criterion `G2.3` has no feature tracing to it", self.errors())
+
+    def test_a_criterion_the_milestone_does_not_declare(self) -> None:
+        self.edit(RATE_LIMIT, "gate: [G2.3]", "gate: [G2.9]")
+        self.assertIn("traces gate `G2.9`, which milestone_checkin_window_opens does not declare",
+                      self.errors())
+
+    def test_a_feature_says_what_it_answers_or_that_it_inherits(self) -> None:
+        self.edit(RATE_LIMIT, "  gate: [G2.3]\n", "")
+        self.assertIn("`traces.gate` is neither a list nor `inherit`", self.errors())
+        self.feature_path(RATE_LIMIT).write_text(
+            self.feature_path(RATE_LIMIT).read_text().replace("traces:\n", "traces:\n  gate: inherit\n"))
+        self.assertNotIn("neither a list nor", self.errors())
+
+    def test_a_criterion_answered_once_warns(self) -> None:
+        warnings = "\n".join(self.tree_findings()[1])
+        self.assertIn(f"criterion `G2.3` is answered by one feature, {RATE_LIMIT}", warnings)
+        self.assertNotIn("criterion `G2.1`", warnings)
+
+    def test_only_a_milestone_has_a_date(self) -> None:
+        readme = self.repo / SLICE / "README.md"
+        readme.write_text(readme.read_text().replace("---\ntitle", "---\ntarget: 2026-11-02\ntitle", 1))
+        self.assertIn("`target:` on a slice", self.errors())
+
+    def test_the_longest_chain_and_the_feature_most_wait_on(self) -> None:
+        tree, graph = self.load()
+        features = [n for n in tree.nodes if n.level == "feature"]
+        chain = [n.key for n in graph.longest_chain(features)]
+        self.assertEqual(chain[0], "feature_report_inbox")
+        self.assertEqual(chain[-1], "feature_site_trend_chart")
+        for earlier, later in zip(chain, chain[1:]):
+            self.assertIn(earlier, [b.key for b in graph.blockers[plan.resolve_node(tree, later).rel]])
+        waiting = {n.key for n in graph.waiting_on(plan.resolve_node(tree, "feature_report_inbox"))}
+        self.assertIn("feature_site_trend_chart", waiting)
+        self.assertNotIn(RATE_LIMIT, waiting)
 
 
 class BriefTests(PlanCase):
@@ -373,7 +432,7 @@ class BriefTests(PlanCase):
         far.write_text(self.feature_path(TOKEN).read_text()
                        .replace("Anonymous check-in token", "Invitation list")
                        .replace("The token identifies an invitation", "The list is rebuilt nightly"))
-        self.edit(TOKEN, "blocked_by: []", "blocked_by: [feature_invitation_list]")
+        self.edit(TOKEN, "blocked_by: [feature_ci_and_full_gate]", "blocked_by: [feature_invitation_list]")
         brief = self.brief()
         near = brief.index(f"### From `{TOKEN}`")
         self.assertLess(near, brief.index("### From `feature_invitation_list`"))
@@ -776,8 +835,25 @@ class CommandLineTests(PlanCase):
 
     def test_work_lists_the_ready_feature_with_its_command(self) -> None:
         done = self.run_plan("work")
-        self.assertIn("1 ready · 1 done", done.stdout)
+        self.assertIn("3 ready", done.stdout)
+        self.assertIn("6 done", done.stdout)
         self.assertIn(f"plan prompt {RATE_LIMIT}", done.stdout)
+
+    def test_view_is_a_census_and_stores_nothing(self) -> None:
+        before = sh("git", "status", "--porcelain", cwd=self.repo)
+        whole = self.run_plan("view").stdout
+        self.assertIn("G2.3  1 feature, 0 done  ← answered once", whole)
+        self.assertIn("left out of the count: feature_window_rehearsal traces every criterion", whole)
+        self.assertIn("Most waited on · feature_report_inbox", whole)
+        self.assertNotIn("%", whole)
+        self.assertEqual(sh("git", "status", "--porcelain", cwd=self.repo), before)
+
+    def test_view_of_one_node_counts_only_what_is_under_it(self) -> None:
+        one = self.run_plan("view", "slice_staff_complete_a_checkin").stdout
+        self.assertIn("Slice · Staff complete a check-in on their own phone", one)
+        self.assertIn("1 ready · 1 in-review · 1 done", one)
+        self.assertIn("G2.2  1 feature, 1 done", one)
+        self.assertNotIn("G1.1", one)
 
     def test_show_prints_one_field(self) -> None:
         self.assertEqual(self.run_plan("show", RATE_LIMIT, "--field", "status").stdout.strip(),

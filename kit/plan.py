@@ -71,6 +71,10 @@ RECORD_HEADINGS = (
     "Lesson",
 )
 PACKET_HEADINGS = ("Acceptance criteria", "Verification")
+# The direction to lean when the criteria are silent. Its own heading because, as a clause inside
+# the goal, it was the clause an author under time pressure did not write.
+TIE_BREAKER = "Where to err"
+INHERIT = "inherit"
 
 EXIT_KINDS = ("command", "attest", "human_gate")
 COMPACT_KEYS = {"offer", "carry", "never"}
@@ -227,6 +231,17 @@ class Node:
         return str(self.frontmatter.get("title") or self.slug)
 
     @property
+    def features(self) -> list["Node"]:
+        """Every feature at or under this node."""
+        if self.level == "feature":
+            return [self]
+        return [feature for child in self.children for feature in child.features]
+
+    @property
+    def milestone(self) -> "Node | None":
+        return next((n for n in self.ancestry if n.level == "milestone"), None)
+
+    @property
     def ancestry(self) -> list["Node"]:
         """Top of the plan first, this node last."""
         chain, cursor = [], self
@@ -359,6 +374,40 @@ def is_briefed(node: Node) -> bool:
     return all(section(node.body, heading) is not None for heading in PACKET_HEADINGS)
 
 
+def gate_criteria(node: Node) -> list[str]:
+    """The criteria somebody outside the build will judge a milestone by, as it declares them."""
+    declared = (node.frontmatter.get("traces") or {}).get("gate")
+    return [str(c) for c in declared] if isinstance(declared, list) else []
+
+
+def traced_gates(node: Node) -> list[str] | str | None:
+    """What a feature says it answers: a list of criteria, `inherit`, or nothing at all."""
+    declared = (node.frontmatter.get("traces") or {}).get("gate")
+    if isinstance(declared, list):
+        return [str(c) for c in declared]
+    return INHERIT if declared == INHERIT else None
+
+
+def coverage(milestone: Node) -> tuple[dict[str, list[Node]], list[Node]]:
+    """Which features point at each criterion, and the features left out of the count. A feature
+    that traces every criterion – a rehearsal, a final acceptance run – answers all of them by
+    definition, so counting it makes each one look answered whether or not anything builds it."""
+    criteria = gate_criteria(milestone)
+    answered: dict[str, list[Node]] = {criterion: [] for criterion in criteria}
+    blanket: list[Node] = []
+    for feature in milestone.features:
+        traced = traced_gates(feature)
+        if not isinstance(traced, list):
+            continue
+        if len(criteria) > 1 and set(criteria) <= set(traced):
+            blanket.append(feature)
+            continue
+        for criterion in traced:
+            if criterion in answered:
+                answered[criterion].append(feature)
+    return answered, blanket
+
+
 def demote(markdown: str, levels: int) -> str:
     return re.sub(r"^(#+) ", lambda m: "#" * (len(m.group(1)) + levels) + " ", markdown, flags=re.M)
 
@@ -398,6 +447,27 @@ class Graph:
 
     def has_dependent(self, node: Node) -> bool:
         return any(node in blockers for blockers in self.blockers.values())
+
+    def waiting_on(self, node: Node) -> list[Node]:
+        """Every unfinished feature that cannot start until `node` lands, directly or through
+        another."""
+        return [other for other in self.tree.nodes
+                if other.is_leaf and other.status != "done" and node in self.upstream(other)]
+
+    def longest_chain(self, among: list[Node]) -> list[Node]:
+        """The longest run of unfinished features in which each waits on the one before."""
+        if self.cycles():
+            return []
+        inside = {n.rel for n in among if n.status != "done"}
+        best: dict[str, list[Node]] = {}
+
+        def chain(node: Node) -> list[Node]:
+            if node.rel not in best:
+                before = [chain(b) for b in self.blockers[node.rel] if b.status != "done"]
+                best[node.rel] = max(before, key=len, default=[]) + [node]
+            return best[node.rel]
+
+        return max((chain(n) for n in among if n.rel in inside), key=len, default=[])
 
     def cycles(self) -> list[list[str]]:
         colour: dict[str, int] = {}
@@ -1398,6 +1468,17 @@ def check_tree(kit: Kit, tree: Tree, graph: Graph) -> tuple[list[str], list[str]
                               f"Everything above a feature is derived")
             if section(node.body, "Record") is not None:
                 err(node, "`## Record` on a container – only a feature is executed")
+            if "target" in node.frontmatter and node.level != "milestone":
+                err(node, f"`target:` on a {node.level} – only a milestone has an acceptance date. "
+                          f"A timebox is not a node")
+            if node.level == "milestone" and gate_criteria(node):
+                answered, _ = coverage(node)
+                for criterion, features in answered.items():
+                    if not features:
+                        err(node, f"criterion `{criterion}` has no feature tracing to it")
+                    elif len(features) == 1:
+                        warn(node, f"criterion `{criterion}` is answered by one feature, "
+                                   f"{features[0].key} – one slip there is a slip of the milestone")
             continue
 
         if not node.is_leaf:
@@ -1417,6 +1498,25 @@ def check_tree(kit: Kit, tree: Tree, graph: Graph) -> tuple[list[str], list[str]
         if status in ("ready", "blocked") and not is_briefed(node):
             err(node, f"status is `{status}` with no packet – it needs `## Acceptance criteria` "
                       f"and `## Verification`, or the status `no-packet`")
+        if is_briefed(node) and section(node.body, TIE_BREAKER) is None:
+            err(node, f"a packet with no `## {TIE_BREAKER}` – the direction to lean when the "
+                      f"criteria are silent")
+        if "target" in node.frontmatter:
+            err(node, "`target:` on a feature – only a milestone has an acceptance date")
+
+        milestone = node.milestone
+        declared = gate_criteria(milestone) if milestone else []
+        if declared:
+            traced = traced_gates(node)
+            if traced is None or traced == []:
+                err(node, f"`traces.gate` is neither a list nor `{INHERIT}` – {milestone.key} "
+                          f"declares criteria, so say which this answers, or that it serves its "
+                          f"parent's")
+            elif isinstance(traced, list):
+                for criterion in traced:
+                    if criterion not in declared:
+                        err(node, f"traces gate `{criterion}`, which {milestone.key} does not "
+                                  f"declare")
 
         workflow, column = node.workflow, node.frontmatter.get("column")
         if not workflow and status not in PRE_WORKFLOW:
@@ -1554,6 +1654,48 @@ def work(kit: Kit, tree: Tree, graph: Graph, show_all: bool) -> int:
     return 0
 
 
+def view(tree: Tree, graph: Graph, node: Node | None) -> int:
+    """The census for one node, or for the whole plan. Facts a program can compute from the
+    features, and no judgement: no percentage, no verdict, nothing stored."""
+    features = node.features if node else [n for n in tree.nodes if n.level == "feature"]
+    print(f"{node.level.capitalize()} · {node.title}" if node else "The whole plan")
+    counts = defaultdict(int)
+    for feature in features:
+        counts[feature.status or "unset"] += 1
+    print("  " + (" · ".join(f"{counts[s]} {s}" for s in STATUSES if counts[s]) or "no features"))
+
+    below = node.features if node else None
+    milestones = [n for n in tree.nodes if n.level == "milestone" and gate_criteria(n)
+                  and (node is None or n in node.ancestry or n in _under(node))]
+    for milestone in milestones:
+        answered, blanket = coverage(milestone)
+        print(f"\nCriteria · {milestone.title}")
+        for criterion, tracing in answered.items():
+            if below is not None:
+                tracing = [f for f in tracing if f in below]
+            done = sum(1 for f in tracing if f.status == "done")
+            note = ("  ← nothing points at it" if not tracing
+                    else "  ← answered once" if len(tracing) == 1 else "")
+            print(f"  {criterion}  {plural(len(tracing), 'feature')}, {done} done{note}")
+        for feature in blanket:
+            print(f"  left out of the count: {feature.key} traces every criterion")
+
+    chain = graph.longest_chain(features)
+    if len(chain) > 1:
+        print(f"\nLongest chain still to run · {len(chain)}")
+        print("  " + " → ".join(f.key for f in chain))
+    waited = [(len(graph.waiting_on(f)), f) for f in features if f.status != "done"]
+    most = max(waited, key=lambda pair: pair[0], default=(0, None))
+    if most[0]:
+        print(f"\nMost waited on · {most[1].key}")
+        print(f"  {plural(most[0], 'unfinished feature')} cannot start until it lands")
+    return 0
+
+
+def _under(node: Node) -> list[Node]:
+    return [child for direct in node.children for child in [direct, *_under(direct)]]
+
+
 # ──────────────────────────────────────────────────────────────────────────────
 # Setting up
 # ──────────────────────────────────────────────────────────────────────────────
@@ -1649,6 +1791,10 @@ def main(argv: list[str]) -> int:
     queue.add_argument("--all", action="store_true", dest="show_all",
                        help="also list features with no packet")
 
+    census = sub.add_parser("view", help="the census for one node, or the whole plan – computed, "
+                                         "never stored")
+    census.add_argument("node", nargs="?", help="a node's name or path (default: the whole plan)")
+
     shown = feature_command("show", "one feature's frontmatter")
     shown.add_argument("--field", help="print one field's value and nothing else")
 
@@ -1715,6 +1861,8 @@ def main(argv: list[str]) -> int:
     graph = Graph(tree)
     if args.command == "work":
         return work(kit, tree, graph, args.show_all)
+    if args.command == "view":
+        return view(tree, graph, resolve_node(tree, args.node) if args.node else None)
 
     node = resolve_node(tree, args.feature)
     if args.command == "show":

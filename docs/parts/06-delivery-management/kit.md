@@ -68,8 +68,8 @@ wrote plan – the workflows, kit.yaml and values.yaml. Fill values.yaml, write 
 It copies the workflow templates, writes `kit.yaml` and an empty `values.yaml` with one line per
 `project.*` slot, and adds `.work/` to `.gitignore`. It refuses if `plan/kit.yaml` already exists.
 
-**To try the kit before you have a plan,** add `--example`. That also copies a five-node plan on
-[the example system](../../reference/example-system.md) and fills every project slot from the slot's
+**To try the kit before you have a plan,** add `--example`. That also copies [the example plan](../05-delivery-planning/example-plan.md) – 24 features on
+[the example system](../../reference/example-system.md) – and fills every project slot from the slot's
 own example.
 
 **Then set how a claim reaches the main branch.** One line in `kit.yaml`:
@@ -126,26 +126,36 @@ run one workflow.
 > **You** start it. **The agent** runs every command from `plan enter` on.
 
 The worked example is the guide's: the rate limit on the public check-in endpoint. Every block below
-is output from one run on 2 October 2026, against a local repository with `land: push`. The archive
-path is shortened.
+is output from runs on 2 October 2026, against a local repository with `land: push`. The archive
+path is shortened, and the queue is cut to its ready features.
 
 **See what can start.** A feature is listed as ready only when everything it depends on is done.
 
 ```
 $ plan work
-1 ready · 1 done
-
+2 design · 10 no-packet · 3 ready · 1 blocked · 1 in-progress · 1 in-review · 6 done
+…
 Ready
+  feature_checkin_log_scrub – No check-in content in the operational exhaust
+    build-in-repository · wave 3
+    plan prompt feature_checkin_log_scrub
   feature_checkin_rate_limit – Rate limit on the public check-in endpoint
-    build-in-repository · wave 2
+    build-in-repository · wave 3
     plan prompt feature_checkin_rate_limit
+  feature_report_inbox – The report inbox
+    build-in-browser · wave 4
+    plan prompt feature_report_inbox
+…
 ```
+
+A **wave** is the earliest point a feature could start, counted from the dependencies alone.
+Features in one wave do not depend on each other.
 
 **Assemble the brief.** The kit prints the count the guide tells you to check.
 
 ```
 $ plan prompt feature_checkin_rate_limit -o .work/feature_checkin_rate_limit/brief.md
-wrote .work/feature_checkin_rate_limit/brief.md – 10131 words, 44 before the sentence naming the column.
+wrote .work/feature_checkin_rate_limit/brief.md – 10321 words, 47 before the sentence naming the column.
 ```
 
 Hand that file to a fresh session. From here the agent runs the commands, because the brief and
@@ -217,6 +227,7 @@ repository. Guide step 1.5 has the failure this guards against.
 | `plan init <dir> [--example]` | You | Writes a plan directory |
 | `plan check` | You, and the agent at `record` | Checks the templates, the plan and the retros. Exits 1 on any error |
 | `plan work [--all]` | You | Unfinished features by state, with the command that briefs each |
+| `plan view [node]` | You | The census for one node or the whole plan: counts by status, each criterion and what points at it, the longest chain, the feature most others wait on. Computed, never stored |
 | `plan show <feature> [--field f]` | Either | The feature's header fields, or one of them |
 | `plan resolve <workflow> [-o file]` | You | One workflow, joined and filled, to read |
 | `plan prompt <feature> [--column c] [--column-only] [-o file]` | You | The brief. `--column` starts it at a later column |
@@ -243,11 +254,12 @@ go.
 | In | It fails on |
 |---|---|
 | The templates | A slot used and not defined · a slot with no `what`, `by_hand` or `example` · a bound workflow with an unfilled slot · a column marked to compact both ways · a human gate that does not block inside an unattended stretch |
-| The plan | A level in the wrong place · a missing title, goal or done-when · a container with no boundaries · a `blocked_by` that names nothing · a dependency loop · a status that contradicts its blockers · a `ready` feature with no packet or no workflow · a column the workflow does not have · a record heading outside the closed set · a done feature with no record or no lesson |
+| The plan | A level in the wrong place · a missing title, goal or done-when · a container with no boundaries · a `blocked_by` that names nothing · a dependency loop · a status that contradicts its blockers · a `ready` feature with no packet or no workflow · a packet with no `## Where to err` · a milestone criterion no feature traces to · a feature tracing a criterion its milestone does not declare · a date on anything but a milestone · a column the workflow does not have · a record heading outside the closed set · a done feature with no record or no lesson |
 | The retros | A file over 60 lines · a missing label |
 
 It warns, without failing, on a slot nothing uses, a done feature with no merge date, a feature in
-flight with no column, and a *Carried forward* note that no later feature will read.
+flight with no column, a criterion answered by one feature only, and a *Carried forward* note that
+no later feature will read.
 
 **It found a defect in the published templates on its first run**, on 2 October 2026. One column
 was marked both to offer compaction and never to compact. The template is fixed.
@@ -256,18 +268,9 @@ was marked both to offer compaction and never to compact. The template is fixed.
 
 ## What the plan must look like
 
-The kit expects the plan Part 5 will describe. Until Part 5 is written, this is the whole of it.
-
-```
-plan/tree/
-  mission_platform_build/
-    README.md
-    milestone_checkin_window_opens/
-      README.md
-      slice_staff_complete_a_checkin/
-        README.md
-        feature_checkin_rate_limit.md
-```
+[Part 5](../05-delivery-planning/README.md) is the guide to writing one, and
+[the example plan](../05-delivery-planning/example-plan.md) is a whole one. This is the short form of
+what the kit reads.
 
 **A level is a folder with a `README.md`. A feature is a file.** The name's prefix says the level:
 `mission_`, `milestone_`, `slice_`, `feature_`.
@@ -282,18 +285,22 @@ workflow: build-in-repository
 blocked_by: [feature_anonymous_checkin_token]
 briefed: 2026-09-28
 traces:
+  gate: [G2.3]
   finding: [F-51]
   boundary: [B3]
 ---
 ```
 
-| Section | On | Holds |
+| Section | On | The kit |
 |---|---|---|
-| `## Goal` · `## Done-when` | Every node | What it is for, and what shows it is finished |
-| `## Boundaries` | Every level above a feature | Where it stops |
-| `## Inherited context` | Any level above a feature | What is settled and not to be reopened |
-| `## Acceptance criteria` · `## Verification` | A feature | The packet |
-| `## Record` | A done feature | What the run left behind |
+| `## Goal` · `## Done-when` | Every node | Requires both. Copies the goal of every level into the brief |
+| `## Boundaries` | Every level above a feature | Requires it. Copies each into the brief |
+| `## Inherited context` | Any level above a feature | Copies it into the brief |
+| `## Acceptance criteria` · `## Verification` | A feature | Together these are what makes a feature *briefed* |
+| `## Where to err` | A briefed feature | Requires it |
+| `## Record` | A done feature | Requires a filled-in *Lesson*, and *Decisions taken* or *Carried forward* |
+
+Everything in a feature's file above `## Record` is copied into its brief unchanged.
 
 **The record's headings are a closed set:** Decisions taken · Carried forward · Verification actually
 run · Review · Panel tally · Also fixed (not the feature) · Lesson. *Carried forward* is copied by
@@ -304,7 +311,8 @@ another. A heading spelled another way is not copied, so the check rejects it.
 `done`. The kit moves a feature from `ready` to `in-progress` and to `done`. Every other change is
 yours.
 
-The example plan in `kit/example/` is a working copy of all of this.
+**A milestone may declare criteria**, as `traces: {gate: […]}`. Every feature under it then says
+which it answers, or `inherit`.
 
 ---
 
@@ -328,8 +336,9 @@ warning and the full workflow. Resolve a mode by hand, with prompt B.
 | A panel runner | One fresh session per seat. You paste the findings back |
 | A cost-per-column report | Not measured. The column markers in `.work/<feature>/stages.jsonl` are the raw material |
 | A journal scaffold per build step | The agent writes the journal's headings itself |
-| A roll-up view of the whole plan | `plan work --all` lists features. Nothing draws the levels |
-| Checks that every finding and decision is traced to a feature | Read the `traces:` lines yourself |
+| A picture of the whole plan | `plan view` prints the census. Nothing draws the levels against the build order |
+| The build order written into file names | `plan work` prints each feature's wave. A folder listing still sorts alphabetically |
+| Checks that a packet's links resolve, and that an identifier its text cites is in its header | Read them yourself |
 
 ---
 
