@@ -1,11 +1,11 @@
-**Status** scaffold – not yet written · **Life** living · **Reader** you, about to supervise an agent run
+**Status** scaffold – not yet written · **Life** living · **Reader** you, about to keep the work honest as it scales
 
-# How to supervise an agent run
+# How to keep the work honest as it scales
 
 > **Not yet written.** This part is an outline. The finished part is
 > [Part 3, threat modelling](../03-threat-modelling/README.md) – start there.
 
-a per-slice supervisor, verification taken at source rather than reported, and an escalation route that reaches a person
+retrospectives that change something, a review panel with stated composition, and rules enforced by a check rather than by advice
 
 The worked example throughout is [the example system](../../reference/example-system.md).
 
@@ -19,7 +19,7 @@ The worked example throughout is [the example system](../../reference/example-sy
 
 **Read this once. Use the prompt every time.**
 
-> **Draft order: 3rd.** See `PLAN.md` section 10.
+> **Draft order: 6th.** See `PLAN.md` section 10.
 
 ---
 
@@ -92,12 +92,16 @@ close one, say so here]
 
 ## Source material
 
-- `platform/docs/supervisor-playbook.md` — all nine sections. Written 2026-08-27, direct owner
-  channel added the following day.
-- `platform/plan/workflows/*.yaml` — where a workflow declares the point from which it runs unattended.
-- `platform/tools/fleet/` — the adjacent pattern: parallel resolvers in their own worktrees, each
-  checked by a reviewer, with **a shell script and not a model holding the loop**. Decide whether this
-  belongs here or in Part 7.
+- `platform/plan/retro.md` — the register rules, the two standing questions, the ceiling, the
+  three-occurrence bar, the retired gap register.
+- `platform/.claude/skills/comment-budget/SKILL.md` — the enforcement evidence.
+- `platform/.claude/skills/panel-composition/SKILL.md` and `docs/review/panel-composition.md` — the
+  seating model and the unestablished rewrite.
+- `platform/.claude/agents/` — the reviewer profiles.
+- `platform/docs/constitution-evidence.md`, `AGENTS.md` — the standing constitution and its growth
+  control.
+- `platform/tools/fleet/README.md` — the loop, and its decisions.
+- `platform/docs/defect-resolution-workbook.md`.
 
 ## Open
 

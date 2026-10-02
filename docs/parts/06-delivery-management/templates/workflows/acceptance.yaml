@@ -1,0 +1,298 @@
+# Acceptance – proving built work in a deployed environment.
+#
+# For work whose truth lives in a RUNNING, deployed environment: commands, workers, migrations with
+# a backfill, import and reconciliation runs, or a deployed surface in a browser. It proves
+# behaviour that is already built. It is not a second implementation workflow.
+#
+# One workflow, two proof instruments. Either the operations are run and their effects read back out
+# (the **operations** instrument), or the deployed surface is driven in a browser and then walked by
+# a person on a real device (the **browser** instrument). The columns, the gates and the reasons are
+# the same. Only the matrix's columns and the human check differ, and each column below says how.
+#
+# Attended throughout: there is no `unattended_from`. Every deployment is asked for, and a person
+# judges the result.
+#
+# Shared columns come from core.yaml. {{project.*}} and {{tooling.*}} slots are defined in slots.yaml.
+
+name: acceptance
+description: >
+  Verify every owning feature and external input, confirm the environment holds the state the run
+  needs, agree the matrix and the deployment, deploy only with explicit approval, prove the
+  behaviour by running every row and reading its effect back, put the result in front of a person who
+  can judge whether it is right rather than merely free of errors, close defects where they belong,
+  review with a panel, write what happened, merge, and release the claim.
+
+uses: core
+
+columns:
+
+  - name: check
+    delegate:
+      model: "{{tooling.reading_tier}}"
+      send: >
+        the blocker check, the read sweep and the environment inventory. Give it
+        {{project.constitution}}, the packet, the decisions it names, the owning component's
+        documentation and the upstream Carried forward notes. Ask for each blocker's merged state
+        from {{tooling.pr_state}}, and for {{project.target_environment}} and
+        {{project.deploy_mechanism}} confirmed to exist. **Read-only, and say so in its brief:**
+        describe commands, never run one that changes the environment, and remember the environment
+        is shared.
+      keep: >
+        whether the environment holds the state the run needs. This is the gate the workflow fails on
+        most often and the one a worker is worst at: a query returning nothing because the
+        configuration was never built looks exactly like a correct run over nothing. Read the counts
+        it returns and decide yourself. Also the call that an acceptance claim has no owning
+        implementation.
+      escalate: >
+        the inventory is not clean – a count you cannot account for, credentials that are not what
+        the packet assumes, or any sign that someone else is mid-change in the environment.
+    entry: >
+      Confirm every feature this one depends on has merged and is linked to its diff. Verify
+      {{project.target_environment}}, {{project.deploy_mechanism}} and any data the run depends on
+      exist, without changing them.
+
+      **Confirm the environment holds the state the run needs.** A command that returns nothing
+      because the configuration it reads was never built cannot be told, from the outside, from a
+      command that is broken.
+
+      Report any prerequisite that is only marked done, and any acceptance claim with no owning
+      implementation, before preparing a run.
+    produces:
+      - every blocker confirmed merged AND linked to its diff
+      - the target environment and deployment mechanism confirmed to exist, unchanged
+      - the state the run depends on, confirmed present – not assumed because the code that creates
+        it has merged
+      - any prerequisite only marked done, and any acceptance claim with no owning implementation
+    exit:
+      - human_gate: blockers, external inputs, target environment and owning implementations verified
+        why: acceptance cannot prove behaviour whose prerequisites exist only in the plan
+      - human_gate: the environment holds the state this run reads
+        why: >
+          an empty result is not a failure signal. It is the same output as a correct run over
+          nothing. Establish what is there before the run, so that afterwards you compare against a
+          number rather than a hope.
+
+  - use: core.open
+
+  - name: prepare
+    entry: >
+      Write the matrix before deploying. One row per criterion: the exact command or action, the
+      environment, the input state it assumes, the expected effect, **how that effect will be read
+      back**, the evidence to keep, and the feature that owns it if it fails. With the browser
+      instrument, each row also names its synthetic fixture, the browser or device, and the screen
+      size.
+
+      **The read-back column is what makes the matrix worth writing.** "Ran without error" is not an
+      expected effect. "Every promoted record has a row in the audit table with this action, and none lacks an actor" is. Where a row's only assertion is an exit status, say so – the matrix must not read as though
+      it proved more.
+
+      **Include the failure rows.** Malformed input, a missing prerequisite, the second run that
+      must change nothing, the interruption. Those are what tell an acceptance run from a demo.
+
+      Build the exact artefact and establish its identity – an image digest, a migration list, a
+      build hash, whichever applies. Present a deployment plan naming the environment, the commands,
+      what changes, the rollback, the standing cost and what will be left behind. Say which rows are
+      automated and which need a person to judge.
+
+      Do not deploy in this column.
+    produces:
+      - the matrix in full, every row naming how its effect is read back
+      - the failure rows
+      - every row whose only assertion is an exit status, named as such
+      - the exact artefact, and how its identity was established
+      - the deployment plan, and the operator's words approving it
+      - which rows are automated and which need a person to judge
+    exit:
+      - human_gate: the matrix and the exact artefact agreed, every row naming how its effect is read back
+        why: >
+          a matrix of commands and exit statuses produces a green board that proves the commands ran.
+          The read-back is the acceptance.
+        blocking: true
+      - human_gate: the deployment explicitly approved for the named environment
+        why: a previous approval does not silently cover a new run
+        blocking: true
+    compact:
+      offer: >
+        `check` and `prepare` are verification and reading. What follows needs the matrix and the
+        approved deployment, both short. The deployment approval is safe to carry in writing:
+        `deploy` stops if anything differs from what was presented, so a lost approval halts the run
+        rather than quietly widening it.
+      carry:
+        - the matrix in full, row by row – every later column is scored against it
+        - what the environment held before the run, measured – every "after" figure is meaningless
+          without it
+        - the exact artefact and how its identity was established
+        - the approved deployment, and the operator's words approving it
+        - which rows are automated and which need a person
+        - anything reported at `check`
+
+  - name: deploy
+    entry: >
+      Deploy only the approved artefact, by {{project.deploy_mechanism}}, to the approved
+      environment. Stop if the plan, the target or the diff differs from what was presented.
+
+      **Getting the artefact into the environment is a different act from proving it works there.**
+      The halves often travel by different routes – the build one way, the command that runs inside
+      it another, a migration a third. Deploy each, and read each back separately.
+
+      **Read back what is actually running, with {{project.deployed_identity}}.** A command that
+      exits cleanly has told you it was accepted, not that it took effect.
+
+      Record the deployed identity with nothing that {{project.evidence_rules}} forbids. If
+      deployment partly fails, inspect and re-plan. Do not improvise changes to the environment.
+    produces:
+      - the deployed identity, READ BACK from what is running
+      - each route the deployment travelled, deployed and read back separately
+      - anything the deployment left behind, and any partial failure with what was done about it
+    exit:
+      - human_gate: the deployed identity read back from the running environment, matching what was approved
+        why: >
+          a successful command is not evidence that the intended thing is live. The commonest
+          failure on this path is proving a behaviour against the previous build.
+    compact:
+      never: >
+        `deploy`, `prove` and `result-review` loop back through each other. They are one drop,
+        taken after `result-review`.
+
+  - name: prove
+    entry: >
+      Run every row of the matrix against the deployed environment, with synthetic data only, and
+      read each effect back out.
+
+      **With the operations instrument: a command that returned is not a command that worked.** Read
+      the exit status, then the output, then the thing it claims to have changed. A task with no
+      exit status yet has not finished. A worker that started is not a worker that finished. A
+      migration that applied is not a backfill that is correct.
+
+      **Take the "before" figure for every row that asserts a count or a change.** Taken afterwards
+      it is not the same measurement, and a run that changed nothing gets recorded as a run that
+      changed exactly what was expected.
+
+      **With the browser instrument:** run the matrix with {{project.browser_check}} against the
+      deployed surface at each of {{project.viewports}}. Cover every scenario in the packet,
+      including the conditional paths, validation and focus, reload, several tabs, storage and
+      network interruption, and retry. Inspect the console, the security policy, the requests, and
+      what is sent. Keep only the screenshots and traces the review needs.
+
+      Run the failure rows deliberately. The failure path is usually where the data is lost.
+
+      Keep the evidence, and confirm it carries nothing {{project.evidence_rules}} forbids before
+      writing it anywhere lasting.
+
+      **A defect goes back to the feature that owns it and is re-proved here.** Never grow a
+      workaround that exists only to pass acceptance.
+    produces:
+      - every matrix row run against the DEPLOYED environment, with its result
+      - for each row, what was read back – not merely the exit status
+      - the before and after figure for every row asserting a count or a change
+      - the failure rows exercised, and what each did
+      - each defect returned to the feature that owns it and re-proved here
+      - retained evidence, confirmed clean
+      - for any row that could pass while the property is false, the perturbation that proves it –
+        or a statement that none was run
+    exit:
+      - human_gate: every matrix row run and read back, or carrying a named owner that blocks it
+        why: a partial matrix must read as partial, not as a green result
+        blocking: true
+      - human_gate: the evidence contains nothing the evidence rules forbid
+      - human_gate: where a row could pass while the property is false, the perturbation that proves it
+        why: >
+          nothing here is ever seen red. The work is already built and deployed, so every row's first
+          run is a run that passes. The classic empty row is a query returning nothing against an
+          environment that was always empty. Break the thing it guards, watch exactly that row fail,
+          and restore. If no perturbation was run, say so.
+
+  - name: result-review
+    entry: >
+      Put the result in front of a person and ask whether it is **right**, not whether it errored.
+
+      Automation asserts what somebody thought of in advance. The value here is what nobody thought
+      to assert. A reconciliation that balances exactly against the wrong total passes every row.
+      It is visible in seconds to someone who knows what the data should look like.
+
+      Give them a short numbered plan: what was run, what to look at, how to reach it again, the
+      comparison worth making, and the judgement calls automation cannot settle. Show the actual
+      result – a real extract, synthetic content only – not a summary of it. Where a figure can be
+      checked against something outside this system, name that thing and check it.
+
+      **With the browser instrument, this is a walkthrough on a real device.** Leave the deployed
+      synthetic surface reachable and give the exact address, the starting state, the actions and
+      the expected results. Draw attention to touch, the on-screen keyboard, perceived loading and
+      retry, the wording, and focus. Automated browser evidence does not replace it.
+
+      Keep the environment in the state under review while the review is active. Feedback is fixed
+      in the feature that owns it, and `prove` repeats before this column is accepted.
+    produces:
+      - a short numbered plan for the reviewer
+      - the actual result shown, synthetic content only
+      - any figure checked against a source outside this system, and the result
+      - the reviewer's own words, and any judgement call they settled
+      - every finding fixed where it belongs and re-proved, or given a named owner that blocks it
+    exit:
+      - human_gate: the result judged right, not merely free of errors
+        why: >
+          a green matrix says the operations behaved as somebody predicted. Whether the output is
+          correct is a different question, and the one this feature is for.
+        blocking: true
+      - human_gate: every finding fixed and re-proved, or given a named owner that blocks it
+    compact:
+      offer: >
+        Three columns of evidence end here – the deployment read-back, a full matrix run, and a human
+        judgement that may have looped back through both. The panel reasons from the diff and the
+        matrix result.
+      carry:
+        - the deployed identity, as read back
+        - every matrix row, its result, where it ran, and what was read back to prove it
+        - the before and after figures
+        - the failure rows exercised and what each did
+        - each defect, the feature it was fixed in, and that it was re-proved
+        - rows that did not pass, and the named owner each now has
+        - the reviewer's own words
+        - the paths to the retained evidence, and confirmation that it is clean
+        - what was not proved
+
+  - use: core.panel
+    seeds:
+      - "A reconciliation that balances against the wrong total and passes every row."
+      - "Where it moves data: the sensitivity travelling with each fact, what the audit log records,
+        and what leaves {{project.boundaries}} in a log line or an error."
+      - "Where it runs outside a request – a worker, a command, a scheduled task: what the
+        framework's per-request safeguards are no longer doing."
+      - "Where a failure is silent: whether anybody would ever find out."
+      - "Where the matrix asserts absence or a count: whether the row could pass while the property
+        is false."
+    also:
+      entry: >
+        **This workflow has no unattended stretch, so the authorisation is asked for here.** Stop at
+        the agreed seats and ask in the same message, before invoking anything.
+
+        The evidence a seat may inspect is the packet, the complete branch, the deployed evidence
+        and the matrix. After each fix, re-run the affected matrix rows as well as the local checks.
+      exit:
+        - human_gate: the panel's seats agreed, and the run authorised where the runner requires it
+          blocking: true
+
+  - use: core.prepare-pr
+  - use: core.submit
+    also:
+      entry: >
+        The body also carries the matrix result with its before and after figures, the failure rows,
+        the reviewer's judgement, what the run left behind, and the rollback.
+  - use: core.record
+  - use: core.merge
+
+  - use: core.close
+    also:
+      produces:
+        - the environment left as the approved deployment said it would be, or what remains named
+          with its owner
+
+standing_constraints:
+  - Every deployment, and every change to the environment, is asked for first and bound to one named
+    environment.
+  - Synthetic data only. Nothing {{project.evidence_rules}} forbids in logs, screenshots, traces or
+    records.
+  - A local or component-harness pass cannot stand in for acceptance against the deployed thing.
+  - A defect is fixed in the feature that owns it, never hidden by a workaround that exists only to
+    pass acceptance.
+  - Automated browser evidence does not replace the walkthrough on a real device.

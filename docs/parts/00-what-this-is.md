@@ -5,7 +5,7 @@
 > **Not yet written.** This page is an outline. The finished part is
 > [Part 3, threat modelling](03-threat-modelling/README.md) – start there.
 
-> **Draft order: 6th.** Written last, once the other parts exist and the claim has been tested against
+> **Draft order: 7th.** Written last, once the other parts exist and the claim has been tested against
 > them. Writing it first would produce a promise the parts then have to keep.
 
 ## The claim
@@ -28,7 +28,7 @@ input and decisions, not on review capacity]
 
 ## How the parts fit together
 
-[the map of the eight parts and what each carries. Why tooling is Part 8 and not Part 1]
+[the map of the nine parts and what each carries. Why tooling is Part 9 and not Part 1]
 
 ## Where it comes from
 

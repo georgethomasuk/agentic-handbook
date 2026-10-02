@@ -95,8 +95,6 @@ close one, say so here]
 - `platform/plan/README.md` — the delivery record, and the workflow-selection table.
 - `platform/plan/model.md` — the rungs, the who-says-it-is-done definition, and the delegation
   measurement.
-- `platform/plan/workflows/*.yaml` — the templates, with per-column delegation blocks, entry, produces,
-  exit and human gates.
 - `platform/plan/tree/` — the leaves.
 - `redmoor_docs/delivery/README.md` — the sprint docs, the ID chain, and the note about four
   disagreeing copies.

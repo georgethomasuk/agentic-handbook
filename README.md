@@ -23,9 +23,10 @@ into an agent session, and **templates** for every file the process produces.
 | 3 | [Attacking it before building it](docs/parts/03-threat-modelling/README.md) |
 | 4 | [Designing the surfaces](docs/parts/04-design/README.md) |
 | 5 | [Planning the delivery](docs/parts/05-delivery-planning/README.md) |
-| 6 | [Supervising the run](docs/parts/06-supervision/README.md) |
-| 7 | [Keeping it honest](docs/parts/07-keeping-it-honest/README.md) |
-| 8 | [The machine](docs/parts/08-the-machine/README.md) |
+| 6 | [Managing the delivery](docs/parts/06-delivery-management/README.md) |
+| 7 | [Supervising the run](docs/parts/07-supervision/README.md) |
+| 8 | [Keeping it honest](docs/parts/08-keeping-it-honest/README.md) |
+| 9 | [The machine](docs/parts/09-the-machine/README.md) |
 
 By George Thomas — [georgethomas.io](https://www.georgethomas.io) · Redmoor Labs.
 

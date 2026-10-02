@@ -1,11 +1,11 @@
-**Status** scaffold – not yet written · **Life** living · **Reader** you, about to keep the work honest as it scales
+**Status** scaffold – not yet written · **Life** living · **Reader** you, about to build the machine the agents run on
 
-# How to keep the work honest as it scales
+# How to build the machine the agents run on
 
 > **Not yet written.** This part is an outline. The finished part is
 > [Part 3, threat modelling](../03-threat-modelling/README.md) – start there.
 
-retrospectives that change something, a review panel with stated composition, and rules enforced by a check rather than by advice
+a development box, a session multiplexer, and a network, each chosen from a requirement rather than from preference
 
 The worked example throughout is [the example system](../../reference/example-system.md).
 
@@ -19,7 +19,7 @@ The worked example throughout is [the example system](../../reference/example-sy
 
 **Read this once. Use the prompt every time.**
 
-> **Draft order: 5th.** See `PLAN.md` section 10.
+> **Draft order: 10th.** See `PLAN.md` section 10.
 
 ---
 
@@ -92,16 +92,11 @@ close one, say so here]
 
 ## Source material
 
-- `platform/plan/retro.md` — the register rules, the two standing questions, the ceiling, the
-  three-occurrence bar, the retired gap register.
-- `platform/.claude/skills/comment-budget/SKILL.md` — the enforcement evidence.
-- `platform/.claude/skills/panel-composition/SKILL.md` and `docs/review/panel-composition.md` — the
-  seating model and the unestablished rewrite.
-- `platform/.claude/agents/` — the reviewer profiles.
-- `platform/docs/constitution-evidence.md`, `AGENTS.md` — the standing constitution and its growth
-  control.
-- `platform/tools/fleet/README.md` — the loop, and its decisions.
-- `platform/docs/defect-resolution-workbook.md`.
+- `redmoor_infra/docs/devbox.md` — the specification, the sizing evidence, the containment argument,
+  the rejected alternatives, and the price correction.
+- `redmoor_infra/ansible/group_vars/devbox.yml` — the multiplexer version and pinning, the service
+  definition, the memory ceiling, the network configuration.
+- `redmoor_docs/deep_dives/20260815_CI_Cost_And_Remote_Development.md` — the research behind it.
 
 ## Open
 

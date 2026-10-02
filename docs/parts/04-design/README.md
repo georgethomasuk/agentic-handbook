@@ -19,7 +19,7 @@ The worked example throughout is [the example system](../../reference/example-sy
 
 **Read this once. Use the prompt every time.**
 
-> **Draft order: 4th.** See `PLAN.md` section 10.
+> **Draft order: 5th.** See `PLAN.md` section 10.
 
 ---
 

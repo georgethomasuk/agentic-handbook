@@ -23,7 +23,7 @@ It is generalised out of a live client build. The client is never named.
 Every stage of the work produces an artefact that declares **who it is for, what binds, and how it is
 proved done**.
 
-That is the same move at eight different altitudes: a requirement with a fit criterion, a threat
+That is the same move at each altitude: a requirement with a fit criterion, a threat
 finding with a treatment, a design part with a stated value, a plan leaf with a proof, a supervised
 run with a gate.
 
@@ -49,7 +49,7 @@ They are not looking for a prompt library. They are looking for what to write do
 - **Not a tutorial.** It assumes the reader has run agents and has opinions.
 - **Not the blog voice.** See §7.
 
-## 5 · The eight parts
+## 5 · The nine parts
 
 | # | Part | The mechanism it carries |
 |---|---|---|
@@ -58,10 +58,11 @@ They are not looking for a prompt library. They are looking for what to write do
 | 2 | [Designing the system](docs/parts/02-system-design/) | Zones as bulkheads; decisions recorded once; workflows interrogated for failure |
 | 3 | [Attacking it before building it](docs/parts/03-threat-modelling/) | Two taxonomies over two different spines; one file per finding |
 | 4 | [Designing the surfaces](docs/parts/04-design/) | IA by interview; a value lives in exactly one place; the handover spec |
-| 5 | [Planning the delivery](docs/parts/05-delivery-planning/) | Two rungs; workflow chosen by what could prove it; the packet is the brief |
-| 6 | [Supervising the run](docs/parts/06-supervision/) | The per-slice supervisor; verification at source; escalation |
-| 7 | [Keeping it honest](docs/parts/07-keeping-it-honest/) | Retros; the review panel; enforcement beats advice |
-| 8 | [The machine](docs/parts/08-the-machine/) | The requirement first, then the box, the sessions, the network |
+| 5 | [Planning the delivery](docs/parts/05-delivery-planning/) | Four levels, each judged by who says it is done; the packet is the brief; naming the workflow a feature will run |
+| 6 | [Managing the delivery](docs/parts/06-delivery-management/) | A workflow is columns with an entry, outputs and an exit; chosen by what could prove the work; a shared core plus slots filled per engagement |
+| 7 | [Supervising the run](docs/parts/07-supervision/) | Running a workflow: the supervisor per build step; the unattended stretch; verification at source; escalation |
+| 8 | [Keeping it honest](docs/parts/08-keeping-it-honest/) | Retros; the review panel; enforcement beats advice |
+| 9 | [The machine](docs/parts/09-the-machine/) | The requirement first, then the box, the sessions, the network |
 
 **Tooling is last on purpose.** The box is a consequence of needing to supervise several long-running
 processes, not a starting choice. Leading with it would teach the wrong lesson.
@@ -160,7 +161,7 @@ anything. In summary:
 
 **Enforced, not advised.** `scripts/check-sanitised.sh` fails the build on a denylisted term or a
 leaked path. The denylist is confidential, so it lives at `.sanitise-denylist`, gitignored and never
-committed; `.sanitise-denylist.example` shows the format. This is Part 7's own argument applied to
+committed; `.sanitise-denylist.example` shows the format. This is Part 8's own argument applied to
 the handbook.
 
 ## 9 · Publishing
@@ -170,7 +171,7 @@ Own repository, public on GitHub, rendered with **MkDocs Material** to GitHub Pa
 Each part is a folder whose `README.md` is its landing page, so the structure reads correctly both on
 the site and when browsing the repository on GitHub.
 
-Why not Ghost: the handbook is eight cross-linked documents with anchors, not a blog feed. Why not a
+Why not Ghost: the handbook is nine cross-linked documents with anchors, not a blog feed. Why not a
 folder in `my-voice`: that repository is a private working record, and this artefact is meant to be
 shared.
 
@@ -185,29 +186,40 @@ jobs. The rest are written from George's own account, with the artefacts as evid
 | # | Part | Source method doc exists? | Effort | Order |
 |---|---|---|---|---|
 | 3 | Threat modelling | **Yes** — the walk playbook and the approach note | extract | 1st |
-| 5 | Delivery planning | **Yes** — the plan model and workflow selection | extract | 2nd |
-| 6 | Supervision | **Yes** — the supervisor playbook | extract | 3rd |
-| 4 | Design | **Partly** — IA method and handover spec yes; the design-system step no | extract + write | 4th |
-| 7 | Keeping it honest | **Partly** — retro rules and panel composition yes | extract + write | 5th |
-| 0 | What this is | n/a — written last, once the parts exist | write | 6th |
-| 1 | Framing the work | **No** — excellent outputs, no recorded method | write | 7th |
-| 2 | System design | **No** — same | write | 8th |
-| 8 | The machine | **Partly** — the devbox document; two terms unresolved | write | 9th |
+| 5 | Delivery planning | **Yes** — the plan model | extract | 2nd |
+| 6 | Delivery management | **Yes** — the workflow files and workflow selection | extract | 3rd |
+| 7 | Supervision | **Yes** — the supervisor playbook | extract | 4th |
+| 4 | Design | **Partly** — IA method and handover spec yes; the design-system step no | extract + write | 5th |
+| 8 | Keeping it honest | **Partly** — retro rules and panel composition yes | extract + write | 6th |
+| 0 | What this is | n/a — written last, once the parts exist | write | 7th |
+| 1 | Framing the work | **No** — excellent outputs, no recorded method | write | 8th |
+| 2 | System design | **No** — same | write | 9th |
+| 9 | The machine | **Partly** — the devbox document; two terms unresolved | write | 10th |
 
-**Parts 3, 5, 6 alone are a publishable handbook.** Ship in that state if the rest stalls.
+**Parts 3, 5, 6, 7 alone are a publishable handbook.** Ship in that state if the rest stalls.
 
 ## 11 · Open questions
 
 | # | Question | Blocks |
 |---|---|---|
 | Q1 | The handbook's name and the repository's name | publishing |
-| Q2 | "Coly" — the web interface over the session multiplexer? Transcription unresolved | Part 8 |
-| Q3 | "Officialization" — visibility? observability? Transcription unresolved | Part 8 |
+| Q2 | "Coly" — the web interface over the session multiplexer? Transcription unresolved | Part 9 |
+| Q3 | "Officialization" — visibility? observability? Transcription unresolved | Part 9 |
 | Q4 | How the design system was actually produced from the IA. No method doc found | Part 4 |
 | Q5 | How Parts 1 and 2 were actually run with agents. No method doc found | Parts 1, 2 |
-| Q6 | What about the recent supervisor work is *not* already in the playbook §5a | Part 6 |
+| Q6 | What about the recent supervisor work is *not* already in the playbook §5a | Part 7 |
 | Q7 | Diagrams — the source estate has almost none. Which parts need one? | all |
 | Q8 | Whether parts without an agent procedure (0, and possibly 1) stay single pages or become folders for consistency | structure |
+
+### Decided
+
+| Date | Decision | Affects |
+|---|---|---|
+| 2026-09-23 | **"Slice" means the plan level only** – an integrated capability you can demonstrate. The source also uses it for the cut of one feature's build that a subagent runs; the handbook calls that a **build step**. One word with two meanings three parts apart is unreadable, and renaming one term is cheaper | Parts 5, 6 |
+| 2026-09-23 | **Part 5 plans; Part 6 runs.** Part 5 covers the plan levels, the packet, choosing a workflow, and what a workflow's columns carry. Part 6 covers running one – the unattended stretch, subagents per build step, the review panel, the journal, cost per column. The source is about 9,500 lines and one part cannot carry both | Parts 5, 6 |
+| 2026-09-24 | **The workflow templates are layered, and reusable across engagements.** Each workflow is method text plus a shared core file plus a slots file; the handbook publishes method and slots with the tooling described, and George's private copy fills the tooling slots. Eight source workflows become six: build in the repository · build in a browser (styling units fold in as a mode) · component library · contract change · change only the real environment can prove · acceptance (runtime and browser acceptance merge). Dated incidents leave the `why:` lines for the guide; each `why:` keeps the failure's shape. **Extracting the tooling itself into a runnable kit is deferred**, a separate project | Part 5, and every part that ships templates |
+| 2026-10-02 | **Nine parts, not eight: managing the delivery is its own part.** Part 5 is planning – the plan levels and the packet. The new Part 6 is delivery management – the workflows, choosing one, and filling the slots for an engagement. Supervising the run moves from 6 to 7, keeping it honest from 7 to 8, the machine from 8 to 9. Workflows are how delivery is managed, not how it is planned; planning is the packets. **The three rows above use the old numbers**: where they say Part 6 they mean supervision, now Part 7, and the workflow templates they place in Part 5 are now in Part 6 | Parts 5 to 9, every index |
+| 2026-10-02 | **Seven workflow templates, not six.** The source gained a ninth workflow on 2026-09-26, after the six were decided: one bounded part built against a registry that already declares it. It is lighter than `component-library` and has two columns nothing else has, so it is published as `single-part` rather than folded in. **`build-plan` and `build-execute` moved into the shared core**, because four of the seven use the same text; a workflow adds to them with `also:`. Two modes: `treatment-only` (of `build-in-browser`) and `draft-contract` (of `contract-change`, **not yet run**) | Part 6 |
 
 ## 12 · After the handbook
 

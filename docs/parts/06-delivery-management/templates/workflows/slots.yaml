@@ -1,0 +1,433 @@
+# Every slot the workflow templates use.
+#
+# Two namespaces, filled by different people at different times:
+#
+#   project.*  filled once per client engagement. The stack, the rules, the boundaries. Lives in the
+#              client repository beside the workflows, because the client's reviewers need to read it.
+#   tooling.*  filled once per operator. How you claim work, keep a journal, run a review panel. Lives
+#              in your private copy and travels with you from one engagement to the next.
+#
+# Each slot carries:
+#   what     – what the workflow needs from it, in one sentence
+#   by_hand  – how to do it with no tooling at all. Every slot has one. A workflow that only runs on
+#              one operator's scripts is not a method, it is a dependency.
+#   example  – a filling on the example system (docs/reference/example-system.md)
+#
+# You add one more line to each slot you use:
+#   value    – your filling. A slot with no `value` is unfilled, and a workflow that uses it cannot
+#              be resolved. A value that names you – an archive destination, an account – is written
+#              as an environment variable, never as the name itself.
+#
+# A slot that is a check must fail loudly when it cannot run. A check that skips when its input is
+# missing reads as a pass.
+
+project:
+
+  constitution:
+    what: The document every session reads first – the rules that bind the whole build.
+    by_hand: A single AGENTS.md or CONTRIBUTING.md at the repository root.
+    example: "AGENTS.md – the build rules, the data rules and the two lists below"
+
+  data_rules:
+    what: The rules for handling personal data, stated as a standing constraint in every column.
+    by_hand: A short numbered list in the constitution, quoted into each brief.
+    example: >
+      Sensitivity is a property of a field, not of a store. Incident report content (H3a) never
+      appears in a log line, an error message or a response the insurer's dashboard can reach.
+
+  boundaries:
+    what: The trust boundaries a change must not quietly cross, named as the threat model names them.
+    by_hand: The boundary table from the threat model, linked from the constitution.
+    example: "B1 – report content leaving the core store; B2 – the insurer's login; B3 – the public check-in endpoint"
+
+  real_data_policy:
+    what: When, if ever, a fixture may be built from real data, and who decides.
+    by_hand: One paragraph in the constitution. The safe default is "never".
+    example: "Never. The supplier's machines are H4, and the threat model treats live data there as a finding."
+
+  stop_list:
+    what: The decisions an unattended run must hand back for, rather than take.
+    by_hand: A bulleted list in the constitution, headed so the agent can quote it.
+    example: >
+      Anything that changes what crosses a trust boundary · a new holding of personal data · a change
+      to what the insurer can see · a migration that cannot be reversed · a new dependency.
+
+  decide_and_disclose_list:
+    what: The decisions an unattended run may take itself, provided it names each one in the pull request.
+    by_hand: A second bulleted list beside the stop list. Anything on neither list is a stop.
+    example: >
+      Naming, file placement, test structure · a refactor inside the files the feature already touches
+      · copy wording where the design reference is silent.
+
+  sensitive_boundaries:
+    what: The parts of the code where a build step earns the higher model tier just by touching them.
+    by_hand: A list of directories or modules in the constitution.
+    example: "authentication, the check-in endpoint (B3), anything writing to the aggregate store (H2)"
+
+  design_reference:
+    what: Where the designed surface is specified – screens, states, copy. Where it speaks, it binds.
+    by_hand: A folder of design documents, or a link to the design file, with a version or date.
+    example: "the design folder – the check-in flow and the dashboard, one document per screen, each dated"
+
+  lockfile:
+    what: The file that states the installed version of every dependency.
+    by_hand: Whatever the package manager writes.
+    example: "package-lock.json and requirements.lock"
+
+  local_system:
+    what: How to bring up a real running system on your own machine, to exercise a change against.
+    by_hand: A documented command, and the address it serves on.
+    example: "docker compose up, then the app on localhost with a seeded synthetic site"
+
+  browser_check:
+    what: How to drive the real built surface in a browser and read back what happened.
+    by_hand: You, in a browser, with the developer tools open and a screen reader on.
+    example: "a browser automation session against the local system, reading the accessibility tree"
+
+  viewports:
+    what: The screen sizes a visible change must be checked at.
+    by_hand: A list in the constitution.
+    example: "the narrowest supported phone (check-ins are filled in on personal phones), a tablet, a desktop"
+
+  full_gate:
+    what: The whole local check – lint, types, every test suite.
+    by_hand: One documented command that runs everything CI runs.
+    example: "make check"
+
+  full_gate_capped:
+    what: The same check as a workflow exit – bounded in time, and failing rather than hanging.
+    by_hand: The full gate wrapped in a timeout.
+    example: "timeout 15m make check"
+
+  base_is_fresh:
+    what: A check that the branch contains the current main branch, run just before the panel is briefed.
+    by_hand: "git fetch, then git merge-base --is-ancestor origin/main HEAD"
+    example: "git fetch -q origin main && git merge-base --is-ancestor origin/main HEAD"
+
+  comment_check:
+    what: A check that no comment the branch added carries review IDs, dates or change history.
+    by_hand: A grep over the added lines of the diff for the words your team uses for history.
+    example: "! git diff origin/main -U0 | grep '^+' | grep -Eiq 'previously|was changed|review [0-9]'"
+
+  ci_watch:
+    what: A command that waits for CI on the pull request and fails if CI fails.
+    by_hand: Watch the pull request page until CI finishes, and read the result.
+    example: "gh pr checks --watch --fail-fast"
+
+  # ── Browser work – build-in-browser, component-library, single-part ──
+
+  component_harness:
+    what: The tool that renders one component in isolation, one entry per state.
+    by_hand: A page per component that renders it with fixed synthetic properties.
+    example: "the component workbench, with one entry per state of each check-in screen"
+
+  built_surface:
+    what: The real built surface, served the way production serves it – not a development server.
+    by_hand: Run the production build and serve its output locally.
+    example: "the production build of the check-in app, served from its output folder"
+
+  review_route:
+    what: How a reviewer on another machine reaches a server running on yours.
+    by_hand: >
+      A reverse proxy to an address the reviewer can reach, plus that address added to each
+      server's list of allowed hosts. Each server refuses differently, one at a time.
+    example: "a proxy from the development machine to its name on the team's private network"
+
+  scoped_check:
+    what: The check for one component – its own suite plus the one browser test that could see the change.
+    by_hand: Run the owning component's tests, then the single relevant browser test.
+    example: "make check-component C=checkin, then the browser test for the changed screen"
+
+  visual_authority:
+    what: The single source that decides how things look.
+    by_hand: Name it in the constitution.
+    example: "the component library"
+
+  content_authority:
+    what: The single source that decides what the surface says.
+    by_hand: Name it in the constitution.
+    example: "the agreed wellbeing check-in question set"
+
+  emitted_styles:
+    what: The stylesheet the build actually emits, as opposed to the styling written in source.
+    by_hand: Open the built stylesheet and search it for the rule.
+    example: "the stylesheet in the component workbench's build output"
+
+  contrast_bar:
+    what: The contrast ratio printed values must clear.
+    by_hand: State the standard and level in the constitution, and measure with a contrast checker.
+    example: "the accessibility standard's AA contrast ratios, measured on resolved colours"
+
+  engines:
+    what: The browser engines a part claims to work in.
+    by_hand: A list in the constitution.
+    example: "each browser engine the insurer's dashboard supports"
+
+  engine_check:
+    what: A part's browser test, run in one named engine against a fresh harness build. Must fail, not skip, when the engine is unavailable.
+    by_hand: Build the harness, then run the part's browser test once per engine, reading each result.
+    example: "the chart's browser test, run once per engine after rebuilding the workbench"
+
+  design_tokens:
+    what: Where colour, spacing, type and radius values are defined once and read everywhere.
+    by_hand: One file of named values.
+    example: "the token file the dashboard's colours, spacing and type come from"
+
+  design_diff:
+    what: A tool that compares the reference and the built part property by property, printing what matches and what differs.
+    by_hand: >
+      Open both in a browser, read the computed styles of the paired elements, and write both
+      columns down. Slow, and still better than a screenshot.
+    example: "a script that loads the reference page and the workbench entry and prints each computed style as matching or differing"
+
+  structure_outline:
+    what: A tool that prints the reference's real structure around a given piece of text, so a selector is chosen from what is there.
+    by_hand: Inspect the element in the browser and copy out its ancestors.
+    example: "a script that finds the deepest element holding a given label and prints its ancestors"
+
+  parts_inventory:
+    what: The tracked document listing every part a surface has and where each appears.
+    by_hand: A markdown table in the design folder.
+    example: "the parts inventory for the insurer dashboard, in the design folder"
+
+  part_registry:
+    what: The registry in which each part is declared before it is built – what it is handed, what it must hold, and what claims it.
+    by_hand: One structured file with an entry per part.
+    example: "the chart registry – one entry per dashboard chart, with the data it is handed and the panels that claim it"
+
+  registry_check:
+    what: A check that a part's registry entry has nothing left open.
+    by_hand: Read the entry and confirm every field is declared or carries a recorded open question.
+    example: "a script that exits non-zero while any chart a panel claims still has an open question"
+
+  shared_layer:
+    what: The layer every part uses for interaction, so no part re-implements it.
+    by_hand: Name the folder in the owning component's documentation.
+    example: "the shared chart layer – legend, linked highlight, keyboard model"
+
+  scratch_area:
+    what: Where a live design page can be built outside the component tree, on its own values.
+    by_hand: A folder of standalone pages that nothing imports.
+    example: "a scratch folder beside the chart registry, one page per chart"
+
+  behaviour_questions:
+    what: The fixed set of behaviour questions every part answers by inspection after it is built.
+    by_hand: A short list in the registry's own documentation.
+    example: "Size · Categories · Zero · Hover · Static or interactive · How it degrades"
+
+  # ── Contract change ──
+
+  contract_sources:
+    what: The contract's authoritative definition, its specification and its change log.
+    by_hand: Name the three files in the constitution.
+    example: "the incident-report intake schema, its specification and its change log"
+
+  contract_lifecycle:
+    what: The lifecycle states the contract and its governed artefacts can be in, and how each is established as fact.
+    by_hand: A short table of states, and for each the command or record that proves it.
+    example: "contract – draft or released; each report form version – draft, frozen or published; stored reports counted per form version in H1"
+
+  contract_surface_groups:
+    what: The groups of surfaces an impact map must walk, with this project's paths beside each.
+    by_hand: The seven groups in the `impact-map` column, each with a path.
+    example: "specification · schema and the looser intake check · canonical forms and fixtures · inline examples in tests · generated types · intake, translation and dashboard consumers · stored reports"
+
+  regenerate:
+    what: Re-run code generation and fail if the result differs from what is committed.
+    by_hand: Run the generator, then check the working copy is unchanged.
+    example: "make generate && git diff --exit-code"
+
+  # ── A change only the real environment can prove ──
+
+  local_double:
+    what: The local emulator of the environment, and what it does not enforce.
+    by_hand: Say plainly that there is none, and that every criterion is proved on the real environment.
+    example: "the cloud emulator in the compose file – it enforces no access policy"
+
+  offline_check:
+    what: The configuration check that needs no credentials.
+    by_hand: The configuration tool's own validate command.
+    example: "the infrastructure tool's validate command, run with no credentials set"
+
+  invocation_shapes:
+    what: The ways the environment tool can be invoked that a control must survive.
+    by_hand: A list in the infrastructure documentation.
+    example: "preview · apply · an apply aimed at one resource · an apply without refreshing · destroy"
+
+  dependency_lock_check:
+    what: Regenerate the tool's dependency lock for every platform the work runs on.
+    by_hand: Run the lock command once per platform and commit the result.
+    example: "the provider lock regenerated for the CI platform and the development machines"
+
+  handover_hygiene_check:
+    what: A check that nothing specific to the supplier is in what the client will receive.
+    by_hand: Search the handed-over folders for the supplier's names and account identifiers.
+    example: "a script that fails if the supplier's name appears under the infrastructure folder (boundary B4)"
+
+  real_env_suite:
+    what: The acceptance suite that runs against the real environment. Not part of the full gate.
+    by_hand: Run each denial by hand under the restricted identity, and record the refusal.
+    example: "the access tests, run as the insurer's role and as the safety team's role against the development environment"
+
+  env_drift_check:
+    what: A command that exits cleanly only when the real environment matches the configuration.
+    by_hand: Run a preview and read that it proposes no changes.
+    example: "the preview command with its detailed exit status"
+
+  irreversible_resources:
+    what: The resources that cannot be destroyed and recreated freely.
+    by_hand: A list in the infrastructure documentation.
+    example: "encryption keys, which hold a deletion window · storage names, which cannot be reused at once"
+
+  trap_notes:
+    what: A lookup table of environment symptoms and their causes, read by symptom.
+    by_hand: A notes file beside the infrastructure code, added to whenever a symptom costs time.
+    example: "the environment traps file – clean apply with no effect, preview that recreates a live resource"
+
+  # ── Acceptance ──
+
+  target_environment:
+    what: The deployed environment a run is bound to – its name, its account and the identity used.
+    by_hand: Name all three in the packet.
+    example: "the staging environment, its account, and the deploy role"
+
+  deploy_mechanism:
+    what: The one approved way an artefact reaches the environment.
+    by_hand: A documented command or pipeline job.
+    example: "the release pipeline's manual deploy job"
+
+  deployed_identity:
+    what: How to read back what is actually running, as distinct from what was sent.
+    by_hand: Ask the running service which build it is, and the database which migrations it has.
+    example: "the image digest the service reports, and the migration list the database reports"
+
+  evidence_rules:
+    what: What must never appear in retained evidence – logs, screenshots, traces, records.
+    by_hand: A short list in the constitution, checked by reading the evidence before it is kept.
+    example: "no incident report content (H3a), no check-in answers (H3b), no token and no secret"
+
+tooling:
+
+  enter_column:
+    what: Record which column the work has entered, and print that column's instructions.
+    by_hand: >
+      Append the column name and the time to the journal, then print that column from the resolved
+      workflow file and work from what was printed. The printing is what matters.
+    example: "plan enter <feature> <column>"
+
+  journal_file:
+    what: Where the feature's running journal is kept – appended at each marked boundary, never rewritten.
+    by_hand: A markdown file in the working copy, ignored by version control, named for the feature.
+    example: ".work/<feature>/journal.md"
+
+  claim:
+    what: Mark the feature in progress where everyone reads the plan, before work starts.
+    by_hand: Edit the feature's status on the main branch in a tiny pull request, and merge it.
+    example: "plan claim <feature>"
+
+  claim_check:
+    what: A check that the claim is on the main branch and that the working branch contains it.
+    by_hand: Read the feature's status on main, then confirm the claim commit is in your branch's history.
+    example: "plan claim-check <feature>"
+
+  pr_state:
+    what: Read whether a pull request has merged, from the code host rather than from the plan.
+    by_hand: Open the pull request and read its state.
+    example: "gh pr view <number> --json state"
+
+  reading_tier:
+    what: The model tier for work that is reading and reporting, with no judgement kept.
+    by_hand: The cheapest model you trust to quote accurately.
+    example: "the small tier"
+
+  default_tier:
+    what: The model tier a build step runs at unless the plan argues it up.
+    by_hand: The mid tier.
+    example: "the mid tier"
+
+  escalated_tier:
+    what: The model tier a build step runs at when one of the four reasons earns it.
+    by_hand: The most capable tier you have.
+    example: "the top tier"
+
+  build_plan_file:
+    what: Where the agreed build plan is written, so workers that never saw the conversation can be briefed from it.
+    by_hand: A markdown file in the working copy, beside the journal.
+    example: ".work/<feature>/build-plan.md"
+
+  reviewer_library:
+    what: The reviewer profiles a panel seat is filled from – each named for the failure mode it catches.
+    by_hand: A folder of short markdown briefs, one per profile.
+    example: ".review/profiles/ – e.g. small-cell-reidentification.md, focus-never-moves.md"
+
+  panel_runner:
+    what: Runs the panel's seats against the branch, apart from the working session, and returns one ranked report with counts.
+    by_hand: >
+      Open one fresh session per seat, give each its profile and the diff, read-only. Collect the
+      findings yourself. The isolation is the point: never review in the session that wrote the code.
+    example: "review-panel run --branch <branch> --seats <seats>"
+
+  issue_tracker:
+    what: Where a problem found in passing gets a number, an owner and a state.
+    by_hand: The client's issue tracker. Never a running list in a document.
+    example: "gh issue create"
+
+  added_comments:
+    what: List every comment block the branch adds.
+    by_hand: Read the diff and note each added comment.
+    example: "git diff origin/main -U0 | grep -E '^\\+\\s*(#|//|/\\*|\\*)'"
+
+  open_pr:
+    what: Open the pull request with the body the `submit` column specifies.
+    by_hand: Open it on the code host and paste the body.
+    example: "gh pr create --body-file .work/<feature>/pr-body.md"
+
+  retro:
+    what: Write the five-line retro on the workflow run, into a file of its own.
+    by_hand: One small markdown file per run, in a retro folder. Never a shared file others append to.
+    example: "plan retro <feature>"
+
+  record_fields:
+    what: Any structured fields your plan tooling reads from a closed feature, beyond the six headings.
+    by_hand: None. Leave the slot empty.
+    example: "the panel tally block, in the format the plan's reporting reads"
+
+  plan_check:
+    what: A check that the plan still parses and every feature's links and statuses are consistent.
+    by_hand: Read the feature file against the template, and each dependency's status against the plan.
+    example: "plan validate"
+
+  wait_for_merge:
+    what: Block until the pull request's state reads merged, or return if it is closed without merging.
+    by_hand: Wait for the operator to say it is merged, then check the pull request page yourself.
+    example: "gh pr view <number> --json state -q .state | grep -qx MERGED"
+
+  close:
+    what: Mark the feature done on the main branch – status, column cleared, merge date read from the merge.
+    by_hand: A tiny pull request editing the feature's status, with the date copied from the merged pull request.
+    example: "plan close <feature>"
+
+  close_check:
+    what: A check that the feature reads done on the main branch.
+    by_hand: Read it.
+    example: "plan show <feature> --field status | grep -qx done"
+
+  archive_journal:
+    what: Copy the session journal somewhere that outlives the working copy. Fails if the destination is unset.
+    by_hand: Copy the journal file into your own records, outside the client repository.
+    example: "cp .work/<feature>/journal.md \"${JOURNAL_ARCHIVE:?unset}/<feature>.md\""
+
+  release_workspace:
+    what: Remove the working copy the feature held.
+    by_hand: Delete the worktree or clone.
+    example: "git worktree remove .work/<feature>/tree"
+
+  design_pack_file:
+    what: Where a contract change's understanding pack is written – surfaces, candidate designs, the compatibility matrix.
+    by_hand: A markdown file at the path the packet names. If it names none, agree one.
+    example: "the design pack for the change, in the contract's own documentation folder"
+
+  register_file:
+    what: Where the component library's register of measured divergences is kept during the build.
+    by_hand: A markdown table in the working copy.
+    example: ".work/<feature>/register.md"
