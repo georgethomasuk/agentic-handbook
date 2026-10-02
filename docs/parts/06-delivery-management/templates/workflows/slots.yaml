@@ -29,6 +29,12 @@
 #
 # A slot that is a check must fail loudly when it cannot run. A check that skips when its input is
 # missing reads as a pass.
+#
+# A value lands in the middle of a sentence. Write it as a name or a phrase, not as a sentence of its
+# own, and read one resolved column before trusting it. Where the engagement has none of the thing,
+# say so in a phrase that still reads there: "the lockfile – there is none, so read the installed
+# version". On the first real run, 2026-10-02, a value of "none – no design reference" resolved to an
+# instruction to read "none – no design reference first".
 
 project:
 
@@ -105,7 +111,10 @@ project:
 
   full_gate_capped:
     what: The same check as a workflow exit – bounded in time, and failing rather than hanging.
-    by_hand: The full gate wrapped in a timeout.
+    by_hand: |
+      The full gate wrapped in a timeout. Watch the wrapper stop a command that overruns, on the
+      machine that will run it: `timeout` is not on every machine, and without it the gate exits 127
+      before it has checked anything.
     example: "timeout 15m make check"
 
   base_is_fresh:
@@ -119,9 +128,13 @@ project:
     example: "! git diff origin/main -U0 | grep '^+' | grep -Eiq 'previously|was changed|review [0-9]'"
 
   ci_watch:
-    what: A command that waits for CI on the pull request and fails if CI fails.
-    by_hand: Watch the pull request page until CI finishes, and read the result.
-    example: "gh pr checks --watch --fail-fast"
+    what: A command that waits for CI on the pull request's newest commit and fails if CI fails.
+    by_hand: |
+      Watch the pull request page until CI finishes on the newest commit, and read the result. The
+      code host's own watch command is not enough alone. Run one second after the pull request was
+      opened it exited 1, "no checks reported". Run two seconds after a push it printed the pass of
+      the commit before and exited 0. Both on 2026-10-02.
+    example: "plan ci"
 
   # ── Browser work – build-in-browser, component-library, single-part ──
 
@@ -397,9 +410,9 @@ tooling:
     example: "plan retro <feature>"
 
   record_fields:
-    what: Any structured fields your plan tooling reads from a closed feature, beyond the six headings.
+    what: Any structured fields your plan tooling reads from a closed feature, beyond the seven headings.
     by_hand: None. Leave the slot empty.
-    example: "the panel tally block, in the format the plan's reporting reads"
+    example: "a cost line per column, in the format the plan's reporting reads"
 
   plan_check:
     what: A check that the plan still parses and every feature's links and statuses are consistent.
@@ -412,7 +425,7 @@ tooling:
     example: "gh pr view <number> --json state -q .state | grep -qx MERGED"
 
   close:
-    what: Mark the feature done on the main branch – status, column cleared, merge date read from the merge.
+    what: Mark the feature done on the main branch – status, column cleared, the pull request's number, merge date read from the merge.
     by_hand: A tiny pull request editing the feature's status, with the date copied from the merged pull request.
     example: "plan close <feature>"
 

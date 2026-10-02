@@ -824,7 +824,10 @@ milestones, slices, features – is the model's order, not a recorded sequence o
 | Labels for sprints, tracks and sizes | Ignores any header field it does not know |
 
 **The example plan has never been built.** Its six finished features have records because a record
-is what the guide has to show. They were written for the example, not produced by a run.
+is what the guide has to show. They were written for the example, not produced by a run. One of its
+`ready` features, the rate limit, was built once on 2 October 2026, in a scratch repository that is
+not published. [Part 6](../06-delivery-management/README.md#whats-not-solved-yet) says what that
+showed.
 
 **Requirement and decision numbers are missing from the example.** Parts 1 and 2 are not written, so
 the example's features trace to criteria, findings, boundaries and holdings only.

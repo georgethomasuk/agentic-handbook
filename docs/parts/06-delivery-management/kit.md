@@ -1,4 +1,4 @@
-**Status** draft – tested, and not yet run on a real feature · **Life** living · **Reader** you, the operator, setting the kit up and running a feature with it
+**Status** draft – tested, and run on one real feature from claim to release · **Life** living · **Reader** you, the operator, setting the kit up and running a feature with it
 
 # The kit
 
@@ -9,8 +9,11 @@ plan that claim a feature and close it.
 **It replaces prompts B and C, and the by-hand line of nine tooling slots.** It does not replace
 any judgement. Choosing the workflow, agreeing the two lists and answering a gate are still yours.
 
-**It has not run a real feature.** It has tests, and one walk through its commands on the example
-plan. [What it has not proved](#what-it-has-not-proved) is the list to read before relying on it.
+**It has run one real feature, from claim to release.** That was on 2 October 2026, in a scratch
+repository on a real code host. A person answered one gate, the merge. A session stood in at every
+other. Said "as far as the merge" until the feature was merged, later that day.
+[What the first real run found](#what-the-first-real-run-found) and
+[what it has not proved](#what-it-has-not-proved) are the two lists to read before relying on it.
 
 | | |
 |---|---|
@@ -80,7 +83,32 @@ own example.
 | `push` | Pushed straight to the main branch | Nothing protects the main branch |
 | `none` | Made in your working copy and nowhere else | You land it yourself |
 
-**Worked example.** On the example system the main branch is protected, so `land: pr` stays.
+**With `land: pr`, also say whether a pull request here has checks.**
+
+| `checks:` | Before merging a claim or a close, the kit |
+|---|---|
+| `required` | Waits until a check is reported, then until every check passes. Seeing none within `checks_wait` seconds fails. This is the default |
+| `none` | Merges without waiting. For a repository that runs nothing on a pull request |
+
+**The kit does not work this out for itself.** A pull request raised a moment ago has no checks yet,
+because the code host has not started them. Asked then, the code host gives the same answer as a
+repository with no checks at all. The first run against a real code host, on 2 October 2026, took
+that answer for a pass. It merged a claim six seconds after raising it, two seconds before its one
+check started. Said "14 seconds, with its check still running" until the pull request's own times
+were read.
+
+**It also waits for the pull request to take the commit it pushed.** For about two seconds after a
+push, the code host still reports the commit before, and that commit's checks. On the same day the
+code host's own watch command, run straight after a push, printed the earlier commit's pass and
+exited 0.
+
+**After the merge it removes its branch from the remote.** The first claim left one behind.
+
+**Run again after a red check, it uses the pull request it left open.** That is tested against a
+stand-in for the code host, and not against the code host.
+
+**Worked example.** On the example system the main branch is protected and CI runs on every pull
+request, so `land: pr` and `checks: required` both stay.
 
 ---
 
@@ -155,7 +183,7 @@ Features in one wave do not depend on each other.
 
 ```
 $ plan prompt feature_checkin_rate_limit -o .work/feature_checkin_rate_limit/brief.md
-wrote .work/feature_checkin_rate_limit/brief.md – 10321 words, 47 before the sentence naming the column.
+wrote .work/feature_checkin_rate_limit/brief.md – 10386 words, 47 before the sentence naming the column.
 ```
 
 Hand that file to a fresh session. From here the agent runs the commands, because the brief and
@@ -235,8 +263,9 @@ repository. Guide step 1.5 has the failure this guards against.
 | `plan enter-check <feature> <column>` | The agent | Passes if that column was the last one entered |
 | `plan claim <feature> [--land]` | The agent | `ready` to `in-progress`, with the column |
 | `plan claim-check <feature>` | The agent | Passes if the claim is on the main branch and in this branch |
-| `plan close <feature> --pr N [--merged date] [--land]` | The agent | `done`, the column removed, the merge date written |
+| `plan close <feature> --pr N [--merged date] [--land]` | The agent | `done`, the column removed, the pull request's number and the merge date written |
 | `plan close-check <feature>` | The agent | Passes if the feature reads done on the main branch |
+| `plan ci` | The agent | Waits for the checks on this branch's pull request, for the commit at its head. Fails if that commit is not pushed, if no check appears, or if one fails |
 | `plan retro <feature>` | The agent | Creates the run's retro file, five labels |
 | `plan archive <feature>` | The agent | Copies the journal to `PLAN_JOURNAL_ARCHIVE` and reads it back |
 | `plan release <feature>` | The agent | Removes `.work/<feature>/`, once the journal is archived |
@@ -258,8 +287,8 @@ go.
 | The retros | A file over 60 lines · a missing label |
 
 It warns, without failing, on a slot nothing uses, a done feature with no merge date, a feature in
-flight with no column, a criterion answered by one feature only, and a *Carried forward* note that
-no later feature will read.
+flight with no column, a criterion answered by one unfinished feature only, and a *Carried forward*
+note that no later feature will read.
 
 **It found a defect in the published templates on its first run**, on 2 October 2026. One column
 was marked both to offer compaction and never to compact. The template is fixed.
@@ -316,13 +345,56 @@ which it answers, or `inherit`.
 
 ---
 
+## What the first real run found
+
+One feature: the worked example's rate limit. It was run on 2 October 2026 in a scratch repository
+on a real code host, with `land: pr` and one CI check. A session ran every column of
+`build-in-repository` from `check` to `merge`, and stopped at the merge, which is yours. The feature
+was merged by a person the same day, and the session then ran `close`.
+
+**One human gate was answered by a person: the merge.** The session stood in for you at every other.
+So those gates are tested as text a session read, and not as a person deciding.
+
+| Found | Where | Now |
+|---|---|---|
+| A claim merged before its check had started | `plan claim --land`, the first time | Fixed. The second claim merged 11 seconds after its check passed |
+| Straight after a push, the code host answers for the commit before | The `submit` column's watch command | Fixed. `plan ci` waits for the pushed commit. Run straight after a push, it returned within two seconds of that commit's check finishing |
+| Straight after a pull request is opened, the same command exits 1 with "no checks reported" | The `submit` column | Fixed by `plan ci`, which waits |
+| The claim's branch stayed on the remote | Reading the remote afterwards | Fixed. The second claim left none |
+| `timeout` is not on every machine, and the capped gate exited 127 | The `prove` column | The slot now says to watch it stop an overrun first. Guide step 1.5 |
+| A slot value that was a sentence, or "none", broke the sentence it landed in | Reading a resolved column | One standing constraint reworded. `slots.yaml` says to write a phrase, and to read one resolved column |
+| `record` listed six headings and `panel` asked for a seventh | The `record` column | Fixed. Seven in both |
+| A panel run by hand returns no counts, and the column said never to count by hand | The `panel` column | Fixed. Counted by hand, and marked so |
+| The comment list `prepare-pr` asks for included markdown headings and missed docstrings | The `prepare-pr` column | Not fixed. It is a slot value. Write one for your language |
+| The column said a close makes three changes, and it makes four: it writes the pull request's number too | Reading the close's diff | Fixed. The column lists four |
+| The one feature behind a criterion was done, and `plan check` still warned that it could slip | `plan check`, after the close | Fixed. A finished feature is not warned about |
+| Two of the `close` column's four exits pass once only. After the release, `plan enter-check` and `plan archive` both fail, because the release removed what they read | Running the four exits a second time | Not fixed. Run them once, in the order the column lists them |
+| The feature's own branch stayed on the remote after the merge | Reading the remote afterwards | Not fixed. The kit removes its own claim and close branches. Removing a merged feature branch is a setting on the code host |
+
+**The close, on the code host's own times.** The close was a plan-only pull request. It was raised
+at 15:54:49 UTC, its check ran from 15:54:56 to 15:55:04, and it merged at 15:55:12. It added three
+lines to one file and removed two. `plan close-check` then passed.
+
+**The archive and the release refused in the right order.** With no destination set, `plan archive`
+exited 1 and so did `plan release`. With one set, `plan release` still refused until the journal had
+been archived. Then both passed: 293 lines copied and read back, and the feature's work folder
+removed.
+
+---
+
 ## What it has not proved
 
-**No feature has been built with it.** The walk above runs every command. It does not run a session
-through twelve columns.
+**A close refused on a real code host.** `plan close` refuses a feature whose pull request has not
+merged. That is tested against a stand-in only. The one real close was of a merged feature.
 
-**`land: pr` has only met a stand-in.** The tests run it against a script that plays the code host.
-Raising a real pull request, waiting on real checks and merging it are untested.
+**A gate answered by a person, other than the merge.** See above.
+
+**An archive that outlives the machine.** The run archived its journal to a folder on the same disk.
+
+**A protected main branch.** The scratch repository's was not protected, and nothing required a
+review. A claim that needs a second person's approval before it merges has not been tried.
+
+**More than one check, or a slow one.** The one check there took under ten seconds.
 
 **Modes are refused.** `plan resolve --mode` exits with an error, and a feature with `mode:` gets a
 warning and the full workflow. Resolve a mode by hand, with prompt B.

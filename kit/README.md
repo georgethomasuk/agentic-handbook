@@ -30,7 +30,8 @@ scripts/test-kit.sh
 
 It runs the tests, then runs `plan check` on a fresh copy of the example plan. Every test builds its
 own repository in a temporary folder with a local remote. The pull-request path is tested against a
-script that stands in for `gh`, and against nothing else.
+script that stands in for `gh`. It has also been run by hand against a real code host, once: the
+kit's page says what that found.
 
 ## Three rules the code keeps
 

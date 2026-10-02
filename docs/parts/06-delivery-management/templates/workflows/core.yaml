@@ -93,7 +93,7 @@ delegation: |
 standing_constraints:
   - "{{project.data_rules}}"
   - "{{project.boundaries}}"
-  - Fixtures are synthetic unless {{project.real_data_policy}} says otherwise.
+  - "Fixtures are synthetic. Whether one may ever be built from real data: {{project.real_data_policy}}"
   - The review panel runs apart from the working session; its per-seat output does not land here.
   - After the workflow's `unattended_from` column, the run stops only at a blocking human gate or on
     {{project.stop_list}}. Items on {{project.decide_and_disclose_list}} are decided and disclosed in
@@ -392,8 +392,10 @@ columns:
       by sharpening a seat's suspicion, adding a profile on this branch, or raising an issue with
       {{tooling.issue_tracker}}. Recording it only in the journal is the same as dropping it.
 
-      Record the panel's counts – seats, findings raised, refuted, acted on – as the runner returned
-      them, in the feature's `### Panel tally`. Never count them by hand.
+      Write the panel's counts – seats, findings raised, refuted, acted on – in the journal, as the
+      runner returned them. `record` copies them into the feature's `### Panel tally`. Never count
+      what a runner counted. A panel run by hand returns no counts: count them from the triaged
+      report, and say in the tally that they were counted by hand.
     produces:
       - the named seats, each with the concrete failure mode it exists to catch
       - every new or extended reviewer profile, committed on this branch
@@ -401,7 +403,7 @@ columns:
       - every finding triaged – fixed where it belongs, or a stated decision – and every unverified
         finding with the way it was decided
       - every failure mode nobody had a seat for, closed by one of the three routes
-      - the panel tally, as returned, in `### Panel tally`
+      - the panel tally in the journal, as returned, or marked as counted by hand
       - the checks re-run after each fix
     exit:
       - attest: each seat named for the failure mode it will investigate
@@ -416,7 +418,7 @@ columns:
         why: |
           a gap written only in a journal or a running list has no owner and no state, so nothing
           closes it. An issue has both.
-      - attest: the panel tally recorded as returned, with nothing hand-counted
+      - attest: the panel tally recorded as returned, or marked as counted by hand
         why: |
           which seats earn their cost is a question about many panels, not this one. A tally written
           into prose cannot be asked that question.
@@ -502,7 +504,8 @@ columns:
       was asked for, and the record is what came of it.
 
       Use only these headings: **Decisions taken** · **Carried forward** · **Verification actually
-      run** · **Review** · **Also fixed (not the feature)** · **Lesson**. The set is closed because
+      run** · **Review** · **Panel tally** · **Also fixed (not the feature)** · **Lesson**. The set
+      is closed because
       Carried forward is lifted by its exact heading into the brief of every feature that depends on
       this one. Rename it and it reaches nobody.
 
@@ -514,6 +517,7 @@ columns:
       - **Verification actually run** – where the packet's commands were not enough, and what was
         done instead. The difference, not a restatement.
       - **Review** – who looked, what came back, and what was accepted.
+      - **Panel tally** – the panel's counts, copied from the journal. Left out where no panel ran.
       - **Also fixed** – incidental repairs, so a later reader of the history does not misread them.
       - **Lesson** – the one thing that generalises. If it repeats an earlier feature's, say which.
 
@@ -529,7 +533,7 @@ columns:
       line names what proof its change would give up. Fix names where the fix goes, or says
       `none: one-off`. Do not read other retro entries before writing yours.
     produces:
-      - "`## Record` under the six closed headings, written from the journal and the pull request body"
+      - "`## Record` under the seven closed headings, written from the journal and the pull request body"
       - every problem found in passing, raised as an issue and cited by number
       - a retro entry, in its own file, under the length limit
       - "{{tooling.record_fields}}"
@@ -570,9 +574,9 @@ columns:
       on merge, so an unclosed feature sits in flight indefinitely and every queue, count and
       dependency check downstream reads a stale line.
 
-      Close it with {{tooling.close}}. It refuses unless the feature has merged, and makes three
-      changes only: status done, the column removed, the merge date read from the merge itself –
-      never typed. It adds no prose; the record was written at `record`.
+      Close it with {{tooling.close}}. It refuses unless the feature has merged, and changes the
+      header only: status done, the column removed, the pull request's number, and the merge date
+      read from the merge itself – never typed. It adds no prose; the record was written at `record`.
 
       Then archive the journal with {{tooling.archive_journal}}, and only after that release the
       working copy with {{tooling.release_workspace}}. The order matters: the journal usually lives

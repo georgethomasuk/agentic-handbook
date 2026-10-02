@@ -38,4 +38,4 @@ tooling:
   panel_runner: >
     one fresh session per seat, each given its profile and the diff, read-only – opened by the
     operator, who pastes the findings back
-  record_fields: "nothing beyond the six headings"
+  record_fields: "nothing beyond the seven headings"

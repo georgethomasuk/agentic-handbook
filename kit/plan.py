@@ -25,6 +25,7 @@ import shutil
 import subprocess
 import sys
 import tempfile
+import time
 from collections import defaultdict
 from dataclasses import dataclass, field
 from functools import cached_property
@@ -121,9 +122,13 @@ DEFAULTS = {
     "remote": "origin",
     "main": "main",
     "land": "pr",
+    "checks": "required",
+    "checks_wait": 120,
     "tooling_values": None,
 }
 LAND_MODES = ("pr", "push", "none")
+CHECK_MODES = ("required", "none")
+CHECK_POLL = 5  # seconds between looks for a check that has not been reported yet
 
 
 @dataclass
@@ -156,6 +161,8 @@ class Kit:
         config = {**DEFAULTS, **loaded}
         if config["land"] not in LAND_MODES:
             raise fail(f"{root / 'kit.yaml'}: `land` must be one of {' · '.join(LAND_MODES)}")
+        if config["checks"] not in CHECK_MODES:
+            raise fail(f"{root / 'kit.yaml'}: `checks` must be one of {' · '.join(CHECK_MODES)}")
         return cls(root=root, config=config)
 
     @cached_property
@@ -1092,6 +1099,66 @@ def on_main(kit: Kit, node: Node) -> dict:
     return parse_document(shown.stdout)[0]
 
 
+def wait_for_checks(kit: Kit, branch: str, head: str, cwd: Path,
+                    then: str = " – nothing merged") -> None:
+    """Return only once the checks on the commit just pushed have been seen and have passed.
+
+    A pull request raised a moment ago has no checks yet: the code host has not started them. Asked
+    then, it answers "no checks reported", which is also what a repository with no checks at all
+    answers. Taking that for a pass merged a claim while its check was still running. So "none yet"
+    is waited out, and "none ever" has to be said in kit.yaml rather than inferred.
+
+    A pull request pushed to a moment ago still answers for the commit before: for about two seconds
+    it reports the old head and the old head's checks, pass or fail. So the pull request is waited
+    for until it has the commit that was pushed.
+    """
+    if kit.config["checks"] == "none":
+        return
+    wait = float(kit.config["checks_wait"])
+    deadline = time.monotonic() + wait
+    while True:
+        seen = gh("pr", "view", branch, "--json", "headRefOid", "-q", ".headRefOid", cwd=cwd)
+        if seen.stdout.strip() == head:
+            break
+        if time.monotonic() >= deadline:
+            raise fail(f"the pull request for {branch} did not take the pushed commit within "
+                       f"{wait:g} seconds{then}")
+        time.sleep(CHECK_POLL)
+    while True:
+        seen = gh("pr", "checks", branch, cwd=cwd, check=False)
+        if "no checks reported" not in (seen.stdout + seen.stderr).lower():
+            break
+        if time.monotonic() >= deadline:
+            raise fail(f"no check was reported on {branch} within {wait:g} seconds{then}. If "
+                       f"this repository runs no checks on a pull request, say so: "
+                       f"`checks: none` in kit.yaml")
+        time.sleep(CHECK_POLL)
+    watched = gh("pr", "checks", branch, "--watch", "--fail-fast", cwd=cwd, check=False)
+    if watched.returncode != 0:
+        raise fail(f"checks did not pass on {branch}{then}:\n"
+                   + (watched.stdout or watched.stderr).strip())
+
+
+def ci(kit: Kit) -> int:
+    """Wait for the checks on this branch's pull request – the ones for the commit at its head.
+
+    The code host's own watch command, run straight after a push, answered for the commit before:
+    it printed that commit's pass and exited 0 while the new head's check was still starting."""
+    remote = kit.config["remote"]
+    branch = git(kit, "rev-parse", "--abbrev-ref", "HEAD").stdout.strip()
+    head = git(kit, "rev-parse", "HEAD").stdout.strip()
+    there = git(kit, "ls-remote", remote, f"refs/heads/{branch}").stdout.split()
+    if not there or there[0] != head:
+        raise fail(f"the head of {branch} is not on {remote} – push it first. Checks run on what "
+                   f"was pushed, not on what is here.")
+    if kit.config["checks"] == "none":
+        print("kit.yaml says `checks: none` – nothing waited for.")
+        return 0
+    wait_for_checks(kit, branch, head, kit.repo, then="")
+    print(f"checks passed on {branch} at {head[:7]}.")
+    return 0
+
+
 def land(kit: Kit, node: Node, verb: str, subject: str, body: str, edit,
          rebase: bool = True) -> None:
     """Make one plan-only change on the main branch, from a throwaway working copy.
@@ -1122,14 +1189,16 @@ def land(kit: Kit, node: Node, verb: str, subject: str, body: str, edit,
             git(kit, "push", "-q", remote, f"HEAD:{main}", cwd=scratch)
         else:
             git(kit, "push", "-q", "--force-with-lease", "-u", remote, branch, cwd=scratch)
-            gh("pr", "create", "--base", main, "--head", branch, "--title", subject,
-               "--body", body, cwd=scratch)
-            checks = gh("pr", "checks", branch, "--watch", "--fail-fast", cwd=scratch, check=False)
-            report = (checks.stdout + checks.stderr).lower()
-            if checks.returncode != 0 and "no checks reported" not in report:
-                raise fail(f"checks did not pass on {branch} – nothing merged:\n"
-                           + (checks.stdout or checks.stderr).strip())
+            raised = gh("pr", "create", "--base", main, "--head", branch, "--title", subject,
+                        "--body", body, cwd=scratch, check=False)
+            # A run that stopped on a red check left its pull request open, and the push above
+            # has just updated it.
+            if raised.returncode != 0 and "already exists" not in raised.stderr:
+                raise fail(f"gh pr create failed:\n{(raised.stderr or raised.stdout).strip()}")
+            wait_for_checks(kit, branch, head, scratch)
             gh("pr", "merge", branch, "--squash", "--match-head-commit", head, cwd=scratch)
+            # A code host set to delete merged branches has already done this, so a refusal is fine.
+            git(kit, "push", "-q", remote, "--delete", branch, cwd=scratch, check=False)
     finally:
         git(kit, "worktree", "remove", "--force", str(scratch), check=False)
         shutil.rmtree(scratch, ignore_errors=True)
@@ -1476,7 +1545,9 @@ def check_tree(kit: Kit, tree: Tree, graph: Graph) -> tuple[list[str], list[str]
                 for criterion, features in answered.items():
                     if not features:
                         err(node, f"criterion `{criterion}` has no feature tracing to it")
-                    elif len(features) == 1:
+                    elif len(features) == 1 and features[0].status != "done":
+                        # A finished feature cannot slip. The first real run closed the one feature
+                        # behind a criterion and was warned about it on every check after.
                         warn(node, f"criterion `{criterion}` is answered by one feature, "
                                    f"{features[0].key} – one slip there is a slip of the milestone")
             continue
@@ -1675,7 +1746,7 @@ def view(tree: Tree, graph: Graph, node: Node | None) -> int:
                 tracing = [f for f in tracing if f in below]
             done = sum(1 for f in tracing if f.status == "done")
             note = ("  ← nothing points at it" if not tracing
-                    else "  ← answered once" if len(tracing) == 1 else "")
+                    else "  ← answered once" if len(tracing) == 1 and not done else "")
             print(f"  {criterion}  {plural(len(tracing), 'feature')}, {done} done{note}")
         for feature in blanket:
             print(f"  left out of the count: {feature.key} traces every criterion")
@@ -1716,6 +1787,13 @@ main: main
 #   push  pushed straight to the main branch – for a repository with no protection on it
 #   none  edited in the working copy only; landing it is yours
 land: pr
+
+# Whether a pull request here has checks to wait for. Used by `land: pr` only.
+#   required  wait until a check is reported and every check passes. Seeing none within
+#             `checks_wait` seconds fails – a pull request raised a moment ago has none yet
+#   none      this repository runs no checks on a pull request. Merge without waiting
+checks: required
+checks_wait: 120
 
 # Your own tooling values, if they are not the kit's. A path, or set PLAN_TOOLING_VALUES.
 tooling_values:
@@ -1786,6 +1864,7 @@ def main(argv: list[str]) -> int:
                             "its example")
 
     sub.add_parser("check", help="the templates, the tree and the retros – fails on any error")
+    sub.add_parser("ci", help="wait for the checks on this branch's pull request, for its head")
 
     queue = sub.add_parser("work", help="unfinished features, and the command that briefs each")
     queue.add_argument("--all", action="store_true", dest="show_all",
@@ -1836,6 +1915,8 @@ def main(argv: list[str]) -> int:
     kit = Kit.find()
     if args.command == "check":
         return check(kit)
+    if args.command == "ci":
+        return ci(kit)
     if args.command == "resolve":
         if args.mode:
             raise fail(f"modes are not applied by the kit yet – `{args.mode}` is resolved by hand, "

@@ -105,7 +105,7 @@ October 2026. The first real brief assembled by walking the plan from the top wa
 5,064 of them came before the sentence naming the column. Step 2.2 exists because of that brief.
 
 **And the same count on the kit's output**, run on 2 October 2026. The brief it assembles for the
-worked example is 10,321 words, with 47 before the sentence naming the column. Most of that length is
+worked example is 10,386 words, with 47 before the sentence naming the column. Most of that length is
 the eleven later columns, copied whole at the bottom.
 
 **What a column costs to run is Part 7's subject**, not this one's.
@@ -335,6 +335,11 @@ success and there is no archive.
 copy the journal lives in. An archive that quietly copied nothing is found out when somebody wants
 the evidence behind a record, which is after the only copy is gone. The kit's `plan release` refuses
 until the archived copy exists and matches.
+
+**A second one, from the first real run on 2 October 2026.** `full_gate_capped` was filled as
+`timeout 5m make check`, on a machine with no `timeout` command. Nobody had watched it fail. At the
+`prove` column it exited 127, having checked nothing. That was loud, so the slot did its job – at
+the sixth column, not at setup.
 
 ---
 
@@ -592,7 +597,7 @@ writes the brief:
 
 ```
 $ plan prompt feature_checkin_rate_limit -o .work/feature_checkin_rate_limit/brief.md
-wrote .work/feature_checkin_rate_limit/brief.md – 10321 words, 47 before the sentence naming the column.
+wrote .work/feature_checkin_rate_limit/brief.md – 10386 words, 47 before the sentence naming the column.
 ```
 
 ---
@@ -970,17 +975,30 @@ depends on it, or the entry names its destination – an issue by number, a name
 
 # What's not solved yet
 
-**Neither route has run a real feature.** The by-hand route has not been run at all: prompts A, B
-and C are untried. The kit has tests, and one walk through its commands on the example plan against
-a local repository. No feature has been built with it.
+**One feature has been run, by the kit route, through all twelve columns.** On 2 October 2026 a
+session ran the worked example's rate limit through `build-in-repository`, in a scratch repository on
+a real code host. It stopped at the merge, as the column says to. A person merged it, and the session
+then ran `close`. Said "as far as the merge" until that happened, later the same day.
+[The kit's page](./kit.md#what-the-first-real-run-found) lists what the run found.
 
-**The kit's pull-request path has only met a stand-in.** Claiming and closing by pushing to the main
-branch are tested against a real local repository. Raising a pull request, waiting on its checks and
-merging it are tested against a script standing in for the code host, never against the code host.
+**One human gate in that run was answered by a person: the merge.** The session stood in for you at
+`frame` and `build-plan`. Whether those gates ask you the right questions is untested.
 
-**The layered templates have not been run.** The workflows these were extracted from are whole
-files. Splitting them into a core, a workflow and slots – `use:`, `also:`, `as:` – was done during
-extraction. The tests show the layers join. They do not show the joined text works on a session.
+**The by-hand route has not been run at all.** Prompts A, B and C are untried.
+
+**The panel earned its cost once, and one run is one run.** Three seats and two re-reviews raised 18
+findings on a change to two source files. The worst was made by the fix to an earlier finding, and
+only the re-review saw it. Nothing here says how often that happens.
+
+**The kit's pull-request path has met one code host.** Two claims were raised, checked and merged on
+it, and one close. The first claim merged before its check had started, which is why the second one
+waited. A claim run again after a red check, and a close refused because the feature has not merged,
+are tested against a script standing in for the code host.
+
+**One of the seven layered workflows has been run, once.** The workflows these were extracted from
+are whole files. Splitting them into a core, a workflow and slots – `use:`, `also:`, `as:` – was done
+during extraction. `build-in-repository`, joined from its layers, was followed by a session from
+`check` to `close`. The other six have not been run.
 
 **Modes are not applied by the kit.** `treatment-only` and `draft-contract` are written as prose
 changes, column by column, and the kit refuses them rather than guess. A feature in a mode is
@@ -1003,9 +1021,10 @@ left. A second one will find holes that are missing and slots that are really on
 
 **Setup cost is not measured.** Neither the hours to fill the slots nor a second engagement's brief.
 
-**The worked example has never been built.** The rate limit and the plan around it are in
-[the example plan](../05-delivery-planning/example-plan.md). Its briefs are real kit output. Nothing
-in it has been run through a workflow.
+**The worked example has been built once, outside the example plan.** The rate limit and the plan
+around it are in [the example plan](../05-delivery-planning/example-plan.md). Its briefs are real kit
+output. The rate limit was built in a scratch repository that is not published. The example plan
+still shows it as `ready`, and the records of its six finished features are still fiction.
 
 ---
 
@@ -1030,6 +1049,13 @@ in it has been run through a workflow.
 - Two features in flight that had merged, one nine days earlier – `model.md` §9b.
 - Two features, same failure a day apart; three notes with no route – `model.md` §11c.
 - Slot, column and exit counts – counted by script from this repository's templates, 2026-10-02.
+- The first real run, 2026-10-02 – a private scratch repository on the code host. Pull request
+  times (created, check started and completed, merged) read with `gh pr view` and `gh run list`.
+  The 18 findings and the two source files – the run's journal and `git diff --stat`. The brief's
+  10,386 words – `plan prompt` on a fresh `plan init --example`, after the template edits.
+  The close, the same day – pull request times read with `gh pr view`; the 293 lines from
+  `plan archive`'s own output; the twelve columns from `plan enter`'s "12 of 12". The brief's figure
+  said 10,381 until the `close` column gained five words.
 
 ## Open
 

@@ -38,11 +38,24 @@ FAKE_GH = """#!/usr/bin/env bash
 echo "$*" | tr '\\n' ' ' >> "$GH_LOG"
 echo >> "$GH_LOG"
 case "$1 $2" in
-  "pr create") exit 0 ;;
+  "pr create") [ -n "$GH_PR_EXISTS" ] && { echo "a pull request for branch already exists" >&2; exit 1; }
+               [ -n "$GH_CREATE_FAILS" ] && { echo "could not create: no permission" >&2; exit 1; }
+               exit 0 ;;
   "pr checks") [ -n "$GH_NO_CHECKS" ] && { echo "no checks reported on the branch" >&2; exit 1; }
+               # A check that the code host has not started yet: reported on a later look.
+               if [ -n "$GH_CHECKS_LATE" ]; then
+                 looks=$(grep -c "^pr checks" "$GH_LOG")
+                 [ "$looks" -le "$GH_CHECKS_LATE" ] && { echo "no checks reported on the branch" >&2; exit 1; }
+               fi
                exit "${GH_CHECKS_EXIT:-0}" ;;
   "pr merge")  git push -q origin "HEAD:main" ;;
-  "pr view")   if [ -n "$GH_VIEW" ]; then echo "$GH_VIEW"
+  "pr view")   if [[ "$*" == *headRefOid* ]]; then
+                 # A pull request pushed to a moment ago still reports the commit before.
+                 looks=$(grep -c "^pr view .*headRefOid" "$GH_LOG")
+                 if [ -n "$GH_HEAD_NEVER" ] || [ "$looks" -le "${GH_HEAD_LATE:-0}" ]; then
+                   echo 0000000000000000000000000000000000000000
+                 else git rev-parse HEAD; fi
+               elif [ -n "$GH_VIEW" ]; then echo "$GH_VIEW"
                else echo '{"state":"MERGED","mergedAt":"2026-10-01T10:00:00Z"}'; fi ;;
 esac
 """
@@ -391,6 +404,12 @@ class TreeCheckTests(PlanCase):
         self.assertIn(f"criterion `G2.3` is answered by one feature, {RATE_LIMIT}", warnings)
         self.assertNotIn("criterion `G2.1`", warnings)
 
+    def test_a_criterion_answered_once_stops_warning_when_that_feature_is_done(self) -> None:
+        self.edit(RATE_LIMIT, "status: ready", "status: done\npr: 6\nmerged: 2026-10-02")
+        errors, warnings = self.tree_findings()
+        self.assertNotIn("criterion `G2.3`", "\n".join(warnings))
+        self.assertNotIn("criterion `G2.3`", "\n".join(errors))
+
     def test_only_a_milestone_has_a_date(self) -> None:
         readme = self.repo / SLICE / "README.md"
         readme.write_text(readme.read_text().replace("---\ntitle", "---\ntarget: 2026-11-02\ntitle", 1))
@@ -703,24 +722,133 @@ class LandByPullRequestTests(PlanCase):
 
     def test_a_claim_is_raised_checked_and_merged_in_that_order(self) -> None:
         quiet(plan.claim, self.kit, self.node(RATE_LIMIT), True)
-        self.assertEqual(self.calls(), ["pr create", "pr checks", "pr merge"])
+        self.assertEqual(self.calls(),
+                         ["pr create", "pr view", "pr checks", "pr checks", "pr merge"])
+        self.assertIn("--watch", self.log.read_text().splitlines()[3])
         self.assertIn("--match-head-commit", self.log.read_text())
         self.assertEqual(self.main_status(), "in-progress")
         self.assertEqual(quiet(plan.claim_check, self.kit, self.node(RATE_LIMIT))[0], 0)
+
+    def test_a_landed_change_leaves_no_branch_on_the_remote(self) -> None:
+        quiet(plan.claim, self.kit, self.node(RATE_LIMIT), True)
+        heads = sh("git", "ls-remote", "--heads", "origin", cwd=self.repo)
+        self.assertNotIn("refs/heads/plan/", heads)
 
     def test_a_red_check_stops_the_merge(self) -> None:
         os.environ["GH_CHECKS_EXIT"] = "1"
         with self.assertRaises(SystemExit) as raised:
             quiet(plan.claim, self.kit, self.node(RATE_LIMIT), True)
         self.assertIn("nothing merged", str(raised.exception))
-        self.assertEqual(self.calls(), ["pr create", "pr checks"])
+        self.assertEqual(self.calls(), ["pr create", "pr view", "pr checks", "pr checks"])
         self.assertEqual(self.main_status(), "ready")
 
-    def test_a_repository_with_no_checks_still_merges(self) -> None:
+    def configure(self, **settings) -> None:
+        config = self.repo / "plan" / "kit.yaml"
+        text = config.read_text()
+        for key, value in settings.items():
+            text = re.sub(rf"^{key}: .*$", f"{key}: {value}", text, flags=re.M)
+        config.write_text(text)
+        self.kit = plan.Kit.load(self.repo / "plan")
+
+    def test_no_check_reported_is_not_a_pass(self) -> None:
+        # What the code host says about a pull request raised a moment ago, and about a
+        # repository with no checks at all. The kit cannot tell them apart, so it does not guess.
         os.environ["GH_NO_CHECKS"] = "1"
+        self.configure(checks_wait=0)
+        with self.assertRaises(SystemExit) as raised:
+            quiet(plan.claim, self.kit, self.node(RATE_LIMIT), True)
+        self.assertIn("no check was reported", str(raised.exception))
+        self.assertIn("`checks: none`", str(raised.exception))
+        self.assertNotIn("pr merge", self.calls())
+        self.assertEqual(self.main_status(), "ready")
+
+    def test_a_check_that_starts_late_is_waited_for(self) -> None:
+        os.environ["GH_CHECKS_LATE"] = "2"
+        self.addCleanup(setattr, plan, "CHECK_POLL", plan.CHECK_POLL)
+        plan.CHECK_POLL = 0.01
         quiet(plan.claim, self.kit, self.node(RATE_LIMIT), True)
-        self.assertEqual(self.calls(), ["pr create", "pr checks", "pr merge"])
+        calls = self.calls()
+        self.assertEqual(calls[-1], "pr merge")
+        self.assertGreaterEqual(calls.count("pr checks"), 4)
         self.assertEqual(self.main_status(), "in-progress")
+
+    def test_a_late_check_that_fails_still_stops_the_merge(self) -> None:
+        os.environ["GH_CHECKS_LATE"] = "1"
+        os.environ["GH_CHECKS_EXIT"] = "1"
+        self.addCleanup(setattr, plan, "CHECK_POLL", plan.CHECK_POLL)
+        plan.CHECK_POLL = 0.01
+        with self.assertRaises(SystemExit):
+            quiet(plan.claim, self.kit, self.node(RATE_LIMIT), True)
+        self.assertNotIn("pr merge", self.calls())
+
+    def test_checks_on_the_commit_before_are_not_taken_for_this_one(self) -> None:
+        # For a moment after a push, the code host answers for the old head – and its old checks.
+        os.environ["GH_HEAD_LATE"] = "2"
+        self.addCleanup(setattr, plan, "CHECK_POLL", plan.CHECK_POLL)
+        plan.CHECK_POLL = 0.01
+        quiet(plan.claim, self.kit, self.node(RATE_LIMIT), True)
+        calls = self.calls()
+        self.assertEqual(calls[:4], ["pr create", "pr view", "pr view", "pr view"])
+        self.assertLess(calls.index("pr checks"), calls.index("pr merge"))
+        self.assertEqual(calls.index("pr checks"), 4)
+
+    def test_a_pull_request_that_never_takes_the_commit_is_not_merged(self) -> None:
+        os.environ["GH_HEAD_NEVER"] = "1"
+        self.configure(checks_wait=0)
+        with self.assertRaises(SystemExit) as raised:
+            quiet(plan.claim, self.kit, self.node(RATE_LIMIT), True)
+        self.assertIn("did not take the pushed commit", str(raised.exception))
+        self.assertNotIn("pr checks", self.calls())
+        self.assertNotIn("pr merge", self.calls())
+        self.assertEqual(self.main_status(), "ready")
+
+    def test_a_claim_run_again_after_a_red_check_uses_the_pull_request_left_open(self) -> None:
+        os.environ["GH_PR_EXISTS"] = "1"
+        quiet(plan.claim, self.kit, self.node(RATE_LIMIT), True)
+        self.assertEqual(self.calls()[-1], "pr merge")
+        self.assertEqual(self.main_status(), "in-progress")
+
+    def test_a_pull_request_that_cannot_be_raised_stops_the_claim(self) -> None:
+        os.environ["GH_CREATE_FAILS"] = "1"
+        with self.assertRaises(SystemExit) as raised:
+            quiet(plan.claim, self.kit, self.node(RATE_LIMIT), True)
+        self.assertIn("no permission", str(raised.exception))
+        self.assertEqual(self.calls(), ["pr create"])
+
+    def test_ci_waits_for_the_pushed_commit_then_for_its_checks(self) -> None:
+        sh("git", "push", "-q", "-u", "origin", "feat/rate-limit", cwd=self.repo)
+        os.environ["GH_HEAD_LATE"] = "1"
+        self.addCleanup(setattr, plan, "CHECK_POLL", plan.CHECK_POLL)
+        plan.CHECK_POLL = 0.01
+        code, said, _ = quiet(plan.ci, self.kit)
+        self.assertEqual(code, 0)
+        self.assertIn("checks passed on feat/rate-limit", said)
+        self.assertEqual(self.calls(), ["pr view", "pr view", "pr checks", "pr checks"])
+
+    def test_ci_fails_when_a_check_fails(self) -> None:
+        sh("git", "push", "-q", "-u", "origin", "feat/rate-limit", cwd=self.repo)
+        os.environ["GH_CHECKS_EXIT"] = "1"
+        with self.assertRaises(SystemExit) as raised:
+            quiet(plan.ci, self.kit)
+        self.assertIn("checks did not pass on feat/rate-limit:", str(raised.exception))
+
+    def test_ci_refuses_a_head_that_was_not_pushed(self) -> None:
+        with self.assertRaises(SystemExit) as raised:
+            quiet(plan.ci, self.kit)
+        self.assertIn("push it first", str(raised.exception))
+        self.assertEqual(self.log.exists() and self.calls(), False)
+
+    def test_a_repository_that_says_it_has_no_checks_merges_without_waiting(self) -> None:
+        os.environ["GH_NO_CHECKS"] = "1"
+        self.configure(checks="none")
+        quiet(plan.claim, self.kit, self.node(RATE_LIMIT), True)
+        self.assertEqual(self.calls(), ["pr create", "pr merge"])
+        self.assertEqual(self.main_status(), "in-progress")
+
+    def test_checks_must_be_one_of_the_two_settings(self) -> None:
+        with self.assertRaises(SystemExit) as raised:
+            self.configure(checks="maybe")
+        self.assertIn("`checks` must be one of", str(raised.exception))
 
     def test_the_merge_date_is_read_from_the_code_host(self) -> None:
         quiet(plan.claim, self.kit, self.node(RATE_LIMIT), True)
