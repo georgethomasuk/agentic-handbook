@@ -10,7 +10,7 @@
 # Shared columns come from core.yaml. {{project.*}} and {{tooling.*}} slots are defined in slots.yaml.
 
 name: build-in-browser
-description: >
+description: |
   Verify the feature's inputs and who owns what, claim it, look at the surface as it runs today,
   agree the proposed journey or state design with a small sketch, cut the build into steps and agree
   the cut, run each build step red → green → perturb in a worker of its own, put the live result in
@@ -29,7 +29,7 @@ columns:
   - name: check
     delegate:
       model: "{{tooling.reading_tier}}"
-      send: >
+      send: |
         the blocker check and the read sweep – the whole of this column's reading and none of its
         judgement. Give it {{project.constitution}}, the packet, the upstream Carried forward notes,
         the owning component's documentation, the decisions and contracts the packet cites, and the
@@ -37,15 +37,15 @@ columns:
         from {{tooling.pr_state}}, each named external input confirmed to exist, an inventory of
         which module today holds each of the five responsibilities below, and every place the packet
         and the repository disagree.
-      keep: >
+      keep: |
         two calls, and they are what the gate below asks for. Which surface SHOULD own each
         responsibility – the inventory says where they live now, which is a different question and
         is often the defect. And the classification. Both set how the work is cut, and a guess made
         by a worker is still a guess.
-      escalate: >
+      escalate: |
         the inventory shows a responsibility split across surfaces, or the packet assumes an owner
         the repository contradicts.
-    entry: >
+    entry: |
       Confirm every feature this one depends on has merged and every external input the packet names
       exists. State which surface owns each of five responsibilities: **rendering, interaction
       state, durable state, validation, and building what is sent**. Report packet drift, or an
@@ -70,22 +70,22 @@ columns:
   - name: recon
     delegate:
       model: "{{tooling.reading_tier}}"
-      send: >
+      send: |
         the browser sweep over what already exists – the first paragraph of the entry and nothing
         after it. Ask for observations with the selector or screenshot behind each one, never a
         verdict. This column carries more page snapshots, structure dumps and console logs than any
         other, and almost none of that is an input to `frame`.
-      keep: >
+      keep: |
         **the design reference, read in full in this session.** The second paragraph of the entry is
         never sent. A worker returns a confident summary whether or not it read the thing, and a
         design that was described rather than read is the failure this column guards against. Where
         the reference is a picture rather than a document, the reason is stronger: a worker cannot
         show you one.
-      escalate: >
+      escalate: |
         the sweep reports a defect that pre-dates this feature on the surface about to change, or
         the states it found do not match what the packet describes. Both mean `frame` is about to
         design against a baseline nobody has agreed.
-    entry: >
+    entry: |
       Start {{project.component_harness}} or {{project.local_system}} and inspect the current
       surface with {{project.browser_check}} before proposing a change. The component harness when
       the unit is one component. The real application when routing, persistence, submission or
@@ -112,12 +112,12 @@ columns:
       - human_gate: the current surface and its relevant states inspected in a browser
         why: the proposed change needs an observed baseline, not an inferred one
       - human_gate: the design reference for this surface read, or a statement that the packet names none
-        why: >
+        why: |
           silence is exactly what a reader cannot notice. A design agreed after reading only the
           specification can carry an element the full reference does not contain.
 
   - name: frame
-    entry: >
+    entry: |
       Explain the observable journey, the state transitions, which component or application layer
       owns what, and the responsive and accessibility behaviour.
 
@@ -159,7 +159,7 @@ columns:
         why: this is the inexpensive point to discover that a working surface would be the wrong surface
         blocking: true
     compact:
-      offer: >
+      offer: |
         Everything up to here was reading and looking – the packet, the constitution, the contracts,
         the current tests, and a browser session over states about to change. `build-plan` needs the
         agreement, not the sources. This is the largest safe drop in the workflow.
@@ -174,7 +174,7 @@ columns:
 
   - use: core.build-plan
     also:
-      entry: >
+      entry: |
         **Name the test level per step.** Pure state tests for state rules. Component tests for
         semantics and interaction. Browser tests only where a browser owns the behaviour. And name
         the {{project.component_harness}} entries each step owes.
@@ -192,7 +192,7 @@ columns:
         - each review scenario with the step that makes it reachable, and any scenario none does
       exit:
         - human_gate: every review scenario made reachable by a named step
-          why: >
+          why: |
             a scenario with no harness entry fails at the point the surface is supposed to be
             reviewed, one column after the build finished.
       compact:
@@ -203,17 +203,17 @@ columns:
   - use: core.build-execute
     also:
       delegate:
-        send: >
+        send: |
           Also give each worker the review scenarios it owes harness entries for.
-        keep: >
+        keep: |
           And the browser. A worker cannot show you a picture, so anything that has to be looked at
           waits for `user-review`, which is a column and not a step.
       review_each_step:
-        suspicion: >
+        suspicion: |
           state held that should be derived, and effects that should not exist. A control shipped
           without the keyboard, focus or announcement path its scenario asked for. A property
           threaded through a component that should own it.
-      entry: >
+      entry: |
         **Each step checks at the scope of its own change, with {{project.scoped_check}}, not the
         full gate.** The owning component's suite plus the one browser test that could see the
         change. With several steps running, the full gate contends with itself and fails in files
@@ -230,7 +230,7 @@ columns:
           - the harness entries that now exist for each review scenario, by name
 
   - name: user-review
-    entry: >
+    entry: |
       Leave {{project.component_harness}} or the application running at an address the reviewer can
       reach, by the route settled at `frame`, and present the work. This comes BEFORE the detailed
       browser sweep, so direction arrives while acting on it still costs one fix rather than a
@@ -253,19 +253,19 @@ columns:
       - the direction agreed, in enough detail that `browser-sweep` can score against it
     exit:
       - human_gate: live visual, interaction, responsive and accessibility review accepted
-        why: >
+        why: |
           whoever owns the product decides whether the experience is right, and decides it before
           the detailed sweep. A direction given here costs one fix. The same direction given after
           the sweep costs the whole sweep again.
         blocking: true
       - attest: every review finding fixed, or carried forward to a named downstream feature
     compact:
-      never: >
+      never: |
         the loop between this column and `browser-sweep` runs both ways. They are one drop, taken
         after the sweep.
 
   - name: browser-sweep
-    entry: >
+    entry: |
       Start {{project.built_surface}} and review it with {{project.browser_check}}. Not a test
       renderer, not the component harness in source mode, not reading the code. Exercise every agreed
       scenario at each of {{project.viewports}}.
@@ -291,11 +291,11 @@ columns:
       - anything sent back to `user-review`, and what the second look settled
     exit:
       - attest: the browser sweep is clean, and nothing it changed reopens what `user-review` accepted
-        why: >
+        why: |
           this gate confirms there is a concrete browser review to inspect, not only a green test
           suite, and that the surface the reviewer accepted is still the surface the panel is handed.
     compact:
-      offer: >
+      offer: |
         Two review columns end here – a live review loop that may have run several times, then the
         sweep that proved what it agreed. The panel reasons about what the diff can get wrong, from
         the diff.
@@ -316,14 +316,14 @@ columns:
       - "Browser evidence that passes while the real journey is broken – a selector or fixture
         that matches something other than what the user meets."
     also:
-      entry: >
+      entry: |
         After each fix, re-run the affected browser checks as well as the automated ones.
 
   - use: core.prepare-pr
 
   - use: core.submit
     also:
-      entry: >
+      entry: |
         The body also carries the browsers, states and screen sizes the sweep covered, and the
         manual review plan with its result.
 
@@ -345,27 +345,27 @@ standing_constraints:
 modes:
 
   - name: treatment-only
-    when: >
+    when: |
       the parts exist and only their treatment moves – colour, spacing, type, order at a narrow
       width. No journey changes, no state moves, no owner changes. If the work turns out to move
       any of those, leave the mode and run the full workflow from `recon`.
     unattended_from: build-execute
     agreed_at: frame
     columns:
-      check: >
+      check: |
         Also enumerate the design, content, accessibility and contract rules that apply, each with
         the line it comes from. Decide which bind THIS unit and which merely surround it. A unit
         that adopts a neighbouring rule ships a deviation nobody asked for.
       recon: skip
-      frame: >
+      frame: |
         Replace the sketch with a list: the full set of items and states the rule applies to, the
         invariants that must not change, every printed value that needs its contrast measured, and
         any component seam affected. Agree every deviation from the reference, and the review
         scenarios, before editing.
-      build-plan: >
+      build-plan: |
         One build step. There is no cut to agree, and the cut gate is skipped. The fixture count is
         still owed, here.
-      build-execute: >
+      build-execute: |
         One worker. Write the tests first and watch them fail: reading order, keyboard and focus,
         coverage of the counted content, and the narrow-width cases. Recreate the behaviour inside
         the existing components – never port markup, inline styles or script from the reference.
@@ -375,7 +375,7 @@ modes:
       panel: skip
 
     inspect:
-      entry: >
+      entry: |
         Read {{project.emitted_styles}} for every styling rule whose effect is not obvious, and the
         value it actually resolves to. Where the order of rules matters, check the emitted order.
         Measure contrast for each printed value that needed it, against {{project.contrast_bar}}.
@@ -388,7 +388,7 @@ modes:
         - anything not proved, and any behaviour left to a downstream unit
       exit:
         - attest: the emitted styles and their order verified
-          why: >
+          why: |
             a green source build does not prove that a styling rule was emitted at all. The rule can
             be written, compile, and produce nothing.
         - human_gate: visual and interaction review passed at every screen size

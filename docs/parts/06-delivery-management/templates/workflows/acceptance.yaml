@@ -15,7 +15,7 @@
 # Shared columns come from core.yaml. {{project.*}} and {{tooling.*}} slots are defined in slots.yaml.
 
 name: acceptance
-description: >
+description: |
   Verify every owning feature and external input, confirm the environment holds the state the run
   needs, agree the matrix and the deployment, deploy only with explicit approval, prove the
   behaviour by running every row and reading its effect back, put the result in front of a person who
@@ -29,7 +29,7 @@ columns:
   - name: check
     delegate:
       model: "{{tooling.reading_tier}}"
-      send: >
+      send: |
         the blocker check, the read sweep and the environment inventory. Give it
         {{project.constitution}}, the packet, the decisions it names, the owning component's
         documentation and the upstream Carried forward notes. Ask for each blocker's merged state
@@ -37,16 +37,16 @@ columns:
         {{project.deploy_mechanism}} confirmed to exist. **Read-only, and say so in its brief:**
         describe commands, never run one that changes the environment, and remember the environment
         is shared.
-      keep: >
+      keep: |
         whether the environment holds the state the run needs. This is the gate the workflow fails on
         most often and the one a worker is worst at: a query returning nothing because the
         configuration was never built looks exactly like a correct run over nothing. Read the counts
         it returns and decide yourself. Also the call that an acceptance claim has no owning
         implementation.
-      escalate: >
+      escalate: |
         the inventory is not clean – a count you cannot account for, credentials that are not what
         the packet assumes, or any sign that someone else is mid-change in the environment.
-    entry: >
+    entry: |
       Confirm every feature this one depends on has merged and is linked to its diff. Verify
       {{project.target_environment}}, {{project.deploy_mechanism}} and any data the run depends on
       exist, without changing them.
@@ -67,7 +67,7 @@ columns:
       - human_gate: blockers, external inputs, target environment and owning implementations verified
         why: acceptance cannot prove behaviour whose prerequisites exist only in the plan
       - human_gate: the environment holds the state this run reads
-        why: >
+        why: |
           an empty result is not a failure signal. It is the same output as a correct run over
           nothing. Establish what is there before the run, so that afterwards you compare against a
           number rather than a hope.
@@ -75,7 +75,7 @@ columns:
   - use: core.open
 
   - name: prepare
-    entry: >
+    entry: |
       Write the matrix before deploying. One row per criterion: the exact command or action, the
       environment, the input state it assumes, the expected effect, **how that effect will be read
       back**, the evidence to keep, and the feature that owns it if it fails. With the browser
@@ -104,7 +104,7 @@ columns:
       - which rows are automated and which need a person to judge
     exit:
       - human_gate: the matrix and the exact artefact agreed, every row naming how its effect is read back
-        why: >
+        why: |
           a matrix of commands and exit statuses produces a green board that proves the commands ran.
           The read-back is the acceptance.
         blocking: true
@@ -112,7 +112,7 @@ columns:
         why: a previous approval does not silently cover a new run
         blocking: true
     compact:
-      offer: >
+      offer: |
         `check` and `prepare` are verification and reading. What follows needs the matrix and the
         approved deployment, both short. The deployment approval is safe to carry in writing:
         `deploy` stops if anything differs from what was presented, so a lost approval halts the run
@@ -127,7 +127,7 @@ columns:
         - anything reported at `check`
 
   - name: deploy
-    entry: >
+    entry: |
       Deploy only the approved artefact, by {{project.deploy_mechanism}}, to the approved
       environment. Stop if the plan, the target or the diff differs from what was presented.
 
@@ -146,16 +146,16 @@ columns:
       - anything the deployment left behind, and any partial failure with what was done about it
     exit:
       - human_gate: the deployed identity read back from the running environment, matching what was approved
-        why: >
+        why: |
           a successful command is not evidence that the intended thing is live. The commonest
           failure on this path is proving a behaviour against the previous build.
     compact:
-      never: >
+      never: |
         `deploy`, `prove` and `result-review` loop back through each other. They are one drop,
         taken after `result-review`.
 
   - name: prove
-    entry: >
+    entry: |
       Run every row of the matrix against the deployed environment, with synthetic data only, and
       read each effect back out.
 
@@ -196,14 +196,14 @@ columns:
         blocking: true
       - human_gate: the evidence contains nothing the evidence rules forbid
       - human_gate: where a row could pass while the property is false, the perturbation that proves it
-        why: >
+        why: |
           nothing here is ever seen red. The work is already built and deployed, so every row's first
           run is a run that passes. The classic empty row is a query returning nothing against an
           environment that was always empty. Break the thing it guards, watch exactly that row fail,
           and restore. If no perturbation was run, say so.
 
   - name: result-review
-    entry: >
+    entry: |
       Put the result in front of a person and ask whether it is **right**, not whether it errored.
 
       Automation asserts what somebody thought of in advance. The value here is what nobody thought
@@ -230,13 +230,13 @@ columns:
       - every finding fixed where it belongs and re-proved, or given a named owner that blocks it
     exit:
       - human_gate: the result judged right, not merely free of errors
-        why: >
+        why: |
           a green matrix says the operations behaved as somebody predicted. Whether the output is
           correct is a different question, and the one this feature is for.
         blocking: true
       - human_gate: every finding fixed and re-proved, or given a named owner that blocks it
     compact:
-      offer: >
+      offer: |
         Three columns of evidence end here – the deployment read-back, a full matrix run, and a human
         judgement that may have looped back through both. The panel reasons from the diff and the
         matrix result.
@@ -262,7 +262,7 @@ columns:
       - "Where the matrix asserts absence or a count: whether the row could pass while the property
         is false."
     also:
-      entry: >
+      entry: |
         **This workflow has no unattended stretch, so the authorisation is asked for here.** Stop at
         the agreed seats and ask in the same message, before invoking anything.
 
@@ -275,7 +275,7 @@ columns:
   - use: core.prepare-pr
   - use: core.submit
     also:
-      entry: >
+      entry: |
         The body also carries the matrix result with its before and after figures, the failure rows,
         the reviewer's judgement, what the run left behind, and the rollback.
   - use: core.record

@@ -21,7 +21,7 @@
 # Shared columns come from core.yaml. {{project.*}} and {{tooling.*}} slots are defined in slots.yaml.
 
 name: real-environment-change
-description: >
+description: |
   Verify the blockers, claim the work, re-verify the packet against the environment and agree the
   approach, cut the build into steps and agree the cut, run each build step red → green → perturb in
   a worker of its own, review with nothing applied, prove on the real environment one apply at a
@@ -38,20 +38,20 @@ columns:
   - name: check
     delegate:
       model: "{{tooling.reading_tier}}"
-      send: >
+      send: |
         the blocker verification, which is nearly all of this column and is mechanical. Give it the
         dependency list, and ask for the real merged state of every blocker from
         {{tooling.pr_state}}, any blocker marked done with no pull request linked, and the result
         per blocker rather than a summary across them.
-      keep: >
+      keep: |
         whether a blocker sits OUTSIDE this repository. A human prerequisite, a client decision or
         an account that does not exist blocks the work without appearing in any dependency list. It
         is recalled from the engagement, which a worker was not part of. Also the decision to stop
         and take other work.
-      escalate: >
+      escalate: |
         a blocker's state is ambiguous, or the work touches another repository. Sequencing across
         repositories is a planning call, not a lookup.
-    entry: >
+    entry: |
       Confirm this feature's blockers are actually MERGED, not merely marked done. A blocker marked
       done with no pull request linked has nothing tying it to a diff: treat it as unverified and
       say so. If a blocker is open, stop and pick different work. Do not start and stall halfway.
@@ -60,18 +60,18 @@ columns:
       - a statement that no blocker sits outside this repository – or the one that does, named
     exit:
       - command: "{{tooling.pr_state}}"
-        why: >
+        why: |
           once per blocker. Never piped into another command – a gate whose exit status is the point
           must not lose it to a pipe.
       - human_gate: no blocker sits outside this repository
-        why: >
+        why: |
           a human prerequisite or an account that does not exist blocks the work without appearing
           in the plan. Report it and take the next eligible feature.
 
   - use: core.open
 
   - name: expand
-    entry: >
+    entry: |
       Read the packet. What it says about the environment is dated, so re-verify every file, script,
       variable and resource it names against the repository as it stands. Report anything that has
       moved as a finding against the packet, rather than building to the packet's picture.
@@ -100,12 +100,12 @@ columns:
       - anything asked and answered, and anything you were told to leave alone
     exit:
       - human_gate: the approach agreed
-        why: >
+        why: |
           the packet says what and how it will be known; the agent proposes how. Most of the value
           in the loop is here, and it is worth nothing if the code arrives with the proposal.
         blocking: true
     compact:
-      offer: >
+      offer: |
         Everything up to here was reading – the constitution, the infrastructure documentation, the
         decisions, the owning component's schema, and the packet re-verified against the repository.
         `build-plan` needs the agreement, not the sources.
@@ -117,7 +117,7 @@ columns:
 
   - use: core.build-plan
     also:
-      entry: >
+      entry: |
         **A denial does not get its red from a build step.** {{project.local_double}} enforces no
         access control, so a denial's red is one of two things. A static assertion over the
         configuration, which is worth having and is not the criterion. Or it waits for `prove`. Name
@@ -144,11 +144,11 @@ columns:
           told apart from an absent resource
       exit:
         - human_gate: every acceptance criterion closed by a named step, or named as a denial that `prove` closes
-          why: >
+          why: |
             a criterion no step closes AND `prove` does not claim is the defect, and it is far
             cheaper to find here than after the steps have landed.
         - human_gate: per step that pins a control, the invocation shapes named and its red told apart from an absent resource
-          why: >
+          why: |
             a control test that passes as soon as the resource exists reads the same as a real proof
             in a pull request.
           blocking: true
@@ -159,22 +159,22 @@ columns:
   - use: core.build-execute
     also:
       delegate:
-        send: >
+        send: |
           Also give each worker the invocation shapes `build-plan` named for its step, and how its
           red is to be told apart from an absent resource. And restate the rule against widening,
           because inside a step a widening looks like ordinary progress.
       review_each_step:
-        suspicion: >
+        suspicion: |
           what the configuration does on the SECOND apply, and after the environment has held it for
           a while. A resource the service rewrites on its own. A check that goes inert when it is
           refused access. A grant wider than the resource it exists for. A preview that came back
           clean against an identity that cannot apply it. A property enforced in one place that
           another can remove silently.
-        escalate: >
+        escalate: |
           also any finding whose fix changes a grant, an encryption or retention rule, or a trust
           boundary beyond what was agreed, or whose fix is an apply. The apply is the operator's,
           and so is the decision that one is needed.
-      entry: >
+      entry: |
         Check each step with {{project.offline_check}}, which needs no credentials.
 
         **State which invocation shapes each control-pinning step actually ran**, against the list
@@ -202,7 +202,7 @@ columns:
       - "A grant wider than the resource it exists for."
       - "A comment whose claim stopped being true."
     also:
-      entry: >
+      entry: |
         **Seat the panel where the work actually is, not where the workflow's name points.** A
         feature here is sometimes configuration end to end, and sometimes application code with a
         small, high-risk environment change. Weight the seats by blast radius per line, and say in
@@ -222,7 +222,7 @@ columns:
       exit:
         - command: "{{project.ci_watch}}"
         - human_gate: approval to begin applying
-          why: >
+          why: |
             the boundary between the two gates, and the point at which the feature parks. Approval
             here starts the applying. It does not cover it: every apply unit is asked for separately
             in `prove`.
@@ -235,7 +235,7 @@ columns:
 
   # Apply BEFORE merge. This column catches reality defects.
   - name: prove
-    entry: >
+    entry: |
       This stage catches things true of the world rather than of the code. An unapplied pull request
       is not evidence. Where a feature's value is a property of a running system, merging before
       applying merges a claim.
@@ -267,37 +267,37 @@ columns:
         the run left behind
     exit:
       - human_gate: apply approved – once per unit, every time
-        why: >
+        why: |
           every apply is asked for, not just the first. There is deliberately no one-word apply
           command: a habit is how an unreviewed change reaches an environment that can bill.
         blocking: true
       - attest: every criterion in the packet's verification block run, each naming its environment
-        why: >
+        why: |
           a green run against the local double is not evidence, and reporting one as though it were
           is worse than no report. Prove absence, not just a status code.
       - attest: every denial carried from `build-plan` run against the real environment
-        why: >
+        why: |
           a denial is the one criterion no build step can close. If it is not run here, it was never
           run.
       - command: "{{project.real_env_suite}}"
         why: the acceptance suite against the real environment – deliberately not part of the full gate
       - command: "{{project.env_drift_check}}"
-        why: >
+        why: |
           immediately after applying. Clean, or explain why not. A resource that reports drift on
           every run trains people to stop reading previews.
       - attest: what the preview could not show read back, and what the run left behind listed
-        why: >
+        why: |
           a value known only after apply means nobody has reviewed the real thing. Fetch the
           deployed configuration and compare it with what was agreed. Then list what remains: a
           probe that cleans up as an administrator can leave behind what the restricted identity is
           forbidden to remove.
     compact:
-      offer: >
+      offer: |
         Only when this column is completely finished – every unit applied and verified, every
         criterion run, the environment read back. Once it is, the applies and probes are the largest
         accumulation in the loop, and the report needs the findings, not the transcript.
-      never: >
-        between apply units. A half-applied environment whose remaining plan lives in the
+
+        Never between apply units. A half-applied environment whose remaining plan lives in the
         conversation is the worst thing to summarise, and the per-unit approvals do not transfer.
       carry:
         - every unit applied, in order, and the summary line for each
@@ -315,7 +315,7 @@ columns:
   - use: core.submit
     as: report
     also:
-      entry: >
+      entry: |
         The pull request was opened at `panel`. Here, write its body.
 
         **Say which criteria were proved against the real environment and which against the local
@@ -339,7 +339,7 @@ standing_constraints:
   - Destroying and recreating is not free. Some resources hold a deletion window or cannot be
     recreated under the same name – see {{project.irreversible_resources}}.
   - Never resolve drift by editing the tool's recorded state by hand.
-  - >
+  - |
     Widening a control to make a test pass is not progress. If a criterion fails, the finding is the
     control, not the test – ask. The same goes for "while I'm in there" – the packet's fence exists
     because the blast radius is not local.

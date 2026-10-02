@@ -13,13 +13,28 @@
 #              one operator's scripts is not a method, it is a dependency.
 #   example  – a filling on the example system (docs/reference/example-system.md)
 #
-# You add one more line to each slot you use:
-#   value    – your filling. A slot with no `value` is unfilled, and a workflow that uses it cannot
-#              be resolved. A value that names you – an archive destination, an account – is written
-#              as an environment variable, never as the name itself.
+# This file is definitions only. Do not edit it. Your fillings go in a file of their own,
+# `values.yaml`, beside this folder:
+#
+#   project:
+#     full_gate: "make check"
+#   tooling:
+#     reading_tier: "the small tier"
+#
+# A slot with no value there is unfilled, and a workflow that uses it cannot be resolved. A value
+# that names you – an archive destination, an account – is written as an environment variable, never
+# as the name itself. Said "add a `value:` line to each slot here" until 2026-10-02: a file that
+# holds both the definitions and one engagement's answers cannot be replaced when the definitions
+# change.
 #
 # A slot that is a check must fail loudly when it cannot run. A check that skips when its input is
 # missing reads as a pass.
+#
+# A value lands in the middle of a sentence. Write it as a name or a phrase, not as a sentence of its
+# own, and read one resolved column before trusting it. Where the engagement has none of the thing,
+# say so in a phrase that still reads there: "the lockfile – there is none, so read the installed
+# version". On the first real run, 2026-10-02, a value of "none – no design reference" resolved to an
+# instruction to read "none – no design reference first".
 
 project:
 
@@ -31,7 +46,7 @@ project:
   data_rules:
     what: The rules for handling personal data, stated as a standing constraint in every column.
     by_hand: A short numbered list in the constitution, quoted into each brief.
-    example: >
+    example: |
       Sensitivity is a property of a field, not of a store. Incident report content (H3a) never
       appears in a log line, an error message or a response the insurer's dashboard can reach.
 
@@ -48,14 +63,14 @@ project:
   stop_list:
     what: The decisions an unattended run must hand back for, rather than take.
     by_hand: A bulleted list in the constitution, headed so the agent can quote it.
-    example: >
+    example: |
       Anything that changes what crosses a trust boundary · a new holding of personal data · a change
       to what the insurer can see · a migration that cannot be reversed · a new dependency.
 
   decide_and_disclose_list:
     what: The decisions an unattended run may take itself, provided it names each one in the pull request.
     by_hand: A second bulleted list beside the stop list. Anything on neither list is a stop.
-    example: >
+    example: |
       Naming, file placement, test structure · a refactor inside the files the feature already touches
       · copy wording where the design reference is silent.
 
@@ -96,7 +111,10 @@ project:
 
   full_gate_capped:
     what: The same check as a workflow exit – bounded in time, and failing rather than hanging.
-    by_hand: The full gate wrapped in a timeout.
+    by_hand: |
+      The full gate wrapped in a timeout. Watch the wrapper stop a command that overruns, on the
+      machine that will run it: `timeout` is not on every machine, and without it the gate exits 127
+      before it has checked anything.
     example: "timeout 15m make check"
 
   base_is_fresh:
@@ -110,9 +128,13 @@ project:
     example: "! git diff origin/main -U0 | grep '^+' | grep -Eiq 'previously|was changed|review [0-9]'"
 
   ci_watch:
-    what: A command that waits for CI on the pull request and fails if CI fails.
-    by_hand: Watch the pull request page until CI finishes, and read the result.
-    example: "gh pr checks --watch --fail-fast"
+    what: A command that waits for CI on the pull request's newest commit and fails if CI fails.
+    by_hand: |
+      Watch the pull request page until CI finishes on the newest commit, and read the result. The
+      code host's own watch command is not enough alone. Run one second after the pull request was
+      opened it exited 1, "no checks reported". Run two seconds after a push it printed the pass of
+      the commit before and exited 0. Both on 2026-10-02.
+    example: "plan ci"
 
   # ── Browser work – build-in-browser, component-library, single-part ──
 
@@ -128,7 +150,7 @@ project:
 
   review_route:
     what: How a reviewer on another machine reaches a server running on yours.
-    by_hand: >
+    by_hand: |
       A reverse proxy to an address the reviewer can reach, plus that address added to each
       server's list of allowed hosts. Each server refuses differently, one at a time.
     example: "a proxy from the development machine to its name on the team's private network"
@@ -175,7 +197,7 @@ project:
 
   design_diff:
     what: A tool that compares the reference and the built part property by property, printing what matches and what differs.
-    by_hand: >
+    by_hand: |
       Open both in a browser, read the computed styles of the paired elements, and write both
       columns down. Slow, and still better than a screenshot.
     example: "a script that loads the reference page and the workbench entry and prints each computed style as matching or differing"
@@ -310,7 +332,7 @@ tooling:
 
   enter_column:
     what: Record which column the work has entered, and print that column's instructions.
-    by_hand: >
+    by_hand: |
       Append the column name and the time to the journal, then print that column from the resolved
       workflow file and work from what was printed. The printing is what matters.
     example: "plan enter <feature> <column>"
@@ -362,7 +384,7 @@ tooling:
 
   panel_runner:
     what: Runs the panel's seats against the branch, apart from the working session, and returns one ranked report with counts.
-    by_hand: >
+    by_hand: |
       Open one fresh session per seat, give each its profile and the diff, read-only. Collect the
       findings yourself. The isolation is the point: never review in the session that wrote the code.
     example: "review-panel run --branch <branch> --seats <seats>"
@@ -388,9 +410,9 @@ tooling:
     example: "plan retro <feature>"
 
   record_fields:
-    what: Any structured fields your plan tooling reads from a closed feature, beyond the six headings.
+    what: Any structured fields your plan tooling reads from a closed feature, beyond the seven headings.
     by_hand: None. Leave the slot empty.
-    example: "the panel tally block, in the format the plan's reporting reads"
+    example: "a cost line per column, in the format the plan's reporting reads"
 
   plan_check:
     what: A check that the plan still parses and every feature's links and statuses are consistent.
@@ -403,7 +425,7 @@ tooling:
     example: "gh pr view <number> --json state -q .state | grep -qx MERGED"
 
   close:
-    what: Mark the feature done on the main branch – status, column cleared, merge date read from the merge.
+    what: Mark the feature done on the main branch – status, column cleared, the pull request's number, merge date read from the merge.
     by_hand: A tiny pull request editing the feature's status, with the date copied from the merged pull request.
     example: "plan close <feature>"
 

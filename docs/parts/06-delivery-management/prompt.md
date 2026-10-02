@@ -5,11 +5,14 @@
 Three prompts, one per kind of session. Paste each one into a **fresh** agent session. Fill every
 bracketed placeholder first.
 
+**With [the kit](./kit.md) you need only prompt A.** `plan resolve` does what B does and `plan prompt`
+does what C does. B and C are the by-hand route, and the only route for a workflow in a mode.
+
 | Prompt | Guide step | How often |
 |---|---|---|
 | [**A · Fill the slots**](#a-fill-the-slots) | 1.2 | Once per engagement, and again when a new workflow is first used |
-| [**B · Resolve a workflow**](#b-resolve-a-workflow) | 1.6 | Once per workflow, and again whenever a source file changes |
-| [**C · Assemble a brief**](#c-assemble-a-brief) | 2.2 | Once per feature, and again to resume one at a later column |
+| [**B · Resolve a workflow**](#b-resolve-a-workflow) | 1.6, by hand | Once per workflow, and again whenever a source file changes |
+| [**C · Assemble a brief**](#c-assemble-a-brief) | 2.2, by hand | Once per feature, and again to resume one at a later column |
 
 Steps 1.3, 1.4 and 1.5 are yours. There is no prompt for agreeing the two lists, for filling your own
 tooling slots, or for watching a check fail.
@@ -30,6 +33,7 @@ You are proposing values for the engagement-specific slots a workflow needs. You
 decide. Do not start any feature work.
 
 Workflow folder: [path to plan/workflows]
+The values file: [path to plan/values.yaml]
 The workflow being set up: [workflow name]
 The constitution: [path]
 The threat model's boundary table: [path]
@@ -61,11 +65,11 @@ not facts. List them as `for the operator` and propose nothing.
 
 ## Writing
 
-Write nothing until I have replied to the table. Then add a `value:` line to each slot I confirmed, in
-`slots.yaml`, and to no other.
+Write nothing until I have replied to the table. Then write each value I confirmed into the values
+file, under `project:`, keyed by the slot's name without its `project.` prefix. Write no other key.
 
-You may edit `slots.yaml`. You may not edit `core.yaml`, any workflow file, the constitution or any
-source code.
+You may edit the values file. You may not edit `slots.yaml`, `core.yaml`, any workflow file, the
+constitution or any source code.
 
 ## Report back
 
@@ -77,7 +81,7 @@ unfilled and why, and every command you ran with its exit status.
 
 ## B · Resolve a workflow
 
-Paste this once every slot the workflow uses has a `value`.
+Paste this once every slot the workflow uses has a value.
 
 ```markdown
 You are joining three files into one. This is mechanical. Change no wording, make no judgement, and
@@ -86,7 +90,8 @@ improve nothing.
 Workflow folder: [path to plan/workflows]
 The workflow to resolve: [workflow name]
 The mode, if any: [mode name, or none]
-My tooling values, if they are not in slots.yaml: [path, or none]
+The values file: [path to plan/values.yaml]
+My tooling values, if they are in a file of their own: [path, or none]
 
 Write the result to `resolved/[workflow name].yaml`, or `resolved/[workflow name].[mode].yaml` for a
 mode. Write no other file.
@@ -108,7 +113,8 @@ Work down the workflow file's `columns` list in order.
 7. Copy `stage_protocol`, `exit_kinds`, `report_back`, `compaction` and `delegation` from `core.yaml`
    to the top of the result.
 8. `standing_constraints` – the core's list first, then the workflow's own.
-9. Replace every `{{project.x}}` and `{{tooling.x}}` with that slot's `value`.
+9. Replace every `{{project.x}}` and `{{tooling.x}}` with that slot's value, from the values file.
+   Where both files give a value for one slot, the values file wins.
 10. Leave `modes:` out. If I named a mode, apply its changes column by column after rule 9: replace
     or extend the entry of each column it names, remove each column it marks `skip`, add each column
     it defines, and use its own `agreed_at`, `unattended_from` and `standing_constraints`.

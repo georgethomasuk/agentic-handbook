@@ -23,7 +23,7 @@ name: core
 
 # ── How a session moves through any workflow ────────────────────────────────────────────────
 
-stage_protocol: >
+stage_protocol: |
   Enter every column with {{tooling.enter_column}}. It records which column the work is in and
   prints that column's instructions. Work from what it printed, not from memory of the brief –
   the further into a session, the more of the brief is behind you, and a column worked from memory
@@ -36,18 +36,18 @@ stage_protocol: >
   hand back only at a blocking human gate or for an item on the stop list.
 
 exit_kinds:
-  command: >
+  command: |
     A shell predicate. Run it; exit 0 passes. Prefer this wherever the property can be checked by a
     machine.
-  attest: >
+  attest: |
     The agent checks the property itself, writes the evidence into the journal, and continues. Not a
     weaker gate – it names where the answer comes from. The evidence still has to exist.
-  human_gate: >
+  human_gate: |
     A named person answers. Any exit that cannot be a command must be written as a human gate, so the
     queue of work waiting on a person is visible rather than implied. `blocking: true` means the
     session stops and hands back; a non-blocking gate is answered at the next hand-back.
 
-report_back: >
+report_back: |
   Whoever reads a hand-back has not read the brief and last looked at this feature days ago. Open by
   re-orienting – which feature, which column, what happened – not with the first item of a
   checklist. Name a thing before its properties. One point per paragraph, the concrete before and
@@ -58,7 +58,7 @@ report_back: >
   choice, inside the block. The test: if "1B, 2A, 3 – your call" would not be a complete reply, the
   block is not a decision yet.
 
-compaction: >
+compaction: |
   Keep a journal at {{tooling.journal_file}}. Create it at the first column, append to it at every
   boundary that asks, and never rewrite what is in it. It is working state, not a second record –
   but it is the state that outlives a compaction, and `record` is written from it.
@@ -69,7 +69,7 @@ compaction: >
   agent's job; compacting is the operator's. Never mid-column, never on the agent's own initiative.
   An unmarked boundary is not permission.
 
-delegation: >
+delegation: |
   A column may carry `delegate:`, which sends part of it to a worker – a fresh agent that starts
   with nothing but its brief. `send` is what the worker establishes. `keep` is what does not leave
   this session. `escalate` is what would make the column worth a higher tier.
@@ -93,7 +93,7 @@ delegation: >
 standing_constraints:
   - "{{project.data_rules}}"
   - "{{project.boundaries}}"
-  - Fixtures are synthetic unless {{project.real_data_policy}} says otherwise.
+  - "Fixtures are synthetic. Whether one may ever be built from real data: {{project.real_data_policy}}"
   - The review panel runs apart from the working session; its per-seat output does not land here.
   - After the workflow's `unattended_from` column, the run stops only at a blocking human gate or on
     {{project.stop_list}}. Items on {{project.decide_and_disclose_list}} are decided and disclosed in
@@ -105,7 +105,7 @@ standing_constraints:
 columns:
 
   - name: open
-    entry: >
+    entry: |
       Claim the feature where everyone else looks, before any work starts: {{tooling.claim}}. Until
       the claim is visible there, the plan still offers this feature to the next session that asks
       what to pick up. A status set on your own branch is invisible until that branch merges.
@@ -122,7 +122,7 @@ columns:
       - a working copy that is yours until `close`
     exit:
       - command: "{{tooling.claim_check}}"
-        why: >
+        why: |
           the check is the property, not a report of it. A claim that was raised but never landed,
           or landed on a base the branch does not contain, looks identical to one that worked until
           the feature merges and quietly un-claims itself.
@@ -132,7 +132,7 @@ columns:
   # column with `agreed_at:`.
 
   - name: build-plan
-    entry: >
+    entry: |
       Work out how to build this, then cut that into build steps, and agree the cut before any code is
       written. Plan only – no edits, no test files, no fixtures.
 
@@ -199,30 +199,30 @@ columns:
       - each acceptance criterion with the step that closes it, and any criterion none closes
     exit:
       - command: "test -s {{tooling.build_plan_file}}"
-        why: >
+        why: |
           the one precondition `build-execute` cannot recover from. A worker handed no plan writes
           its own.
       - human_gate: the cut agreed – the reasoning behind it, the steps, their order and their tiers
-        why: >
+        why: |
           the rest of the build runs without stopping. Once steps start landing, moving a boundary
           means re-cutting work that is already green. The reasoning is what is being agreed, not just
           the list.
         blocking: true
       - human_gate: every acceptance criterion closed by a named step
-        why: >
+        why: |
           a criterion no step closes is far cheaper to find here than after the steps have landed.
       - human_gate: every fixture named against the population it stands in for, counted, with the shapes it omits
-        why: >
+        why: |
           a green suite over a shape the real data never takes is indistinguishable, in a pull
           request, from a green suite over the real thing. Counting here is minutes; after the steps
           land it is a reseed, a re-run and a re-prove.
       - human_gate: the panel run authorised, where {{tooling.panel_runner}} requires the operator's words
-        why: >
+        why: |
           everything after this gate runs unattended, so authorisation is asked for at the gate the
           operator is already at. Quote the reply into the journal.
         blocking: true
     compact:
-      offer: >
+      offer: |
         Cutting the work is a search – reasoning through the implementation, drawing and redrawing
         boundaries, walking criteria against the result. Its output is one file on disk. This
         boundary is safe only because the plan is a file.
@@ -237,7 +237,7 @@ columns:
   - name: build-execute
     delegate:
       model: "{{tooling.default_tier}}"
-      send: >
+      send: |
         one worker per build step, in the order `build-plan` set, at the tier that step's plan entry
         names. Give it the step's goal, what it must make true, the agreed design, the
         files it expects to touch, the part of the corpus count its fixture covers, and – the one that
@@ -257,27 +257,27 @@ columns:
         as its own finding: uncommitted files in a component it does not own, and a whole-component
         check failing on a file outside its list. The instruction is to name the file, say it is not
         theirs, and carry on – not to fix it, and not to stop.
-      keep: >
+      keep: |
         every judgement and all of the authority. Design decisions the agreed design did not
         settle come back as questions, not as choices already taken. A step proposes a deviation and
         this session decides it, unless it is on {{project.stop_list}}. The attests below stay here
         too: no step closes its own exit. Also kept: the running order, each step's tier, and the
         decision to start each step at all.
-      escalate: >
+      escalate: |
         re-read the four higher-tier reasons against each step before launching it – the plan was
         written before any step had run. Raising a step's tier is this session's call; write the reason
         in the journal. Lowering one the plan argued up is not offered.
     review_each_step:
-      suspicion: >
+      suspicion: |
         drift from the agreed design that reads as a detail – a value re-declared where a shared one
         exists, a state the design named rendered as a variant of another. Then the seam with steps
         already landed: a second source of truth for something an earlier step owns. And whether the
         step built to its own red, or to the previous step's.
-      escalate: >
+      escalate: |
         a finding whose fix is on {{project.stop_list}} – most often one that contradicts the agreed
         design, moves an ownership seam, or changes what a user sees. A finding the step disputes is
         not one: read the code and decide.
-    entry: >
+    entry: |
       Read the build plan from {{tooling.build_plan_file}} and work it in order. **If it is missing or
       empty, stop and hand back.** Do not reconstruct the cut from memory or from the packet – a
       reconstructed plan is a second, unagreed cut wearing the first one's name.
@@ -325,24 +325,24 @@ columns:
     exit:
       - command: "{{project.full_gate_capped}}"
       - attest: every acceptance criterion closed by a named step that reported it green
-        why: >
+        why: |
           the cut follows the work, not the criteria, so coverage is a property of the sum and of
           nothing smaller.
       - attest: a perturbation record for every step, naming what was broken and which test failed
-        why: >
+        why: |
           a perturbation that produces no failure means the perturbation missed, not that the code is
           right. A step whose criteria went red on one cause still owes each of them a perturbation of
           its own – several tests red on one shared error prove only that the error exists.
       - attest: every deviation a step proposed, decided here rather than inside the step
-        why: >
+        why: |
           a worker holds no authority to change the agreed design. A deviation taken inside a step and
           reported as done is the design changing without the gate that exists to change it.
       - attest: every step reviewed, each finding decided, and any inserted step named
-        why: >
+        why: |
           most review findings fold into the next step and are never seen again. That is the right
           cost, and also why nothing else would notice a column that stopped reviewing halfway.
     compact:
-      offer: >
+      offer: |
         The steps are the largest accumulation here even when delegated – briefs, returned records,
         commits, retries and a full gate run. The column after this works the result and the diff,
         and needs none of it.
@@ -361,12 +361,12 @@ columns:
     # A workflow adds `seeds:` – the failure modes typical of its kind of work – when it uses this.
     precondition:
       - command: "{{project.base_is_fresh}}"
-        why: >
+        why: |
           the panel reviews the diff it is handed. A stale base means it reviews work that changes
           under it, or a diff that silently reverts what landed while you were building. Rebase
           before the panel is briefed, never after – a rebase mid-review invalidates every finding
           that named a line.
-    entry: >
+    entry: |
       Choose the reviewers from what this change can get wrong. Name concrete failure modes, not
       subject areas – not "accessibility" but "an error the screen reader never announces because
       focus never moves". Each suspicion is one seat. Start from this workflow's `seeds`, then let the
@@ -392,8 +392,10 @@ columns:
       by sharpening a seat's suspicion, adding a profile on this branch, or raising an issue with
       {{tooling.issue_tracker}}. Recording it only in the journal is the same as dropping it.
 
-      Record the panel's counts – seats, findings raised, refuted, acted on – as the runner returned
-      them, in the feature's `### Panel tally`. Never count them by hand.
+      Write the panel's counts – seats, findings raised, refuted, acted on – in the journal, as the
+      runner returned them. `record` copies them into the feature's `### Panel tally`. Never count
+      what a runner counted. A panel run by hand returns no counts: count them from the triaged
+      report, and say in the tally that they were counted by hand.
     produces:
       - the named seats, each with the concrete failure mode it exists to catch
       - every new or extended reviewer profile, committed on this branch
@@ -401,27 +403,27 @@ columns:
       - every finding triaged – fixed where it belongs, or a stated decision – and every unverified
         finding with the way it was decided
       - every failure mode nobody had a seat for, closed by one of the three routes
-      - the panel tally, as returned, in `### Panel tally`
+      - the panel tally in the journal, as returned, or marked as counted by hand
       - the checks re-run after each fix
     exit:
       - attest: each seat named for the failure mode it will investigate
         why: a reviewer briefed with a topic summarises; one briefed with a suspicion investigates
       - attest: the operator's authorisation quoted from the journal, where the runner requires one
-        why: >
+        why: |
           authorisation given in a conversation does not travel into a worker or across a
           compaction. The quote is what makes it survive.
       - attest: every finding triaged, fixed, and the fix re-reviewed
         why: the pull request should present a reviewed result, not use its human reviewer as the first panel
       - attest: every panel gap closed with a profile on this branch or an issue
-        why: >
+        why: |
           a gap written only in a journal or a running list has no owner and no state, so nothing
           closes it. An issue has both.
-      - attest: the panel tally recorded as returned, with nothing hand-counted
-        why: >
+      - attest: the panel tally recorded as returned, or marked as counted by hand
+        why: |
           which seats earn their cost is a question about many panels, not this one. A tally written
           into prose cannot be asked that question.
     compact:
-      offer: >
+      offer: |
         The ranked report is the largest artefact the workflow produces, and once every finding is a
         fixed commit or a stated decision it has done its work. `record` is written from the journal,
         so what goes into the journal now is what the record will say.
@@ -434,7 +436,7 @@ columns:
         - the checks re-run after the fixes
 
   - name: prepare-pr
-    entry: >
+    entry: |
       The last code fix is in and the pull request body has not been written. Prune what this branch
       added to comments and docstrings now, so the reviewer reads the diff once, already trimmed.
 
@@ -452,14 +454,14 @@ columns:
     exit:
       - command: "{{project.comment_check}}"
       - attest: every added comment block read against the test, not only the ones that looked like history
-        why: >
+        why: |
           a pass that looks only for history words misses the long explanation with none in it,
           which is the half that most needs cutting
       - attest: the trim is its own commit
         why: a trim mixed into a code change cannot be reviewed as comments-only
 
   - name: submit
-    entry: >
+    entry: |
       Open the pull request with {{tooling.open_pr}}, after the reviews above have passed. Write the
       body for someone who was not present:
 
@@ -480,15 +482,15 @@ columns:
     exit:
       - command: "{{project.ci_watch}}"
       - attest: the body carries enough evidence for a final review by someone who was not there
-        why: >
+        why: |
           the reviewer who merges reads the body, not the journal. A body that says "tests pass"
           has asked them to redo the proving.
       - attest: "`Not proved` is non-empty"
-        why: >
+        why: |
           every change leaves something unproved. An empty section means nobody looked, not that
           nothing was left.
     compact:
-      offer: >
+      offer: |
         The pull request body is now the durable account of the run, and `record` is written from it
         and the journal rather than from memory. What remains is two documents and a merge.
       carry:
@@ -497,12 +499,13 @@ columns:
         - anything left out of the body, and why
 
   - name: record
-    entry: >
+    entry: |
       Append a `## Record` below the packet. Never write over the packet – the packet is why the work
       was asked for, and the record is what came of it.
 
       Use only these headings: **Decisions taken** · **Carried forward** · **Verification actually
-      run** · **Review** · **Also fixed (not the feature)** · **Lesson**. The set is closed because
+      run** · **Review** · **Panel tally** · **Also fixed (not the feature)** · **Lesson**. The set
+      is closed because
       Carried forward is lifted by its exact heading into the brief of every feature that depends on
       this one. Rename it and it reaches nobody.
 
@@ -514,6 +517,7 @@ columns:
       - **Verification actually run** – where the packet's commands were not enough, and what was
         done instead. The difference, not a restatement.
       - **Review** – who looked, what came back, and what was accepted.
+      - **Panel tally** – the panel's counts, copied from the journal. Left out where no panel ran.
       - **Also fixed** – incidental repairs, so a later reader of the history does not misread them.
       - **Lesson** – the one thing that generalises. If it repeats an earlier feature's, say which.
 
@@ -529,27 +533,27 @@ columns:
       line names what proof its change would give up. Fix names where the fix goes, or says
       `none: one-off`. Do not read other retro entries before writing yours.
     produces:
-      - "`## Record` under the six closed headings, written from the journal and the pull request body"
+      - "`## Record` under the seven closed headings, written from the journal and the pull request body"
       - every problem found in passing, raised as an issue and cited by number
       - a retro entry, in its own file, under the length limit
       - "{{tooling.record_fields}}"
     exit:
       - command: "{{tooling.plan_check}}"
       - attest: the record is enough for the next feature that depends on this one
-        why: >
+        why: |
           Carried forward is the one part of a record written for someone else. If it would not
           change what the next feature does, it has not said anything.
       - attest: every Carried forward entry either reaches a dependent feature or names a destination
-        why: >
+        why: |
           a note addressed to work nothing depends on is read zero times, and nothing about the file
           says so. It looks written, filed and delivered.
       - attest: a retro entry written, without reading the others
-        why: >
+        why: |
           retro entries kept in one shared file drifted longer with every author, because each read
           the ones above before writing. An author who reads no siblings cannot inherit their drift.
 
   - name: merge
-    entry: >
+    entry: |
       The hand-back the unattended stretch ends on. Give the operator, in one message: the pull
       request, its CI result, its `Decided without asking` section, and what was not proved.
 
@@ -565,14 +569,14 @@ columns:
         blocking: true
 
   - name: close
-    entry: >
+    entry: |
       Mark the feature done where everyone looks, and release what it held. Nothing moves the status
       on merge, so an unclosed feature sits in flight indefinitely and every queue, count and
       dependency check downstream reads a stale line.
 
-      Close it with {{tooling.close}}. It refuses unless the feature has merged, and makes three
-      changes only: status done, the column removed, the merge date read from the merge itself –
-      never typed. It adds no prose; the record was written at `record`.
+      Close it with {{tooling.close}}. It refuses unless the feature has merged, and changes the
+      header only: status done, the column removed, the pull request's number, and the merge date
+      read from the merge itself – never typed. It adds no prose; the record was written at `record`.
 
       Then archive the journal with {{tooling.archive_journal}}, and only after that release the
       working copy with {{tooling.release_workspace}}. The order matters: the journal usually lives
@@ -586,7 +590,7 @@ columns:
     exit:
       - command: "{{tooling.close_check}}"
       - command: "{{tooling.archive_journal}}"
-        why: >
+        why: |
           an archive step that quietly succeeds having copied nothing leaves you believing there is an
           archive. If the destination is unset, this must fail, not skip.
       - command: "{{tooling.release_workspace}}"

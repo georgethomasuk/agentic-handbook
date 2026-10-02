@@ -112,6 +112,34 @@ Every term the handbook uses in a special sense. Each part also defines a term w
 | **Workbook** | The formal record of a threat-modelling pass. Written to be checked, not read through |
 | **Front door** | The short document the client reads first. It points into the workbook rather than repeating it |
 
+### Planning and delivery – Parts 5 and 6
+
+| Term | Meaning |
+|---|---|
+| **Plan tree** | The plan as folders and files: one folder per level, one file per feature |
+| **Node** | One entry in the plan tree, at any level |
+| **Mission** | The whole engagement. Done when the client accepts its scope |
+| **Milestone** | A point somebody outside the build accepts. The only node with a date |
+| **Slice** | A capability you can watch working, end to end. Done when it is demonstrated |
+| **Feature** | The smallest piece of work. Done when a command passes and the change merges. The only level an agent is handed |
+| **Criterion** | One line of whatever the client will accept the work against, numbered as its owner numbers it. G1.1, G1.2, … in the example |
+| **Confirmation statement** | A criterion restated in one plain sentence, with the node that answers it |
+| **Packet** | The part of a feature's file written before the work. It is the agent's brief |
+| **Where to err** | One sentence in a packet: which way to lean when the criteria are silent |
+| **Record** | The part of a feature's file written after the work: decisions, gaps, the lesson |
+| **Carried forward** | The section of a record written for whoever builds on the feature. Copied into their brief |
+| **Traces** | The identifiers a feature answers to that somebody outside the build owns – a criterion, a finding, a boundary |
+| **Hard dependency** | A feature this one cannot start without. Named in `blocked_by` |
+| **Wave** | The earliest point a feature could start, counted from the dependencies alone |
+| **Census** | What is computed from the features: counts by status, what points at each criterion, the longest chain |
+| **Reading** | Your written judgement about where a level stands. What the census cannot say |
+| **Workflow** | The fixed sequence of columns one feature moves through, from claimed to closed |
+| **Column** | One stage of a workflow, with what it needs on entry, what it produces, and what ends it |
+| **Slot** | A named hole in a workflow, filled once per engagement or once per operator |
+| **Brief** | What a fresh session is handed for one feature: the task first, then the packet and everything it inherits |
+| **Constitution** | The one document every session reads first – the rules that bind the whole build |
+| **The kit** | The command-line tool, `plan`, that checks a plan and does Part 6's mechanical steps |
+
 ### The status line
 
 Every page opens with a line such as **Status** draft · **Life** living · **Reader** you.

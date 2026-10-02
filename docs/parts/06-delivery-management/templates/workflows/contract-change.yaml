@@ -16,7 +16,7 @@
 # Shared columns come from core.yaml. {{project.*}} and {{tooling.*}} slots are defined in slots.yaml.
 
 name: contract-change
-description: >
+description: |
   Establish the contract's lifecycle state as fact, claim the work, map every surface that reads or
   writes the contract, design the change and review the proposal before implementing it, cut the
   build into steps, update every surface on one branch, prove the whole repository and account for
@@ -31,7 +31,7 @@ unattended_from: build-execute
 columns:
 
   - name: explore
-    entry: >
+    entry: |
       Confirm every feature this one depends on has merged, then establish the change before
       designing it. Read {{project.constitution}}, {{project.contract_sources}}, the packet and the
       decisions it cites. State the current behaviour, the problem, the proposed capability, what is
@@ -58,7 +58,7 @@ columns:
   - use: core.open
 
   - name: impact-map
-    entry: >
+    entry: |
       Build the understanding pack at {{tooling.design_pack_file}}, on disk, not in the
       conversation. Read outward in dependency order and record every surface as
       `surface → reads or writes what → compatibility consequence → proving test`.
@@ -90,7 +90,7 @@ columns:
         blocking: true
 
   - name: design
-    entry: >
+    entry: |
       Extend the pack with candidate designs and one explicit recommendation. For each candidate
       show: a before-and-after example; where the change sits; how many are allowed; type and
       format; required or optional; defaults, and what happens to an unknown field; lifecycle;
@@ -122,7 +122,7 @@ columns:
       - human_gate: the pack contains reviewable before-and-after examples and a compatibility matrix
         why: reviewers need a concrete proposed contract, not an adjective such as "additive"
     compact:
-      offer: >
+      offer: |
         Three columns of reading end here, and their output is already a file. The pack holds the
         surfaces, the candidates, the examples and the matrix, so the conversation that produced it
         is the cheapest thing in the workflow to drop. Point the journal at the pack.
@@ -147,7 +147,7 @@ columns:
       - "Something leaving {{project.boundaries}} or reaching a log line because of the new shape."
       - "A migration claim that deployed reality does not support."
     also:
-      entry: >
+      entry: |
         **The evidence is the pack, the candidate designs and the current contract.** Brief each seat
         with those and its suspicion. There is no branch diff to review, so the base-freshness
         precondition does not apply to this run.
@@ -183,7 +183,7 @@ columns:
 
   - use: core.build-plan
     also:
-      entry: >
+      entry: |
         **The baseline is not confirmed here.** Confirming it means running suites, and this column
         only plans. Name which components the baseline covers, so `build-execute` runs the right
         ones at its step 0.
@@ -214,7 +214,7 @@ columns:
           no released artefact edited in place
       exit:
         - human_gate: the coexistence set named – what must stay green, and which step owns keeping it so
-          why: >
+          why: |
             one session can hold this in its head and a set of workers cannot. A step that breaks a
             coexistence fixture it was never told about reports itself green. The sum fails, one
             column later, with the cause several commits back.
@@ -226,25 +226,25 @@ columns:
   - use: core.build-execute
     also:
       delegate:
-        send: >
+        send: |
           Also give each worker the impact map's row for every surface it may touch, and the
           coexistence fixtures it must not break.
-        keep: >
+        keep: |
           **Kept absolutely on this workflow: any change to the contract or to a released governed
           artefact beyond what `proposal-review` approved.** A worker that takes one inside a step
           has moved the contract without the gate that exists to move it.
       review_each_step:
-        suspicion: >
+        suspicion: |
           both sides of the seam, which no single step sees whole. A generated binding that no
           longer means what the definition means. A producer and a consumer that agree only because
           they were changed in the same step. An old version kept for coexistence that nothing now
           exercises. Then the freeze: content or a hash moving where the change was meant to be
           additive, and a stable identifier changing shape.
-        escalate: >
+        escalate: |
           also any finding whose fix needs a coordinated change in a repository this branch does not
           own. A surface in the map that the review finds unaddressed is not an escalation: it goes
           to the next step.
-      entry: >
+      entry: |
         **Step 0, before the first build step: confirm the baseline green** on the components
         `build-plan` named. **A red baseline is a stop, not something to work through.** Every step
         after it reports a red nobody can read, because no step can tell its own break from the one
@@ -261,7 +261,7 @@ columns:
         - anything reported missing rather than implemented
       exit:
         - attest: every surface in the approved impact map implemented, or explicitly reported missing, by a named step
-          why: >
+          why: |
             the impact map is the list a contract change is judged complete against, and no single
             step's report covers it. A forgotten consumer is invisible in every step and visible
             only in the sum.
@@ -271,7 +271,7 @@ columns:
           - every version and hash that moved, and the coexistence set kept
 
   - name: prove
-    entry: >
+    entry: |
       Prove the completed contract before asking anyone to accept it. Run {{project.full_gate}} for
       the whole repository, not only the contract's own component.
 
@@ -300,7 +300,7 @@ columns:
       - attest: generated output reproduces cleanly, or the missing generation is recorded
       - attest: every version and hash change is intentional and reviewable
     compact:
-      offer: >
+      offer: |
         The proof is long and repetitive by design. `implementation-review` needs the result of each
         run, not its output, and the result is a table you have to write anyway.
       carry:
@@ -315,7 +315,7 @@ columns:
   - use: core.panel
     as: implementation-review
     also:
-      entry: >
+      entry: |
         **Reuse the seats agreed at `proposal-review`**, each suspicion restated against the
         implementation. The evidence is the actual diff, the completed impact map and the proof.
 
@@ -366,25 +366,25 @@ standing_constraints:
 modes:
 
   - name: draft-contract
-    status: >
+    status: |
       NOT YET RUN. The source workflow tells a draft from a released contract at `explore` and then
       treats both the same. This mode is the lighter path that distinction implies. Treat the first
       feature to use it as a trial, and write what it cost into the retro.
-    when: >
+    when: |
       `explore` establishes, as fact, that the contract is a draft: nothing released under it, no
       stored data in the current shape, and no deployed producer or consumer outside this
       repository. If any of the three cannot be established, this is not the mode.
     columns:
-      design: >
+      design: |
         The compatibility matrix is replaced by one line stating the three facts from `explore`,
         with how each was established. Before-and-after examples are still owed.
-      build-plan: >
+      build-plan: |
         The coexistence set is empty by fact, so its gate is answered by citing `explore`, not by
         listing fixtures. Versions and hashes may move freely; say that they will.
-      build-execute: >
+      build-execute: |
         Governed artefacts may be edited in place, because none is released. Everything else holds:
         the impact map is still the completeness list, and generated output still changes through
         its source.
-      prove: >
+      prove: |
         Unchanged. A draft contract has just as many surfaces.
     kept: both panels, the impact map, and the full-repository gate

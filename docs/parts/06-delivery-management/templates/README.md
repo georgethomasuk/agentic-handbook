@@ -3,7 +3,8 @@
 # Templates
 
 Copy both into the client repository, beside the plan. [The guide](../README.md) says what to do with
-each.
+each. With [the kit](../kit.md), `plan init` copies the workflows for you, and the brief skeleton is
+not needed.
 
 | | What it is | State |
 |---|---|---|
@@ -14,13 +15,15 @@ each.
 
 ```
 plan/
+  values.yaml             your values for the slots
+  kit.yaml                with the kit only – where things are, and how a claim lands
   workflows/
     core.yaml
     <workflow>.yaml       seven of them
-    slots.yaml            with your values added
+    slots.yaml            what each slot needs – not edited
     resolved/
-      <workflow>.yaml     one per workflow you use – what the agent reads
-  brief.md
+      <workflow>.yaml     by hand only – one per workflow you use, what the agent reads
+  brief.md                by hand only
 .work/
   <feature>/
     journal.md            working state – ignored by version control
